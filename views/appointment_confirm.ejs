@@ -1,35 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Appointment Confirmed</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
-  <body class="notice-page">
-    <section class="notice-card">
-      <h1>Appointment Confirmed</h1>
-      <p>
-        Dr. <strong><%= appointment.doctor_name %></strong> — <%= appointment.date %> at
-        <%= appointment.slot_time %>
-      </p>
-      <p>Serial: <strong>#<%= appointment.serial_no %></strong></p>
-      <p>For: <%= appointment.for_person_name %></p>
-
-      <div class="cta-row">
-        <a class="btn primary" href="/appointments/<%= appointment.id %>/form">Fill Pre-visit Form</a>
-        <a class="btn ghost" href="/appointments/<%= appointment.id %>/status/view">Queue status</a>
-      </div>
-
-      <% const cancellable = ['booked','arrived','waiting']; %>
-      <% if (cancellable.includes(appointment.status)) { %>
-      <form method="POST" action="/appointments/<%= appointment.id %>/cancel" class="inline-form">
-        <button class="btn primary" type="submit">Cancel appointment</button>
-      </form>
-      <% } else { %>
-      <p style="margin-top: 1rem;">Status: <strong><%= appointment.status %></strong></p>
-      <% } %>
-
-      <p style="margin-top: 1.5rem;"><a href="/dashboard/patient">Back to dashboard</a></p>
-    </section>
-  </body>
-</html>
+<!doctype html><html><body>
+<h2>Appointment Confirmed</h2>
+<p>Doctor: <%= a.doc_name %></p>
+<p>Date: <%= a.date %></p>
+<p>Serial No: <b><%= a.serial_no %></b></p>
+<p>Expected time: <%= a.slot_time %></p>
+<p><a href="/appointments/<%= a.id %>/status">Live Status</a></p>
+</body></html>

@@ -1,52 +1,11 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Admin - Doctors</title>
-  </head>
-  <body>
-    <h1>Doctor Approvals</h1>
-
-    <h2>Pending</h2>
-    <% if (pending.length === 0) { %>
-    <p>No pending doctors.</p>
-    <% } else { %>
-    <ul>
-      <% pending.forEach(function(doc) { %>
-      <li>
-        <strong><%= doc.name %></strong> (<%= doc.email %>) — <%= doc.specialty %>,
-        <%= doc.chamber %>
-        <form
-          method="POST"
-          action="/admin/doctors/<%= doc.user_id %>/approve"
-          style="display: inline;"
-        >
-          <button type="submit">Approve</button>
-        </form>
-        <form
-          method="POST"
-          action="/admin/doctors/<%= doc.user_id %>/reject"
-          style="display: inline;"
-        >
-          <button type="submit">Reject</button>
-        </form>
-      </li>
-      <% }) %>
-    </ul>
-    <% } %>
-
-    <h2>Approved</h2>
-    <% if (approved.length === 0) { %>
-    <p>No approved doctors yet.</p>
-    <% } else { %>
-    <ul>
-      <% approved.forEach(function(doc) { %>
-      <li>
-        <strong><%= doc.name %></strong> (<%= doc.email %>) — <%= doc.specialty %>,
-        <%= doc.chamber %>
-      </li>
-      <% }) %>
-    </ul>
-    <% } %>
-  </body>
-</html>
+<!doctype html><html><body>
+<h2>Admin: Doctors</h2>
+<table border="1" cellpadding="6">
+<tr><th>Name</th><th>Email</th><th>BMDC</th><th>Specialty</th><th>Chamber</th><th>Status</th><th>Actions</th></tr>
+<% rows.forEach(r=>{ %><tr>
+<td><%= r.name %></td><td><%= r.email %></td><td><%= r.bmdc_no||'' %></td>
+<td><%= r.specialty||'' %></td><td><%= r.chamber||'' %></td><td><%= r.status %></td>
+<td>
+<form method="post" action="/admin/doctors/<%= r.user_id %>/approve" style="display:inline"><button>Approve</button></form>
+<form method="post" action="/admin/doctors/<%= r.user_id %>/reject" style="display:inline"><button>Reject</button></form>
+</td></tr><% }) %></table></body></html>

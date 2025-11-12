@@ -1,20 +1,16 @@
-const express=require('express');
-const path=require('path');
-const session=require('express-session');
-const methodOverride=require('method-override');
-require('./db'); // init DB & schema
-
+const express=require('express'),path=require('path');
+const session=require('express-session'),methodOverride=require('method-override');
+require('./db');
 const app=express();
-app.set('view engine','ejs');
-app.set('views',path.join(__dirname,'views'));
-app.use(express.urlencoded({extended:true}));
-app.use(methodOverride('_method'));
+app.set('view engine','ejs');app.set('views',path.join(__dirname,'views'));
+app.use(express.urlencoded({extended:true}));app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,'public')));
 app.use(session({secret:'nirnoy-secret',resave:false,saveUninitialized:false}));
 app.use((req,res,next)=>{res.locals.user=req.session.user||null;next();});
-
-// routes
-app.use(require('./routes/auth')); // patient auth
-
-app.get('/',(req,res)=>{res.render('home');});
+app.use(require('./routes/auth'));
+app.use(require('./routes/admin'));
+app.use(require('./routes/doctor'));
+app.use(require('./routes/doctors'));
+app.use(require('./routes/appointments'));
+app.get('/',(req,res)=>res.render('home'));
 app.listen(3000,()=>console.log('Nirnoy 2.0 running at http://localhost:3000'));
