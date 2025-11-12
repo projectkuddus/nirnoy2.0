@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body class="notice-page">
+    <section class="notice-card">
+      <h1><%= title %></h1>
+      <p><%= message %></p>
+      <% if (actions && actions.length) { %>
+      <div class="cta-row">
+        <% actions.forEach(function(action) { %>
+        <a class="btn primary" href="<%= action.href %>"><%= action.label %></a>
+        <% }) %>
+      </div>
+      <% } %>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Doctor Signup - Nirnoy</title>
+  </head>
+  <body>
+    <h1>Doctor Registration</h1>
+    <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+    <% } %>
+    <% if (success) { %>
+    <p style="color: green;"><%= success %></p>
+    <% } %>
+    <form method="POST" action="/doctor/register">
+      <label>Name <input type="text" name="name" required /></label><br />
+      <label>Email <input type="email" name="email" required /></label><br />
+      <label>Password <input type="password" name="password" required /></label><br />
+      <label>BMDC No <input type="text" name="bmdc_no" required /></label><br />
+      <label>Specialty <input type="text" name="specialty" required /></label><br />
+      <label>Chamber <input type="text" name="chamber" required /></label><br />
+      <button type="submit">Submit</button>
+    </form>
+    <p><a href="/">Back home</a></p>
+  </body>
+</html>

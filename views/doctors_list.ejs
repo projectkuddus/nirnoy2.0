@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Doctors - Nirnoy</title>
+  </head>
+  <body>
+    <h1>Approved Doctors</h1>
+    <% if (doctors.length === 0) { %>
+    <p>No doctors available yet.</p>
+    <% } else { %>
+    <ul>
+      <% doctors.forEach(function(doc) { %>
+      <li>
+        <strong><%= doc.name %></strong> — <%= doc.specialty %> (<%= doc.chamber %>)
+        <a href="/doctors/<%= doc.user_id %>">View &amp; Book</a>
+      </li>
+      <% }) %>
+    </ul>
+    <% } %>
+  </body>
+</html>

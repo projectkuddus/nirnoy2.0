@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Live Queue Status</title>
+  </head>
+  <body>
+    <h1>Live Queue Status</h1>
+    <div id="status">
+      <p>Loading...</p>
+    </div>
+    <script>
+      async function loadStatus() {
+        try {
+          const res = await fetch('/appointments/<%= appointmentId %>/status');
+          const data = await res.json();
+          if (data.error) {
+            document.getElementById('status').innerHTML = `<p>${data.error}</p>`;
+            return;
+          }
+          const eta = data.eta ? new Date(data.eta).toLocaleTimeString() : 'TBD';
+          document.getElementById('status').innerHTML = `
+            <p>Doctor: ${data.doctor}</p>
+            <p>Your serial: <strong>#${data.your_serial}</strong></p>
+            <p>Now serving: ${data.now_serving ?? 'Not started'}</p>
+            <p>Status: ${data.status}</p>
+            <p>ETA: ${eta}</p>
+          `;
+        } catch (err) {
+          document.getElementById('status').innerHTML = '<p>Failed to load status.</p>';
+        }
+      }
+      loadStatus();
+      setInterval(loadStatus, 30000);
+    </script>
+  </body>
+</html>

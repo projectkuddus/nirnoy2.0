@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Pre-visit Form</title>
+  </head>
+  <body>
+    <h1>Pre-visit Form</h1>
+    <p>Appointment #<%= appointment.serial_no %> on <%= appointment.date %></p>
+    <form method="POST">
+      <label>
+        Symptoms
+        <textarea name="symptoms" rows="4" cols="40"><%= answers ? answers.symptoms : '' %></textarea>
+      </label>
+      <br />
+      <label>
+        Duration of symptoms
+        <input type="text" name="duration" value="<%= answers ? answers.duration : '' %>" />
+      </label>
+      <br />
+      <label>
+        Current medications
+        <textarea name="medications" rows="4" cols="40"><%= answers ? answers.medications : '' %></textarea>
+      </label>
+      <br />
+      <button type="submit">Save</button>
+    </form>
+    <p><a href="/appointments/<%= appointment.id %>/confirm">Back</a></p>
+  </body>
+</html>

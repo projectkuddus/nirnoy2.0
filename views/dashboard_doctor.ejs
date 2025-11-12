@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <section style="padding: 2rem 4rem;">
+      <h1>Today’s Queue (<%= today %>)</h1>
+      <% if (appointments.length === 0) { %>
+      <p>No appointments booked today.</p>
+      <% } else { %>
+      <div class="patient-list">
+        <% appointments.forEach(function(appt) { %>
+        <article class="patient-card">
+          <header>
+            <h2>#<%= appt.serial_no %> — <%= appt.patient_name %></h2>
+            <span><%= appt.status %></span>
+          </header>
+          <p><strong>Slot:</strong> <%= appt.slot_time %></p>
+          <p><strong>For:</strong> <%= appt.for_person_name %></p>
+          <% if (appt.answers) { %>
+          <details>
+            <summary>Pre-visit form</summary>
+            <p>Symptoms: <%= appt.answers.symptoms %></p>
+            <p>Duration: <%= appt.answers.duration %></p>
+            <p>Medications: <%= appt.answers.medications %></p>
+          </details>
+          <% } %>
+          <div class="doctor-actions">
+            <form method="POST" action="/doctor/appointments/<%= appt.id %>/arrived">
+              <button type="submit">Mark arrived</button>
+            </form>
+            <form method="POST" action="/doctor/appointments/<%= appt.id %>/waiting">
+              <button type="submit">Move to waiting</button>
+            </form>
+            <form method="POST" action="/doctor/appointments/<%= appt.id %>/start">
+              <button type="submit">Start consult</button>
+            </form>
+            <form method="POST" action="/doctor/appointments/<%= appt.id %>/no-show">
+              <button type="submit">No-show</button>
+            </form>
+          </div>
+          <form method="POST" action="/doctor/appointments/<%= appt.id %>/complete" class="complete-form">
+            <label>
+              Notes
+              <textarea name="notes" rows="2"><%= appt.notes || '' %></textarea>
+            </label>
+            <label>
+              Prescription
+              <textarea name="prescription_text" rows="2"><%= appt.prescription_text || '' %></textarea>
+            </label>
+            <label>
+              Tasks
+              <textarea name="tasks" rows="2"><%= appt.tasks ? appt.tasks.tasks : '' %></textarea>
+            </label>
+            <button type="submit">Complete visit</button>
+          </form>
+        </article>
+        <% }) %>
+      </div>
+      <% } %>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <section style="padding: 2rem 4rem;">
+      <h1>My Appointments</h1>
+      <% if (appointments.length === 0) { %>
+      <p>No appointments yet. <a href="/doctors">Find a doctor</a></p>
+      <% } else { %>
+      <div class="patient-list">
+        <% appointments.forEach(function(appt) { %>
+        <article class="patient-card">
+          <header>
+            <h2><%= appt.doctor_name %></h2>
+            <span>#<%= appt.serial_no %></span>
+          </header>
+          <p><strong>Date:</strong> <%= appt.date %> at <%= appt.slot_time %></p>
+          <p><strong>Status:</strong> <%= appt.status %></p>
+          <% if (appt.prescription_text) { %>
+          <p><strong>Prescription ready.</strong></p>
+          <% } %>
+          <div class="cta-row">
+            <a class="btn primary" href="/appointments/<%= appt.id %>/detail">View details</a>
+            <a class="btn ghost" href="/appointments/<%= appt.id %>/status/view">Queue status</a>
+          </div>
+          <% const cancellable = ['booked','arrived','waiting']; %>
+          <% if (cancellable.includes(appt.status)) { %>
+          <form method="POST" action="/appointments/<%= appt.id %>/cancel" class="inline-form">
+            <button class="btn primary" type="submit">Cancel</button>
+          </form>
+          <% } %>
+        </article>
+        <% }) %>
+      </div>
+      <% } %>
+    </section>
+  </body>
+</html>
