@@ -1,7 +1,10 @@
-<!doctype html><html><body>
+<!doctype html><html><head>
+<meta http-equiv="refresh" content="30">
+</head><body>
 <h2>Queue Status</h2>
 <p>Serial: <b><%= a.serial_no %></b></p>
 <p>People ahead: <b><%= ahead %></b></p>
 <p>Estimated wait: <b><%= etaMin %> minutes</b></p>
 <p>Slot time: <%= a.slot_time %></p>
+<p>(auto-refreshes every 30s)</p>
 </body></html>
