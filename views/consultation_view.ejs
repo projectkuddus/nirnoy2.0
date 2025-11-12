@@ -1,0 +1,10 @@
+<!doctype html><html><body>
+<h2>Prescription</h2>
+<% if (cons) { %>
+  <p><b>Notes:</b><br><pre><%= cons.notes %></pre></p>
+  <p><b>Prescription:</b><br><pre><%= cons.prescription_text %></pre></p>
+  <p><b>Tasks:</b><br><pre><%= cons.tasks_json %></pre></p>
+<% } else { %>
+  <p>No prescription yet.</p>
+<% } %>
+</body></html>

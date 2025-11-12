@@ -1,0 +1,9 @@
+<!doctype html><html><body>
+<h2>Pre-visit form</h2>
+<form method="post" action="/appointments/<%= a.id %>/form">
+  <p><label>Chief complaint<br><textarea name="chief_complaint" rows="3" cols="60"></textarea></label></p>
+  <p><label>Duration<br><input name="duration" placeholder="e.g., 3 days"></label></p>
+  <p><label>Allergies<br><input name="allergies" placeholder="e.g., Penicillin"></label></p>
+  <button type="submit">Save</button>
+</form>
+</body></html>
