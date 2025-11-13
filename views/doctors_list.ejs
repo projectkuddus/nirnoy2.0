@@ -1,21 +1,36 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Doctors</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <%- include('_header') %>
-    <%- include('_flash') %>
-    <main class="wrap" style="padding:24px 16px">
-      <h2>Available Doctors</h2>
-      <ul>
-      <% rows.forEach(r=>{ %>
-        <li><a href="/doctors/<%= r.doc_id %>"><%= r.name %></a> — <%= r.specialty||'' %> (<%= r.chamber||'' %>)</li>
-      <% }) %>
-      </ul>
-    </main>
-    <%- include('_footer') %>
-  </body>
-</html>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Find a Doctor</h2>
+
+  <form method="get" action="/doctors" class="card" style="margin-bottom:16px">
+    <div class="row">
+      <input name="q" value="<%= q||'' %>" placeholder="Search name / specialty / area" style="flex:2 1 260px">
+      <input name="specialty" value="<%= specialty||'' %>" placeholder="Specialty" style="flex:1 1 160px">
+      <input name="area" value="<%= area||'' %>" placeholder="Area / Hospital" style="flex:1 1 160px">
+      <input type="number" name="maxFee" value="<%= maxFee||'' %>" placeholder="Max fee (৳)" style="flex:1 1 120px" min="0">
+      <button style="flex:0 0 auto">Search</button>
+    </div>
+  </form>
+
+  <% if (!rows.length) { %>
+    <p>No doctors found. Try clearing some filters.</p>
+  <% } %>
+
+  <div class="row">
+    <% rows.forEach(d=>{ %>
+      <div class="card" style="flex:1 1 300px">
+        <h3 style="margin:0 0 6px 0"><%= d.name %></h3>
+        <p style="margin:0 0 6px 0"><b>Specialty:</b> <%= d.specialty||'—' %></p>
+        <p style="margin:0 0 6px 0"><b>Area:</b> <%= d.area||'—' %></p>
+        <p style="margin:0 0 10px 0"><b>Fee:</b> <%= d.fee?('৳ '+d.fee):'—' %></p>
+        <p style="margin:0;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="pill" href="/doctors/<%= d.did %>">View</a>
+          <a class="pill" href="/appointments/new?doctorId=<%= d.uid %>">Book</a>
+        </p>
+      </div>
+    <% }) %>
+  </div>
+</div>
+<%- include('_footer') %>
+</body></html>

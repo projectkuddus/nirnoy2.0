@@ -14,6 +14,7 @@ app.use(require('./routes/migrate'));
 app.use(require('./routes/migrate_step4'));
 app.use(require('./routes/dev_reset'));
 app.use(require('./routes/migrate_step5'));
+app.use(require('./routes/migrate_step6'));
 app.use(require('./routes/files'));
 app.use(require('./routes/doctor'));
 app.use(require('./routes/doctors'));
