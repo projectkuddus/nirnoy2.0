@@ -1,40 +1,44 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Doctor Dashboard</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <%- include('_header') %><%- include('_flash') %>
-    <div class="wrap">
-    <h2>Today’s Queue</h2>
-    <table>
-      <tr>
-        <th>Time</th><th>Patient</th><th>Status</th><th>Room</th><th>Actions</th>
-      </tr>
-      <% rows.forEach(r=>{ %>
-      <tr>
-        <td><%= r.slot_time %></td>
-        <td><%= r.patient_name %></td>
-        <td><%= r.status %></td>
-        <td>
-          <form method="post" action="/doctor/appointments/<%= r.id %>/room">
-            <input name="room" value="<%= r.room||'' %>" placeholder="Room #">
-            <button>Save</button>
-          </form>
-        </td>
-        <td style="white-space:nowrap">
-          <a href="/doctor/appointments/<%= r.id %>/edit">Visit</a>
-          <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline"><button>Call</button></form>
-          <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline"><button>Start</button></form>
-          <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline"><button>Done</button></form>
-          <form method="post" action="/doctor/appointments/<%= r.id %>/noshow" style="display:inline"><button>No-show</button></form>
-        </td>
-      </tr>
-      <% }) %>
-    </table>
-    </div>
-    <%- include('_footer') %>
-  </body>
-</html>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+<h2>Today’s Queue</h2>
+
+<div class="row" style="margin-bottom:12px">
+  <div class="card" style="flex:1 1 260px">
+    <h3>Visit settings</h3>
+    <p>Visit duration (min): <b><%= visit_duration %></b></p>
+    <form method="post" action="/doctor/running-late" style="display:flex;gap:8px;align-items:center">
+      <label>Running late (+min)</label>
+      <input type="number" name="minutes" value="<%= running_late %>" min="0" style="width:90px">
+      <button>Save</button>
+    </form>
+  </div>
+</div>
+
+<table>
+  <tr>
+    <th>Time</th><th>Patient</th><th>Status</th><th>Room</th><th>Actions</th>
+  </tr>
+  <% rows.forEach(r=>{ %>
+  <tr>
+    <td><%= r.slot_time %></td>
+    <td><%= r.patient_name %></td>
+    <td><%= r.status %></td>
+    <td>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/room">
+        <input name="room" value="<%= r.room||'' %>" placeholder="Room #"><button>Save</button>
+      </form>
+    </td>
+    <td style="white-space:nowrap">
+      <a href="/doctor/appointments/<%= r.id %>/edit">Visit</a>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline"><button>Call</button></form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline"><button>Start</button></form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline"><button>Done</button></form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/noshow" style="display:inline"><button>No-show</button></form>
+    </td>
+  </tr>
+  <% }) %>
+</table>
+</div>
+<%- include('_footer') %>
+</body></html>

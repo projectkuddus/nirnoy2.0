@@ -1,36 +1,50 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Appointment Status</title>
-    <meta http-equiv="refresh" content="30">
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <%- include('_header') %><%- include('_flash') %>
-    <div class="wrap">
-      <h2>Appointment Status</h2>
-      <p><b>Doctor:</b> <%= appt.doctor_name %> &mdash; <b>Date:</b> <%= appt.appt_date %> &nbsp; <b>Time:</b> <%= appt.slot_time %></p>
-      <div class="card">
-        <% if(appt.status==='queued'){ %>
-          <h3>⏳ You’re in the queue</h3>
-          <p>Please stay nearby. This page auto-updates.</p>
-        <% } else if(appt.status==='called'){ %>
-          <h3>📣 It’s your turn</h3>
-          <p>Proceed to <b>Room <%= appt.room||'—' %></b>. Show this screen if needed.</p>
-        <% } else if(appt.status==='in_progress'){ %>
-          <h3>🩺 With the doctor</h3>
-          <p>Your consultation is in progress.</p>
-        <% } else if(appt.status==='done'){ %>
-          <h3>✅ Finished</h3>
-          <p>Download your prescription from the appointment page.</p>
-        <% } else if(appt.status==='no_show'){ %>
-          <h3>⚠️ Marked as no-show</h3>
-          <p>You can book a new slot from the doctor’s page.</p>
-        <% } %>
-      </div>
-      <p><a href="/patient/dashboard">Back to dashboard</a></p>
-    </div>
-    <%- include('_footer') %>
-  </body>
-</html>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Appointment Status</h2>
+  <p><b>Doctor:</b> <%= appt.doctor_name %> &mdash; <b>Date:</b> <%= appt.appt_date %> &nbsp; <b>Time:</b> <%= appt.slot_time %></p>
+
+  <div class="card">
+    <div id="eta" class="pill" style="display:inline-block;margin-bottom:10px">Calculating ETA…</div>
+    <% if(appt.status==='queued'){ %>
+      <h3>⏳ You’re in the queue</h3>
+      <p>Please stay nearby. This page auto-updates.</p>
+    <% } else if(appt.status==='called'){ %>
+      <h3>📣 It’s your turn</h3>
+      <p>Proceed to <b>Room <%= appt.room||'—' %></b>. Show this screen if needed.</p>
+    <% } else if(appt.status==='in_progress'){ %>
+      <h3>🩺 With the doctor</h3>
+      <p>Your consultation is in progress.</p>
+    <% } else if(appt.status==='done'){ %>
+      <h3>✅ Finished</h3>
+      <p>Download your prescription from the appointment page.</p>
+    <% } else if(appt.status==='no_show'){ %>
+      <h3>⚠️ Marked as no-show</h3>
+      <p>You can book a new slot from the doctor’s page.</p>
+    <% } %>
+  </div>
+
+  <p><a href="/patient/dashboard">Back to dashboard</a></p>
+</div>
+<%- include('_footer') %>
+<script>
+(function(){
+  const el=document.getElementById('eta');
+  async function tick(){
+    try{
+      const r=await fetch(window.location.pathname.replace('/status','/eta.json'),{cache:'no-store'});
+      if(!r.ok) return;
+      const j=await r.json();
+      if(j.eta_min!=null){
+        if(j.status==='done') el.textContent='Finished';
+        else if(j.status==='no_show') el.textContent='No-show';
+        else if(j.status==='in_progress') el.textContent='In progress';
+        else if(j.status==='called') el.textContent='It’s your turn';
+        else el.textContent=`Estimated wait: ~${j.eta_min} min (ahead: ${j.position})`;
+      }
+    }catch(e){ /* ignore */ }
+  }
+  tick(); setInterval(tick,10000);
+})();
+</script>
+</body></html>

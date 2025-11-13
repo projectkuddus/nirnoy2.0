@@ -8,7 +8,7 @@ function needDoctor(req,res,next){
   next();
 }
 
-// Dashboard: today queue
+// Dashboard: today queue + running-late/current duration
 router.get('/doctor/dashboard', needDoctor, async (req,res)=>{
   const u=req.session.user;
   const today=new Date().toISOString().slice(0,10);
@@ -16,10 +16,15 @@ router.get('/doctor/dashboard', needDoctor, async (req,res)=>{
     SELECT a.*, p.name AS patient_name, p.email AS patient_email
     FROM appointments a
     JOIN users p ON p.id=a.patient_id
-    WHERE a.doctor_id=? AND a.appt_date=?
+    WHERE a.doctor_id=? AND a.date=?
     ORDER BY a.slot_time
   `,[u.id, today]);
-  res.render('dashboard_doctor',{rows});
+
+  const d=await get(`SELECT visit_duration_minutes, running_late_minutes FROM doctors WHERE user_id=?`,[u.id]);
+  const visit_duration = d?.visit_duration_minutes ?? 15;
+  const running_late = d?.running_late_minutes ?? 0;
+
+  res.render('dashboard_doctor',{rows, visit_duration, running_late});
 });
 
 // status actions
@@ -33,7 +38,15 @@ router.post('/doctor/appointments/:id/done', needDoctor, async (req,res)=>{ awai
 router.post('/doctor/appointments/:id/noshow', needDoctor, async (req,res)=>{ await setStatus(req.params.id,'no_show'); res.redirect('/doctor/dashboard'); });
 router.post('/doctor/appointments/:id/room', needDoctor, async (req,res)=>{ await run(`UPDATE appointments SET room=? WHERE id=?`,[req.body.room||'', req.params.id]); res.redirect('/doctor/dashboard'); });
 
-// NEW: visit editor
+// Set running-late (minutes)
+router.post('/doctor/running-late', needDoctor, async (req,res)=>{
+  const mins = Math.max(0, parseInt(req.body.minutes||'0',10)||0);
+  await run(`UPDATE doctors SET running_late_minutes=? WHERE user_id=?`,[mins, req.session.user.id]);
+  req.session.flash={type:'ok',msg:`Running late set to +${mins} min`};
+  res.redirect('/doctor/dashboard');
+});
+
+// Visit editor
 router.get('/doctor/appointments/:id/edit', needDoctor, async (req,res)=>{
   const a=await get(`
     SELECT a.*, p.name AS patient_name, du.name AS doctor_name
