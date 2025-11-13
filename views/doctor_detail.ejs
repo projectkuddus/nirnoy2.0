@@ -6,7 +6,15 @@
   <p><b>Specialty:</b> <%= d.specialty||'—' %></p>
   <p><b>Area:</b> <%= d.area||'—' %></p>
   <p><b>Fee:</b> <%= d.fee?('৳ '+d.fee):'—' %></p>
-  <p><a class="pill" href="/appointments/new?doctorId=<%= d.uid %>">Book an appointment</a></p>
+
+  <div class="card">
+    <h3>Clinics</h3>
+    <ul>
+      <li>See available clinics in booking page.</li>
+    </ul>
+    <p><a class="pill" href="/book?doctorId=<%= d.uid || d.did %>">Book</a></p>
+  </div>
+
   <p><a href="/doctors">Back to list</a></p>
 </div>
 <%- include('_footer') %>

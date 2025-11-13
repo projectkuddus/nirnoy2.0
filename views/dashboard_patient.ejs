@@ -17,12 +17,13 @@
             <p>No upcoming visits. <a href="/doctors">Find a doctor</a></p>
           <% } else { %>
             <table>
-              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Status</th><th>Links</th></tr>
+              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Clinic</th><th>Status</th><th>Links</th></tr>
               <% upcoming.forEach(a=>{ %>
                 <tr>
                   <td><%= a.appt_date %></td>
                   <td><%= a.slot_time %></td>
                   <td><%= a.doctor_name %></td>
+                  <td><%= a.clinic_name||'—' %></td>
                   <td><%= a.status %></td>
                   <td style="white-space:nowrap">
                     <a href="/appointments/<%= a.id %>/status">Live status</a>
@@ -42,12 +43,13 @@
             <p>No past visits yet.</p>
           <% } else { %>
             <table>
-              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Status</th><th>Files</th></tr>
+              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Clinic</th><th>Status</th><th>Files</th></tr>
               <% past.forEach(a=>{ %>
                 <tr>
                   <td><%= a.appt_date %></td>
                   <td><%= a.slot_time %></td>
                   <td><%= a.doctor_name %></td>
+                  <td><%= a.clinic_name||'—' %></td>
                   <td><%= a.status %></td>
                   <td style="white-space:nowrap">
                     <!-- PDF comes in Step 4; link shown now for habit -->

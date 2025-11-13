@@ -26,7 +26,7 @@
         <p style="margin:0 0 10px 0"><b>Fee:</b> <%= d.fee?('৳ '+d.fee):'—' %></p>
         <p style="margin:0;display:flex;gap:10px;flex-wrap:wrap">
           <a class="pill" href="/doctors/<%= d.did %>">View</a>
-          <a class="pill" href="/appointments/new?doctorId=<%= d.uid %>">Book</a>
+          <a class="pill" href="/book?doctorId=<%= d.uid %>">Book</a>
         </p>
       </div>
     <% }) %>

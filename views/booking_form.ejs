@@ -1,0 +1,38 @@
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Book — <%= doc.name %></h2>
+  <div class="card">
+    <form method="get" action="/book" class="row" style="margin-bottom:8px">
+      <input type="hidden" name="doctorId" value="<%= doc.uid %>">
+      <label>Clinic</label>
+      <select name="clinicId" onchange="this.form.submit()">
+        <% clinics.forEach(c=>{ %>
+          <option value="<%= c.id %>" <%= c.id==clinicId?'selected':'' %>><%= c.name %> — <%= c.area||'' %></option>
+        <% }) %>
+      </select>
+      <label>Date</label>
+      <select name="date" onchange="this.form.submit()">
+        <% days.forEach(d=>{ %>
+          <option value="<%= d %>" <%= d===date?'selected':'' %>><%= d %></option>
+        <% }) %>
+      </select>
+      <noscript><button>Go</button></noscript>
+    </form>
+
+    <form method="post" action="/book" class="row">
+      <input type="hidden" name="doctorId" value="<%= doc.uid %>">
+      <input type="hidden" name="clinicId" value="<%= clinicId %>">
+      <input type="hidden" name="appt_date" value="<%= date %>">
+      <label>Slot</label>
+      <select name="slot_time" required>
+        <% if (!slots.length) { %><option value="">No slots</option><% } %>
+        <% slots.forEach(s=>{ %><option value="<%= s %>"><%= s %></option><% }) %>
+      </select>
+      <button>Confirm</button>
+    </form>
+    <p style="margin-top:8px">Fee: <b><%= doc.fee?('৳ '+doc.fee):'—' %></b></p>
+  </div>
+</div>
+<%- include('_footer') %>
+</body></html>

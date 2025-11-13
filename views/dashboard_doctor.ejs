@@ -17,11 +17,12 @@
 
 <table>
   <tr>
-    <th>Time</th><th>Patient</th><th>Status</th><th>Room</th><th>Actions</th>
+    <th>Time</th><th>Clinic</th><th>Patient</th><th>Status</th><th>Room</th><th>Actions</th>
   </tr>
   <% rows.forEach(r=>{ %>
   <tr>
     <td><%= r.slot_time %></td>
+    <td><%= r.clinic_name||'—' %></td>
     <td><%= r.patient_name %></td>
     <td><%= r.status %></td>
     <td>

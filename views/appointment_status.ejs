@@ -2,7 +2,9 @@
 <%- include('_header') %><%- include('_flash') %>
 <div class="wrap">
   <h2>Appointment Status</h2>
-  <p><b>Doctor:</b> <%= appt.doctor_name %> &mdash; <b>Date:</b> <%= appt.appt_date %> &nbsp; <b>Time:</b> <%= appt.slot_time %></p>
+  <p><b>Doctor:</b> <%= appt.doctor_name %> —
+  <b>Clinic:</b> <%= appt.clinic_name||'—' %> —
+  <b>Date:</b> <%= appt.appt_date %> &nbsp; <b>Time:</b> <%= appt.slot_time %></p>
 
   <div class="card">
     <div id="eta" class="pill" style="display:inline-block;margin-bottom:10px">Calculating ETA…</div>

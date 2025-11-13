@@ -1,29 +1,30 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Doctor Schedule</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <%- include('_header') %><%- include('_flash') %>
-    <div class="wrap">
-    <h2>Weekly Schedule</h2>
-    <form method="post" action="/doctor/schedule">
-    <p>Visit duration (minutes): <input type="number" name="visit_duration_minutes" value="<%= duration %>" min="5" max="60"></p>
-    <table><tr><th>Day</th><th>Start</th><th>End</th></tr>
-    <% const names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; 
-    const map={}; rows.forEach(r=>map[r.day_of_week]={s:r.start_time,e:r.end_time}); 
-    for(let i=0;i<7;i++){ %>
-    <tr>
-      <td><%= names[i] %></td>
-      <td><input type="time" name="w<%= i %>_start" value="<%= (map[i]&&map[i].s)||'' %>"></td>
-      <td><input type="time" name="w<%= i %>_end" value="<%= (map[i]&&map[i].e)||'' %>"></td>
-    </tr><% } %>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Clinic Schedule</h2>
+  <form method="get" action="/doctor/schedule" class="card" style="margin-bottom:12px">
+    <label>Clinic</label>
+    <select name="clinicId" onchange="this.form.submit()">
+      <% clinics.forEach(c=>{ %>
+        <option value="<%= c.id %>" <%= c.id==clinicId?'selected':'' %>><%= c.name %> — <%= c.area||'' %></option>
+      <% }) %>
+    </select>
+  </form>
+
+  <form method="post" action="/doctor/schedule" class="card">
+    <input type="hidden" name="clinicId" value="<%= clinicId %>">
+    <table>
+      <tr><th>Day</th><th>Start (HH:MM)</th><th>End (HH:MM)</th></tr>
+      <% const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; for(let d=0; d<=6; d++){ const r=map[d]||{}; %>
+        <tr>
+          <td><%= days[d] %></td>
+          <td><input name="s_<%= d %>" value="<%= r.start_time||'' %>" placeholder="10:00"></td>
+          <td><input name="e_<%= d %>" value="<%= r.end_time||'' %>" placeholder="12:00"></td>
+        </tr>
+      <% } %>
     </table>
-    <p><button type="submit">Save Schedule</button></p>
-    </form>
-    </div>
-    <%- include('_footer') %>
-  </body>
-</html>
+    <p><button>Save schedule</button> <a class="pill" href="/doctor/clinics">Back</a></p>
+  </form>
+</div>
+<%- include('_footer') %>
+</body></html>

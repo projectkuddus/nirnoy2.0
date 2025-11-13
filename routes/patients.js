@@ -14,10 +14,11 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
 
   // Upcoming: later today (queued/called/in_progress) or any future date
   const upcoming = await all(`
-    SELECT a.*, a.date AS appt_date, du.name AS doctor_name
+    SELECT a.*, a.date AS appt_date, du.name AS doctor_name, c.name AS clinic_name
     FROM appointments a
     JOIN doctors d ON d.id = a.doctor_id
     JOIN users du ON du.id = d.user_id
+    LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
     WHERE a.patient_id = ?
       AND (
            a.date > ?
@@ -28,10 +29,11 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
 
   // Past: finished/no_show or any day earlier than today
   const past = await all(`
-    SELECT a.*, a.date AS appt_date, du.name AS doctor_name
+    SELECT a.*, a.date AS appt_date, du.name AS doctor_name, c.name AS clinic_name
     FROM appointments a
     JOIN doctors d ON d.id = a.doctor_id
     JOIN users du ON du.id = d.user_id
+    LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
     WHERE a.patient_id = ?
       AND (
            a.date < ?
@@ -45,9 +47,10 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
 
 router.get('/consultations/appointment/:id', needPatient, async (req,res)=>{
   const me = req.session.user;
-  const a=await get(`SELECT a.*, a.date AS appt_date, du.name AS doctor_name
+  const a=await get(`SELECT a.*, a.date AS appt_date, du.name AS doctor_name, c.name AS clinic_name
     FROM appointments a JOIN doctors d ON d.id=a.doctor_id
     JOIN users du ON du.id=d.user_id
+    LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
     WHERE a.id=? AND a.patient_id=?`,[req.params.id,me.id]);
   if(!a) return res.status(404).send('Not found');
   const c=await get(`SELECT * FROM consultations WHERE appointment_id=?`,[a.id]);
