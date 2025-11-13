@@ -17,3 +17,8 @@ button:hover,.pill:hover{filter:brightness(0.95);text-decoration:none}
 .pill{line-height:26px}
 h2{margin:10px 0 12px}
 h3{margin:0 0 8px}
+.topbar{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;z-index:10}
+.nav{display:flex;gap:14px;align-items:center;padding:10px 14px}
+.nav a{text-decoration:none;color:#333;font-weight:600}
+.flash{margin:10px 14px}
+.flash .msg{background:#fff8c4;border:1px solid #f2e394;padding:8px 10px;margin-bottom:6px;border-radius:6px}
