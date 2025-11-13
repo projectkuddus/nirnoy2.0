@@ -1,0 +1,17 @@
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Intake Template</h2>
+  <p>Enter one question per line. Patients will see this form after booking.</p>
+  <form method="post" class="card">
+    <p><textarea name="lines" rows="12" style="width:100%" placeholder="e.g.
+Main symptom?
+Onset (since when)?
+Fever present?
+Medications currently taking?
+Allergies?"><%= lines %></textarea></p>
+    <p><button>Save</button> <a class="pill" href="/doctor/dashboard">Back</a></p>
+  </form>
+</div>
+<%- include('_footer') %>
+</body></html>

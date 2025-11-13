@@ -1,0 +1,19 @@
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Intake Form</h2>
+  <p><b>Date:</b> <%= a.appt_date %> — <b>Time:</b> <%= a.slot_time %></p>
+  <form method="post" action="/appointments/<%= a.id %>/intake" class="card">
+    <% qs.forEach(function(q,idx){ %>
+      <p>
+        <label><b><%= q %></b></label><br>
+        <textarea name="q<%= idx %>" rows="3" style="width:100%"><%= (answers[q]||'') %></textarea>
+      </p>
+    <% }) %>
+    <p><button>Save</button>
+      <a class="pill" href="/appointments/<%= a.id %>/status">Cancel</a>
+    </p>
+  </form>
+</div>
+<%- include('_footer') %>
+</body></html>

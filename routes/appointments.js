@@ -130,4 +130,57 @@ router.get('/appointments/:id/eta.json', needLogin, async (req,res)=>{
   res.json({status:a.status, eta_min:etaMin, position:before});
 });
 
+async function getQuestionsForAppointment(apptId){
+  const row = await get(`
+    SELECT d.intake_json
+    FROM appointments a
+    JOIN doctors d ON d.id=a.doctor_id
+    WHERE a.id=?`, [apptId]);
+  if(row?.intake_json){
+    try{
+      const arr=JSON.parse(row.intake_json);
+      if(Array.isArray(arr) && arr.length) return arr.slice(0,50).map(s=>String(s));
+    }catch(_){}
+  }
+  return [
+    'Main symptom / problem?',
+    'Onset (when did it start)?',
+    'Severity now (1-10)?',
+    'Fever / pain / other key symptoms?',
+    'Current medications?',
+    'Known allergies?',
+    'Past conditions / surgeries?',
+    'Anything else doctor should know?'
+  ];
+}
+
+router.get('/appointments/:id/intake', needLogin, async (req,res)=>{
+  const u=req.session.user;
+  const a=await get(`SELECT a.*, u.name AS doctor_name
+    FROM appointments a
+    JOIN doctors d ON d.id=a.doctor_id
+    JOIN users u ON u.id=d.user_id
+    WHERE a.id=?`,[req.params.id]);
+  if(!a) return res.status(404).send('Not found');
+  if(!(u.role==='admin'||u.id===a.patient_id||u.id===a.doctor_id)) return res.status(403).send('Not allowed');
+  const qs = await getQuestionsForAppointment(a.id);
+  const last = await get(`SELECT answers_json FROM appointment_intake WHERE appointment_id=? ORDER BY id DESC LIMIT 1`,[a.id]);
+  let answers={}; if(last?.answers_json){ try{ answers=JSON.parse(last.answers_json)||{}; }catch(_){ answers={}; } }
+  res.render('appointment_intake',{a,qs,answers});
+});
+
+router.post('/appointments/:id/intake', needLogin, async (req,res)=>{
+  const u=req.session.user;
+  const a=await get(`SELECT * FROM appointments WHERE id=?`,[req.params.id]);
+  if(!a) return res.status(404).send('Not found');
+  if(!(u.role==='admin'||u.id===a.patient_id||u.id===a.doctor_id)) return res.status(403).send('Not allowed');
+  const qs = await getQuestionsForAppointment(a.id);
+  const out={};
+  qs.forEach((q,i)=>{ out[q]=String((req.body['q'+i]||'').slice(0,2000)); });
+  await run(`INSERT INTO appointment_intake(appointment_id,answers_json) VALUES(?,?)`,[a.id, JSON.stringify(out)]);
+  req.session.flash={type:'ok',msg:'Intake saved'};
+  if(u.role==='patient') return res.redirect(`/appointments/${a.id}/status`);
+  return res.redirect(`/doctor/appointments/${a.id}/edit`);
+});
+
 module.exports=router;

@@ -4,22 +4,42 @@
   <h2>Visit — <%= a.patient_name %> with <%= a.doctor_name %></h2>
   <p><b>Date:</b> <%= a.appt_date %> &nbsp; <b>Time:</b> <%= a.slot_time %> &nbsp; <b>Status:</b> <%= a.status %></p>
 
-  <form method="post" action="/doctor/appointments/<%= a.id %>/update" class="card">
-    <p><label>Diagnosis</label><br>
-    <textarea name="diagnosis" rows="3" style="width:100%"><%= a.diagnosis||'' %></textarea></p>
+  <div class="row">
+    <div class="card" style="flex:1 1 420px">
+      <h3>Intake</h3>
+      <% if (!intake) { %>
+        <p>No intake submitted yet.</p>
+        <p><a class="pill" href="/appointments/<%= a.id %>/intake" target="_blank">Open patient intake</a></p>
+      <% } else { %>
+        <table>
+          <% Object.keys(intake).forEach(function(k){ %>
+            <tr><th style="text-align:left;vertical-align:top"><%= k %></th><td><%= intake[k] %></td></tr>
+          <% }) %>
+        </table>
+        <p><a class="pill" href="/appointments/<%= a.id %>/intake" target="_blank">Edit intake</a></p>
+      <% } %>
+    </div>
 
-    <p><label>Prescription (free text)</label><br>
-    <textarea name="prescription_text" rows="8" style="width:100%"><%= a.prescription_text||'' %></textarea></p>
+    <div class="card" style="flex:1 1 420px">
+      <h3>Visit Notes</h3>
+      <form method="post" action="/doctor/appointments/<%= a.id %>/update">
+        <p><label>Diagnosis</label><br>
+        <textarea name="diagnosis" rows="3" style="width:100%"><%= a.diagnosis||'' %></textarea></p>
 
-    <p><label>Advice / follow-up</label><br>
-    <textarea name="advice" rows="3" style="width:100%"><%= a.advice||'' %></textarea></p>
+        <p><label>Prescription (free text)</label><br>
+        <textarea name="prescription_text" rows="8" style="width:100%"><%= a.prescription_text||'' %></textarea></p>
 
-    <p>
-      <button type="submit">Save</button>
-      <a class="pill" href="/appointments/<%= a.id %>/prescription.pdf" target="_blank">Preview PDF</a>
-      <a class="pill" href="/doctor/dashboard">Back</a>
-    </p>
-  </form>
+        <p><label>Advice / follow-up</label><br>
+        <textarea name="advice" rows="3" style="width:100%"><%= a.advice||'' %></textarea></p>
+
+        <p>
+          <button type="submit">Save</button>
+          <a class="pill" href="/appointments/<%= a.id %>/prescription.pdf" target="_blank">Preview PDF</a>
+          <a class="pill" href="/doctor/dashboard">Back</a>
+        </p>
+      </form>
+    </div>
+  </div>
 </div>
 <%- include('_footer') %>
 </body></html>
