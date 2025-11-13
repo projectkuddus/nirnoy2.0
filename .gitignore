@@ -2,3 +2,10 @@ node_modules
 nirnoy.db
 .env
 .DS_Store
+node_modules
+nirnoy.db
+uploads/
+.env
+.DS_Store
+*.sqlite
+
