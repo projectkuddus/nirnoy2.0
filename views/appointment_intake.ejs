@@ -4,6 +4,7 @@
   <h2>Intake Form</h2>
   <p><b>Date:</b> <%= a.appt_date %> — <b>Time:</b> <%= a.slot_time %></p>
   <form method="post" action="/appointments/<%= a.id %>/intake" class="card">
+    <%- include('partials/csrf') %>
     <% qs.forEach(function(q,idx){ %>
       <p>
         <label><b><%= q %></b></label><br>

@@ -9,6 +9,7 @@
     <h3>Visit settings</h3>
     <p>Visit duration (min): <b><%= visit_duration %></b></p>
     <form method="post" action="/doctor/running-late" style="display:flex;gap:8px;align-items:center">
+      <%- include('partials/csrf') %>
       <label>Running late (+min)</label>
       <input type="number" name="minutes" value="<%= running_late %>" min="0" style="width:90px">
       <button>Save</button>
@@ -28,15 +29,28 @@
     <td><%= r.status %></td>
     <td>
       <form method="post" action="/doctor/appointments/<%= r.id %>/room">
+        <%- include('partials/csrf') %>
         <input name="room" value="<%= r.room||'' %>" placeholder="Room #"><button>Save</button>
       </form>
     </td>
     <td style="white-space:nowrap">
       <a href="/doctor/appointments/<%= r.id %>/edit">Visit</a>
-      <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline"><button>Call</button></form>
-      <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline"><button>Start</button></form>
-      <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline"><button>Done</button></form>
-      <form method="post" action="/doctor/appointments/<%= r.id %>/noshow" style="display:inline"><button>No-show</button></form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline">
+        <%- include('partials/csrf') %>
+        <button>Call</button>
+      </form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline">
+        <%- include('partials/csrf') %>
+        <button>Start</button>
+      </form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline">
+        <%- include('partials/csrf') %>
+        <button>Done</button>
+      </form>
+      <form method="post" action="/doctor/appointments/<%= r.id %>/noshow" style="display:inline">
+        <%- include('partials/csrf') %>
+        <button>No-show</button>
+      </form>
     </td>
   </tr>
   <% }) %>

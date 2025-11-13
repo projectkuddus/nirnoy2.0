@@ -19,6 +19,7 @@
     <% } %>
 
     <form method="post" action="/doctor/photo" enctype="multipart/form-data">
+      <%- include('partials/csrf') %>
       <p><input type="file" name="photo" accept="image/*" required></p>
       <button type="submit">Upload</button>
     </form>

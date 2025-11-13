@@ -12,6 +12,7 @@
   </form>
 
   <form method="post" action="/doctor/schedule" class="card">
+    <%- include('partials/csrf') %>
     <input type="hidden" name="clinicId" value="<%= clinicId %>">
     <table>
       <tr><th>Day</th><th>Start (HH:MM)</th><th>End (HH:MM)</th></tr>

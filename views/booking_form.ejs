@@ -21,6 +21,7 @@
     </form>
 
     <form method="post" action="/book" class="row">
+      <%- include('partials/csrf') %>
       <input type="hidden" name="doctorId" value="<%= doc.uid %>">
       <input type="hidden" name="clinicId" value="<%= clinicId %>">
       <input type="hidden" name="appt_date" value="<%= date %>">

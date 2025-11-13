@@ -4,6 +4,7 @@
   <h2>Clinics / Chambers</h2>
   <div class="card">
     <form method="post" action="/doctor/clinics/add" class="row">
+      <%- include('partials/csrf') %>
       <input name="name" placeholder="Clinic name" required>
       <input name="area" placeholder="Area / Hospital">
       <input name="address" placeholder="Address">
@@ -14,6 +15,7 @@
     <% rows.forEach(c=>{ %>
       <div class="card" style="flex:1 1 320px">
         <form method="post" action="/doctor/clinics/<%= c.id %>/update">
+          <%- include('partials/csrf') %>
           <p><b>ID:</b> <%= c.id %></p>
           <p><input name="name" value="<%= c.name %>" style="width:100%"></p>
           <p><input name="area" value="<%= c.area||'' %>" style="width:100%"></p>
@@ -21,11 +23,12 @@
           <p>
             <button>Save</button>
             <a class="pill" href="/doctor/schedule?clinicId=<%= c.id %>">Edit schedule</a>
-        </form>
-            <form method="post" action="/doctor/clinics/<%= c.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this clinic?')">
-              <button>Delete</button>
-            </form>
           </p>
+        </form>
+        <form method="post" action="/doctor/clinics/<%= c.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this clinic?')">
+          <%- include('partials/csrf') %>
+          <button>Delete</button>
+        </form>
       </div>
     <% }) %>
   </div>

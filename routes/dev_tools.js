@@ -76,13 +76,20 @@ router.get('/dev/demo', async (_req,res)=>{
     [du.id,clinic.id,today])).map(r=>r.slot_time));
   let chosen=null;for(let t=start;t+step<=end;t+=step){const hh=fm(t);if(!taken.has(hh)){chosen=hh;break;}}
   if(!chosen) return ok(res,'Demo ready, but no free slots left.');
-  const r=await run(`INSERT INTO appointments(patient_id,doctor_id,clinic_id,appt_date,slot_time,status)
-                     VALUES(?,?,?,?,?,?)`,[pu.id,du.id,clinic.id,today,chosen,'queued']);
-  return ok(res,`Demo created:
+  try{
+    const r=await run(`INSERT INTO appointments(patient_id,doctor_id,clinic_id,appt_date,slot_time,status)
+                       VALUES(?,?,?,?,?,?)`,[pu.id,du.id,clinic.id,today,chosen,'queued']);
+    return ok(res,`Demo created:
 Admin → admin@nirnoy.local / admin123
 Doctor → ${docEmail} / ${docPw}
 Patient → ${patEmail} / ${patPw}
 Appointment → #${r.lastID} on ${today} at ${chosen}`);
+  }catch(e){
+    if(String(e?.message||e).includes('UNIQUE')){
+      return ok(res,'Demo ready, but someone just booked that slot. Please re-run /dev/demo.');
+    }
+    throw e;
+  }
 });
 
 router.get('/dev/status', async (_req,res)=>{

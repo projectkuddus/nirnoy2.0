@@ -12,6 +12,7 @@
     <p>No slots available for this date.</p>
   <% } else { %>
   <form method="post" action="/appointments">
+    <%- include('partials/csrf') %>
     <input type="hidden" name="doctor_id" value="<%= d.doc_id %>">
     <input type="hidden" name="date" value="<%= date %>">
     <p>For (patient name): <input name="for_person_name"></p>

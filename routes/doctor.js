@@ -15,6 +15,7 @@ const upload=multer({storage});
 router.get('/doctor/register',(req,res)=>res.render('doctor_register'));
 
 router.post('/doctor/register', upload.single('bmdc_card'), async (req,res)=>{
+  if(!req.session||!req.body||req.body._csrf!==req.session.csrfToken) return res.status(403).send('Invalid CSRF token');
   try{
     const {name,email,password,bmdc_no,specialty,chamber,visit_duration_minutes,phone}=req.body;
     if(!name||!email||!password||!bmdc_no) return res.status(400).send('Missing fields');

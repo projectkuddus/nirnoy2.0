@@ -23,6 +23,7 @@
     <div class="card" style="flex:1 1 420px">
       <h3>Visit Notes</h3>
       <form method="post" action="/doctor/appointments/<%= a.id %>/update">
+        <%- include('partials/csrf') %>
         <p><label>Diagnosis</label><br>
         <textarea name="diagnosis" rows="3" style="width:100%"><%= a.diagnosis||'' %></textarea></p>
 

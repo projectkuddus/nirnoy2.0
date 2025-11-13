@@ -1,8 +1,9 @@
 <!doctype html><html><body>
 <h2>Consultation — Serial <%= a.serial_no %> — <%= a.patient_name %></h2>
-<p>Date: <%= a.date %></p>
+<p>Date: <%= a.appt_date || a.date %></p>
 <p><b>Pre-visit answers:</b> <pre><%= answers_json %></pre></p>
 <form method="post" action="/doctor/appointments/<%= a.id %>/finish">
+  <%- include('partials/csrf') %>
   <p><textarea name="notes" rows="4" cols="60" placeholder="Notes"><%= (cons&&cons.notes)||'' %></textarea></p>
   <p><textarea name="prescription_text" rows="6" cols="60" placeholder="Prescription"><%= (cons&&cons.prescription_text)||'' %></textarea></p>
   <p><textarea name="tasks_text" rows="4" cols="60" placeholder="Follow-up tasks (one per line)"><%= (cons&&cons.tasks_json?JSON.parse(cons.tasks_json).join('\\n'):'') %></textarea></p>

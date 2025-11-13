@@ -12,6 +12,7 @@
       <% pending.forEach(d=>{ %>
       <tr>
         <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+          <%- include('partials/csrf') %>
           <td><%= d.name %></td>
           <td><%= d.email %></td>
           <td><%= d.status %></td>
@@ -23,8 +24,14 @@
           <td style="white-space:nowrap">
             <button>Save</button>
         </form>
-            <form method="post" action="/admin/doctors/<%= d.uid %>/approve" style="display:inline"><button>Approve</button></form>
-            <form method="post" action="/admin/doctors/<%= d.uid %>/reject" style="display:inline"><button>Reject</button></form>
+            <form method="post" action="/admin/doctors/<%= d.uid %>/approve" style="display:inline">
+              <%- include('partials/csrf') %>
+              <button>Approve</button>
+            </form>
+            <form method="post" action="/admin/doctors/<%= d.uid %>/reject" style="display:inline">
+              <%- include('partials/csrf') %>
+              <button>Reject</button>
+            </form>
           </td>
       </tr>
       <% }) %>
@@ -40,6 +47,7 @@
       <% approved.forEach(d=>{ %>
       <tr>
         <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+          <%- include('partials/csrf') %>
           <td><%= d.name %></td>
           <td><%= d.email %></td>
           <td><input name="bmdc_no" value="<%= d.bmdc_no %>" style="width:110px"></td>

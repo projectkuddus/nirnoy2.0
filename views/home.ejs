@@ -1,37 +1,58 @@
-<%- include('partials/header') %>
-<%- include('partials/flash') %>
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Nirnoy</title>
+    <title>Personal AI Triage & Clinic Queue | Nirnoy</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="/css/style.css">
   </head>
-  <body>
-    <div class="wrap">
-      <% if (user) { %>
-        <p>Signed in as <b><%= user.name||user.email %></b> (<%= user.role %>) — <a href="/logout">Logout</a></p>
-      <% } else { %>
-        <p>Not signed in — <a href="/login">Login</a> · <a href="/register">Patient Sign-up</a> · <a href="/doctor/register">Doctor Sign-up</a></p>
-      <% } %>
-      <div class="row">
-        <div class="card" style="flex:1 1 280px">
-          <h3>Patients</h3>
-          <p>Find doctor → pick slot → live ETA → prescription/history.</p>
-          <p><a href="/doctors">Browse doctors</a></p>
+  <body class="home-body">
+    <%- include('partials/header') %>
+    <%- include('partials/flash') %>
+    <main class="home-main">
+      <section class="hero">
+        <div class="hero__content">
+          <p class="eyebrow">Bangladesh-first health OS</p>
+          <h1>Personal AI triage & clinic queue,<br>built for everyday people.</h1>
+          <p class="subtitle">
+            Nirnoy captures symptoms at home, gives patients a live ETA, and hands doctors a clean visit plan so the clinic stays calm.
+          </p>
+          <div class="hero__cta">
+            <a class="btn primary" href="/register">I’m a Patient</a>
+            <a class="btn ghost" href="/doctor/register">I’m a Doctor</a>
+          </div>
         </div>
-        <div class="card" style="flex:1 1 280px">
-          <h3>Doctors</h3>
-          <p>Set weekly schedule. See queue. Finish with notes/prescription.</p>
-          <p><a href="/doctor/dashboard">Doctor dashboard</a></p>
+        <div class="hero__card">
+          <div class="card-metric">
+            <span>Today’s queue</span>
+            <strong>12 patients</strong>
+            <p>Average wait 14 min</p>
+          </div>
+          <ul class="hero-list">
+            <li>Symptom checker available in Bangla</li>
+            <li>Live SMS + WhatsApp arrival nudges</li>
+            <li>Doctor portal with notes & e-prescription</li>
+          </ul>
         </div>
-        <div class="card" style="flex:1 1 280px">
-          <h3>Admin</h3>
-          <p>Verify BMDC + approve doctors.</p>
-          <p><a href="/admin/doctors">Admin panel</a></p>
-        </div>
-      </div>
-    </div>
-    <%- include('_footer') %>
+      </section>
+
+      <section class="feature-grid">
+        <article>
+          <h3>Symptom checker & intake</h3>
+          <p>Structured questions adapt to the patient’s answers, so doctors get context before the first hello.</p>
+        </article>
+        <article>
+          <h3>Smart queue & ETA</h3>
+          <p>Automatic sloting, live running-late updates, and a lightweight kiosk mode for clinics.</p>
+        </article>
+        <article>
+          <h3>Doctor-friendly notes</h3>
+          <p>One tap actions for “Call”, “Start”, “Done”, plus visit notes and follow-ups synced to the patient profile.</p>
+        </article>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <p>&copy; <%= new Date().getFullYear() %> Nirnoy. Made with care for clinics everywhere.</p>
+    </footer>
   </body>
 </html>

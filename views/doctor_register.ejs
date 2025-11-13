@@ -11,6 +11,7 @@
     <main class="wrap" style="padding:24px 16px">
       <h2>Doctor Sign-up</h2>
       <form method="post" action="/doctor/register" enctype="multipart/form-data">
+        <%- include('partials/csrf') %>
         <p>Name <input name="name" required></p>
         <p>Email <input name="email" type="email" required></p>
         <p>Password <input name="password" type="password" required></p>

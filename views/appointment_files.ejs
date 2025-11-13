@@ -6,6 +6,7 @@
     <div class="card" style="flex:1 1 420px">
       <h3>Upload (PDF/JPG/PNG)</h3>
       <form method="post" action="/appointments/<%= a.id %>/upload" enctype="multipart/form-data">
+        <%- include('partials/csrf') %>
         <p><input type="file" name="file" required></p>
         <p><input name="note" placeholder="Note (optional)" style="width:100%"></p>
         <p>
@@ -33,7 +34,10 @@
             <td><%= f.reviewed?'Yes':'No' %></td>
             <td>
               <% if (user && (user.role==='admin'||user.id===a.doctor_id) && !f.reviewed) { %>
-                <form method="post" action="/appointments/<%= a.id %>/files/<%= f.id %>/review"><button>Mark reviewed</button></form>
+                <form method="post" action="/appointments/<%= a.id %>/files/<%= f.id %>/review" style="display:inline">
+                  <%- include('partials/csrf') %>
+                  <button>Mark reviewed</button>
+                </form>
               <% } %>
             </td>
           </tr>

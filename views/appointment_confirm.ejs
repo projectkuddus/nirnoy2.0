@@ -1,7 +1,7 @@
 <!doctype html><html><body>
 <h2>Appointment Confirmed</h2>
 <p>Doctor: <%= a.doc_name %></p>
-<p>Date: <%= a.date %></p>
+<p>Date: <%= a.appt_date || a.date %></p>
 <p>Serial No: <b><%= a.serial_no %></b></p>
 <p>Expected time: <%= a.slot_time %></p>
 <p><a href="/appointments/<%= a.id %>/form">Fill pre-visit form</a> |

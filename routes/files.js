@@ -8,9 +8,16 @@ const storage=multer.diskStorage({
   filename:(req,file,cb)=>cb(null, Date.now()+'_'+Math.round(Math.random()*1e6)+path.extname(file.originalname||'')),
 });
 const allowed=/pdf|jpg|jpeg|png/;
-const upload=multer({storage,fileFilter:(req,file,cb)=>{
-  (allowed.test((file.mimetype||'').toLowerCase())||allowed.test((file.originalname||'').toLowerCase()))?cb(null,true):cb(new Error('Only PDF/JPG/PNG'));
-}});
+const upload=multer({
+  storage,
+  limits:{fileSize:10*1024*1024},
+  fileFilter:(req,file,cb)=>{
+    const mime=(file.mimetype||'').toLowerCase();
+    const name=(file.originalname||'').toLowerCase();
+    if(allowed.test(mime)||allowed.test(name)) return cb(null,true);
+    cb(new Error('Only PDF/JPG/PNG files up to 10MB are allowed'));
+  }
+});
 
 async function canView(u, apptId){
   const a=await get(`SELECT * FROM appointments WHERE id=?`,[apptId]);
@@ -29,6 +36,7 @@ router.get('/appointments/:id/files', async (req,res)=>{
 router.post('/appointments/:id/upload', upload.single('file'), async (req,res)=>{
   if(!req.session.user) return res.redirect('/login');
   const a=await canView(req.session.user, req.params.id); if(!a) return res.status(403).send('Not allowed');
+  if(!req.body||req.body._csrf!==req.session.csrfToken) return res.status(403).send('Invalid CSRF token');
   if(!req.file){ req.session.flash={type:'err',msg:'File required'}; return res.redirect(`/appointments/${req.params.id}/files`); }
   const fileUrl='/uploads/reports/'+req.file.filename;
   await run(`INSERT INTO appointment_files(appointment_id,uploader_id,kind,note,filepath) VALUES(?,?,?,?,?)`,

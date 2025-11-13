@@ -11,6 +11,7 @@
     <main class="wrap" style="padding:24px 16px">
       <h2>Register (Patient)</h2>
       <form method="post" action="/register">
+        <%- include('partials/csrf') %>
         <p><input name="name" placeholder="Name"></p>
         <p><input name="email" type="email" placeholder="Email" required></p>
         <p><input name="password" type="password" placeholder="Password" required></p>

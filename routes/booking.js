@@ -69,17 +69,62 @@ router.post('/book', needPatient, async (req,res)=>{
   const slot=(req.body.slot_time||'').slice(0,5);
   if(!doctorId||!clinicId||!date||!slot) return res.status(400).send('Missing data');
 
-  const clash=await get(`SELECT id FROM appointments WHERE doctor_id=? AND clinic_id=? AND appt_date=? AND slot_time=?`,[doctorId,clinicId,date,slot]);
-  if(clash){
-    return res.render('notice',{title:'Slot taken',message:'Please pick another slot.',
-      actions:[{label:'Back to booking',href:`/book?doctorId=${doctorId}&clinicId=${clinicId}&date=${date}`}]});
-  }
+  await run('BEGIN IMMEDIATE');
+  let txActive=true;
+  const safeRollback=async()=>{ if(txActive){ try{ await run('ROLLBACK'); }catch(_){ } txActive=false; } };
+  const goBackHref=`/book?doctorId=${doctorId}&clinicId=${clinicId}&date=${date}`;
+  const renderNotice=async(title,message,actions)=>{ await safeRollback(); return res.render('notice',{title,message,actions}); };
+  const slotTakenNotice=async()=>renderNotice(
+    'Slot just got taken',
+    'Please pick another time — this one was booked seconds ago.',
+    [{href:`/book?doctorId=${doctorId}&clinicId=${clinicId}`,label:'Choose another slot'}]
+  );
 
-  const r=await run(`INSERT INTO appointments(patient_id,doctor_id,clinic_id,appt_date,slot_time,status)
-                     VALUES(?,?,?,?,?,?)`,
-                     [req.session.user.id, doctorId, clinicId, date, slot, 'queued']);
-  const id=r.lastID;
-  res.redirect(`/appointments/${id}/status`);
+  try{
+    const doc=await doctorBasics(doctorId);
+    if(!doc) return await renderNotice('Doctor unavailable','That doctor is not available right now.',[{href:'/doctors',label:'Browse doctors'}]);
+
+    const clinic=await get(`SELECT id FROM doctor_clinics WHERE id=? AND doctor_id=?`,[clinicId,doctorId]);
+    if(!clinic) return await renderNotice('Clinic mismatch','That clinic is not available for this doctor.',[{href:`/book?doctorId=${doctorId}`,label:'Pick another clinic'}]);
+
+    const dateObj=new Date(`${date}T00:00:00`);
+    if(Number.isNaN(dateObj.getTime())) return await renderNotice('Invalid date selected','Please pick a valid appointment date.',[{href:goBackHref,label:'Back to booking'}]);
+    const today=new Date(); today.setHours(0,0,0,0);
+    if(dateObj<today) return await renderNotice('Date already passed','Please pick a future date.',[{href:goBackHref,label:'Back to booking'}]);
+
+    const dow=dateObj.getDay();
+    const ranges=await all(`SELECT start_time,end_time FROM doctor_schedule WHERE doctor_id=? AND clinic_id=? AND day_of_week=?`,
+      [doctorId,clinicId,dow]);
+    if(!ranges.length) return await renderNotice('No schedule','Doctor has no schedule for that clinic/day.',[{href:`/book?doctorId=${doctorId}`,label:'Pick another day'}]);
+
+    const step=doc.visit_duration_minutes||15;
+    const allowed=new Set();
+    for(const r of ranges){
+      let start=toMin(r.start_time), end=toMin(r.end_time);
+      while(start+step<=end){
+        allowed.add(fromMin(start));
+        start+=step;
+      }
+    }
+    if(!allowed.has(slot)) return await renderNotice('Invalid slot','Pick a time within the doctor schedule.',[{href:goBackHref,label:'Back to booking'}]);
+
+    const clash=await get(`SELECT id FROM appointments WHERE doctor_id=? AND clinic_id=? AND appt_date=? AND slot_time=?`,
+      [doctorId,clinicId,date,slot]);
+    if(clash) return await slotTakenNotice();
+
+    const r=await run(`INSERT INTO appointments(patient_id,doctor_id,clinic_id,appt_date,slot_time,status)
+                       VALUES(?,?,?,?,?,?)`,
+                       [req.session.user.id, doctorId, clinicId, date, slot, 'queued']);
+    const id=r.lastID;
+    await run('COMMIT'); txActive=false;
+    return res.redirect(`/appointments/${id}/status`);
+  }catch(e){
+    await safeRollback();
+    if(String(e?.message||e).includes('UNIQUE')){
+      return slotTakenNotice();
+    }
+    throw e;
+  }
 });
 
 module.exports=router;
