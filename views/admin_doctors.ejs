@@ -1,33 +1,60 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Admin — Doctors</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <%- include('_header') %>
-    <%- include('_flash') %>
-    <div class="wrap">
-      <h2>Admin — Doctors</h2>
-      <h3>Pending</h3>
-      <table><tr><th>Name</th><th>Email</th><th>BMDC</th><th>Proof</th><th>Actions</th></tr>
-      <% pending.forEach(r=>{ %>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Admin — Doctors</h2>
+
+  <div class="card">
+    <h3>Pending / Rejected</h3>
+    <% if (!pending.length) { %><p>No pending/rejected doctors.</p><% } else { %>
+    <table>
+      <tr><th>Name</th><th>Email</th><th>Status</th><th>BMDC</th><th>Specialty</th><th>Area</th><th>Fee</th><th>Visit (min)</th><th>Actions</th></tr>
+      <% pending.forEach(d=>{ %>
       <tr>
-        <td><%= r.name %></td><td><%= r.email %></td><td><%= r.bmdc_no %></td>
-        <td><% if (docs[r.id]) { %><a href="<%= docs[r.id] %>" target="_blank">View</a><% } else { %>-<% } %></td>
-        <td>
-          <form method="post" action="/admin/doctors/<%= r.id %>/approve" style="display:inline"><button>Approve</button></form>
-          <form method="post" action="/admin/doctors/<%= r.id %>/reject" style="display:inline"><button>Reject</button></form>
-        </td>
-      </tr><% }) %></table>
-      <h3>Approved</h3>
-      <table><tr><th>Name</th><th>Email</th><th>BMDC</th><th>Proof</th></tr>
-      <% approved.forEach(r=>{ %>
-      <tr><td><%= r.name %></td><td><%= r.email %></td><td><%= r.bmdc_no %></td>
-      <td><% if (docs[r.id]) { %><a href="<%= docs[r.id] %>" target="_blank">View</a><% } else { %>-<% } %></td></tr>
-      <% }) %></table>
-    </div>
-    <%- include('_footer') %>
-  </body>
-</html>
+        <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+          <td><%= d.name %></td>
+          <td><%= d.email %></td>
+          <td><%= d.status %></td>
+          <td><input name="bmdc_no" value="<%= d.bmdc_no %>" style="width:110px"></td>
+          <td><input name="specialty" value="<%= d.specialty %>" style="width:140px"></td>
+          <td><input name="area" value="<%= d.area %>" style="width:120px"></td>
+          <td><input type="number" name="fee" value="<%= d.fee %>" style="width:90px" min="0"></td>
+          <td><input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" style="width:90px" min="5"></td>
+          <td style="white-space:nowrap">
+            <button>Save</button>
+        </form>
+            <form method="post" action="/admin/doctors/<%= d.uid %>/approve" style="display:inline"><button>Approve</button></form>
+            <form method="post" action="/admin/doctors/<%= d.uid %>/reject" style="display:inline"><button>Reject</button></form>
+          </td>
+      </tr>
+      <% }) %>
+    </table>
+    <% } %>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Approved</h3>
+    <% if (!approved.length) { %><p>No approved doctors.</p><% } else { %>
+    <table>
+      <tr><th>Name</th><th>Email</th><th>BMDC</th><th>Specialty</th><th>Area</th><th>Fee</th><th>Visit (min)</th><th>Actions</th></tr>
+      <% approved.forEach(d=>{ %>
+      <tr>
+        <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+          <td><%= d.name %></td>
+          <td><%= d.email %></td>
+          <td><input name="bmdc_no" value="<%= d.bmdc_no %>" style="width:110px"></td>
+          <td><input name="specialty" value="<%= d.specialty %>" style="width:140px"></td>
+          <td><input name="area" value="<%= d.area %>" style="width:120px"></td>
+          <td><input type="number" name="fee" value="<%= d.fee %>" style="width:90px" min="0"></td>
+          <td><input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" style="width:90px" min="5"></td>
+          <td style="white-space:nowrap">
+            <button>Save</button>
+          </td>
+        </form>
+      </tr>
+      <% }) %>
+    </table>
+    <% } %>
+  </div>
+</div>
+<%- include('_footer') %>
+</body></html>

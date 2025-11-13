@@ -1,18 +1,19 @@
-:root{--bg:#fafafa;--card:#fff;--ink:#111;--muted:#666;--brand:#1463ff;}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Arial}
-a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
-.wrap{max-width:980px;margin:0 auto;padding:16px}
-header{background:#fff;border-bottom:1px solid #eee;position:sticky;top:0}
-header .nav{display:flex;gap:12px;align-items:center;justify-content:space-between}
-.logo{font-weight:700}
-.pill{display:inline-block;padding:6px 10px;background:#f3f6ff;border:1px solid #e1e7ff;border-radius:999px}
-.row{display:flex;gap:16px;flex-wrap:wrap}
-.card{background:var(--card);border:1px solid #eee;border-radius:10px;padding:14px}
-footer{color:var(--muted);border-top:1px solid #eee;background:#fff;margin-top:32px}
-.flash{padding:10px 12px;border-radius:8px;margin:12px 0}
-.flash.ok{background:#eaf8ed;border:1px solid #bfe5c6}
-.flash.err{background:#fdecea;border:1px solid #f5c2c0}
-table{border-collapse:collapse;width:100%} td,th{border:1px solid #eee;padding:8px;text-align:left}
-input,select,button,textarea{font:inherit;padding:8px;border:1px solid #ddd;border-radius:8px}
-button{background:#000;color:#fff;border:0;cursor:pointer} button:hover{opacity:.9}
-@media (max-width:640px){.row{flex-direction:column}}
+*{box-sizing:border-box} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;margin:0;background:#fafafa;color:#222}
+a{color:#0b63ce;text-decoration:none} a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.site-header{background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10}
+.site-header .nav{display:flex;align-items:center;gap:16px}
+.brand{font-weight:700;font-size:18px;margin-right:8px}
+.links a{margin-right:12px}
+.auth{margin-left:auto;display:flex;gap:8px;align-items:center}
+.card{background:#fff;border:1px solid #eee;border-radius:8px;padding:12px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #eee;border-radius:8px;overflow:hidden}
+th,td{padding:8px 10px;border-bottom:1px solid #f1f1f1;vertical-align:top}
+th{background:#fafafa;text-align:left}
+input,select,textarea{border:1px solid #ddd;border-radius:6px;padding:8px}
+button,.pill{display:inline-block;border:1px solid #0b63ce;background:#0b63ce;color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none}
+button:hover,.pill:hover{filter:brightness(0.95);text-decoration:none}
+.pill{line-height:26px}
+h2{margin:10px 0 12px}
+h3{margin:0 0 8px}
