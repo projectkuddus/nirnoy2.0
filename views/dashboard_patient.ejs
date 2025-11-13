@@ -6,25 +6,58 @@
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <%- include('_header') %>
-    <%- include('_flash') %>
-    <main class="wrap" style="padding:24px 16px">
-      <h2>Patient Dashboard</h2>
-      <h3>Upcoming</h3>
-      <ul>
-      <% upcoming.forEach(a=>{ %>
-        <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
-          <a href="/appointments/<%= a.id %>/status">Live Status</a></li>
-      <% }) %>
-      </ul>
-      <h3>Past</h3>
-      <ul>
-      <% past.forEach(a=>{ %>
-        <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
-          <a href="/consultations/appointment/<%= a.id %>">View Prescription</a></li>
-      <% }) %>
-      </ul>
-    </main>
+    <%- include('_header') %><%- include('_flash') %>
+    <div class="wrap">
+      <h2>My Appointments</h2>
+
+      <div class="row">
+        <div class="card" style="flex:1 1 420px">
+          <h3>Upcoming</h3>
+          <% if (!upcoming.length) { %>
+            <p>No upcoming visits. <a href="/doctors">Find a doctor</a></p>
+          <% } else { %>
+            <table>
+              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Status</th><th>Links</th></tr>
+              <% upcoming.forEach(a=>{ %>
+                <tr>
+                  <td><%= a.appt_date %></td>
+                  <td><%= a.slot_time %></td>
+                  <td><%= a.doctor_name %></td>
+                  <td><%= a.status %></td>
+                  <td style="white-space:nowrap">
+                    <a href="/appointments/<%= a.id %>/status">Live status</a>
+                    | <a href="/doctors/<%= a.doctor_id %>">Doctor</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </table>
+          <% } %>
+        </div>
+
+        <div class="card" style="flex:1 1 420px">
+          <h3>Past</h3>
+          <% if (!past.length) { %>
+            <p>No past visits yet.</p>
+          <% } else { %>
+            <table>
+              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Status</th><th>Files</th></tr>
+              <% past.forEach(a=>{ %>
+                <tr>
+                  <td><%= a.appt_date %></td>
+                  <td><%= a.slot_time %></td>
+                  <td><%= a.doctor_name %></td>
+                  <td><%= a.status %></td>
+                  <td style="white-space:nowrap">
+                    <!-- PDF comes in Step 4; link shown now for habit -->
+                    <a href="/appointments/<%= a.id %>/prescription.pdf">Prescription (PDF)</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </table>
+          <% } %>
+        </div>
+      </div>
+    </div>
     <%- include('_footer') %>
   </body>
 </html>
