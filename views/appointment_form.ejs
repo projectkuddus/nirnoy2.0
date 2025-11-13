@@ -1,9 +1,25 @@
 <!doctype html><html><body>
 <h2>Book: <%= d.name %></h2>
-<form method="post" action="/appointments">
-  <input type="hidden" name="doctor_id" value="<%= d.doc_id %>">
-  <label>Date: <input type="date" name="date" required></label><br>
-  <label>For (patient name): <input name="for_person_name"></label><br>
-  <button type="submit">Get Serial</button>
+<form method="get" action="/appointments/new">
+  <input type="hidden" name="doctorId" value="<%= d.doc_id %>">
+  <label>Date: <input type="date" name="date" value="<%= date||'' %>" required></label>
+  <button type="submit">Find slots</button>
 </form>
+
+<% if (date) { %>
+  <h3>Available slots for <%= date %></h3>
+  <% if (available.length===0) { %>
+    <p>No slots available for this date.</p>
+  <% } else { %>
+  <form method="post" action="/appointments">
+    <input type="hidden" name="doctor_id" value="<%= d.doc_id %>">
+    <input type="hidden" name="date" value="<%= date %>">
+    <p>For (patient name): <input name="for_person_name"></p>
+    <% available.forEach(t=>{ %>
+      <label><input type="radio" name="slot_time" value="<%= t %>" required> <%= t %></label><br>
+    <% }) %>
+    <button type="submit">Get Serial</button>
+  </form>
+  <% } %>
+<% } %>
 </body></html>

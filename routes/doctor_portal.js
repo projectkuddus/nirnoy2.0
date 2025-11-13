@@ -41,4 +41,22 @@ router.post('/doctor/appointments/:id/finish', requireDoctor, async (req,res)=>{
   res.redirect('/doctor/dashboard');
 });
 
+router.get('/doctor/schedule', requireDoctor, async (req,res)=>{
+  const rows=await all(`SELECT * FROM schedules WHERE doctor_id=? ORDER BY day_of_week`,[req.doc.id]);
+  const d=await get(`SELECT visit_duration_minutes FROM doctors WHERE id=?`,[req.doc.id]);
+  res.render('doctor_schedule',{rows,duration:(d&&d.visit_duration_minutes)||10});
+});
+
+router.post('/doctor/schedule', requireDoctor, async (req,res)=>{
+  const dur=parseInt(req.body.visit_duration_minutes||'10',10);
+  await run(`UPDATE doctors SET visit_duration_minutes=? WHERE id=?`,[dur,req.doc.id]);
+  await run(`DELETE FROM schedules WHERE doctor_id=?`,[req.doc.id]);
+  for(let i=0;i<7;i++){
+    const s=req.body[`w${i}_start`], e=req.body[`w${i}_end`];
+    if(s&&e) await run(`INSERT INTO schedules(doctor_id,day_of_week,start_time,end_time) VALUES(?,?,?,?)`,
+      [req.doc.id,i,s,e]);
+  }
+  res.redirect('/doctor/schedule');
+});
+
 module.exports=router;

@@ -1,0 +1,19 @@
+<!doctype html><html><body>
+<h2>Weekly Schedule</h2>
+<form method="post" action="/doctor/schedule">
+<p>Visit duration (minutes): <input type="number" name="visit_duration_minutes" value="<%= duration %>" min="5" max="60"></p>
+<table border="1" cellpadding="6">
+<tr><th>Day</th><th>Start</th><th>End</th></tr>
+<% const names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; 
+const map={}; rows.forEach(r=>map[r.day_of_week]={s:r.start_time,e:r.end_time}); 
+for(let i=0;i<7;i++){ %>
+<tr>
+  <td><%= names[i] %></td>
+  <td><input type="time" name="w<%= i %>_start" value="<%= (map[i]&&map[i].s)||'' %>"></td>
+  <td><input type="time" name="w<%= i %>_end" value="<%= (map[i]&&map[i].e)||'' %>"></td>
+</tr>
+<% } %>
+</table>
+<p><button type="submit">Save Schedule</button></p>
+</form>
+</body></html>

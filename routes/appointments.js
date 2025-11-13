@@ -1,21 +1,45 @@
 const express=require('express');const {run,get,all}=require('../db');const router=express.Router();
 const needLogin=(req,res,next)=>!req.session.user?res.redirect('/login'):next();
 
+function genSlots(start,end,dur){
+  const out=[];let [h1,m1]=start.split(':').map(Number),[h2,m2]=end.split(':').map(Number);
+  let t=h1*60+m1, stop=h2*60+m2;
+  while(t+dur<=stop){out.push(`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`);t+=dur;}
+  return out;
+}
+
 router.get('/appointments/new',needLogin,async(req,res)=>{
   const doctorId=req.query.doctorId;if(!doctorId)return res.status(400).send('doctorId required');
-  const d=await get(`SELECT d.id doc_id,u.name FROM doctors d JOIN users u ON u.id=d.user_id WHERE d.id=?`,[doctorId]);
-  if(!d)return res.status(404).send('Doctor not found');res.render('appointment_form',{d});
+  const d=await get(`SELECT d.id doc_id,u.name,d.visit_duration_minutes FROM doctors d JOIN users u ON u.id=d.user_id WHERE d.id=?`,[doctorId]);
+  if(!d)return res.status(404).send('Doctor not found');
+  const date=req.query.date||'';
+  let available=[];
+  if(date){
+    const dow=new Date(date).getDay();
+    const rows=await all(`SELECT start_time,end_time FROM schedules WHERE doctor_id=? AND day_of_week=?`,[doctorId,dow]);
+    const taken=await all(`SELECT slot_time FROM appointments WHERE doctor_id=? AND date=?`,[doctorId,date]);
+    const takenSet=new Set(taken.map(x=>x.slot_time));
+    for(const r of rows){
+      for(const s of genSlots(r.start_time,r.end_time,d.visit_duration_minutes||10)){
+        if(!takenSet.has(s)) available.push(s);
+      }
+    }
+  }
+  res.render('appointment_form',{d,date,available});
 });
 
 router.post('/appointments',needLogin,async(req,res)=>{
-  const {doctor_id,date,for_person_name}=req.body;
-  const count=await get(`SELECT COUNT(*) c FROM appointments WHERE doctor_id=? AND date=?`,[doctor_id,date]);
-  const serial=(count?.c||0)+1;
+  const {doctor_id,date,for_person_name,slot_time}=req.body;
+  const cnt=await get(`SELECT COUNT(*) c FROM appointments WHERE doctor_id=? AND date=?`,[doctor_id,date]);
+  const serial=(cnt?.c||0)+1;
   const dur=(await get(`SELECT visit_duration_minutes v FROM doctors WHERE id=?`,[doctor_id]))?.v||10;
-  const base='18:00';function addMin(t,m){let [H,M]=t.split(':').map(Number),mins=H*60+M+m;H=Math.floor(mins/60)%24;M=mins%60;return `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`;}
-  const slot_time=addMin(base,(serial-1)*dur);
+  let finalSlot=slot_time;
+  if(!finalSlot){
+    const base='18:00';const add=(t,m)=>{let [H,M]=t.split(':').map(Number),mins=H*60+M+m;H=Math.floor(mins/60)%24;M=mins%60;return `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`;};
+    finalSlot=add('18:00',(serial-1)*dur);
+  }
   const r=await run(`INSERT INTO appointments(doctor_id,patient_id,for_person_name,date,slot_time,serial_no,status)
-    VALUES(?,?,?,?,?,?,?)`,[doctor_id,req.session.user.id,for_person_name||'',date,slot_time,serial,'booked']);
+    VALUES(?,?,?,?,?,?,?)`,[doctor_id,req.session.user.id,for_person_name||'',date,finalSlot,serial,'booked']);
   res.redirect(`/appointments/${r.id}/confirm`);
 });
 
