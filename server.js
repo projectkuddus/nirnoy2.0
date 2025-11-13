@@ -22,5 +22,6 @@ app.get('/debug/outbox', (req,res)=>{
   if(!fs.existsSync(p)) return res.type('text').send('(empty)');
   res.type('text').send(fs.readFileSync(p,'utf8'));
 });
+app.get('/debug/me',(req,res)=>{res.type('json').send(JSON.stringify(req.session.user||{},null,2));});
 app.get('/',(req,res)=>res.render('home'));
 app.listen(3000,()=>console.log('Nirnoy 2.0 running at http://localhost:3000'));

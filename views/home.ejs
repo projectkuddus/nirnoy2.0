@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Nirnoy 2.0</title>
-  </head>
-  <body>
-    <h1>Nirnoy 2.0 is running ✅</h1>
-  </body>
-</html>
+<!doctype html><html><body>
+<h1>Nirnoy 2.0</h1>
+<% if (user) { %>
+  <p>Signed in as: <b><%= user.name||user.email %></b> (<%= user.role %>) — <a href="/logout">Logout</a></p>
+<% } else { %>
+  <p>Not signed in — <a href="/login">Login</a> | <a href="/register">Patient Sign-up</a> | <a href="/doctor/register">Doctor Sign-up</a></p>
+<% } %>
+
+<h3>Quick Links</h3>
+<ul>
+  <li><a href="/doctors">Browse Doctors (public)</a></li>
+  <li><a href="/patient/dashboard">Patient Dashboard</a></li>
+  <li><a href="/doctor/dashboard">Doctor Dashboard</a></li>
+  <li><a href="/doctor/schedule">Doctor Schedule</a></li>
+  <li><a href="/admin/doctors">Admin: Doctors</a></li>
+  <li><a href="/admin/seed">Admin Seed (once)</a></li>
+  <li><a href="/debug/me">Debug: Who am I?</a> | <a href="/debug/outbox">Debug: Outbox</a></li>
+</ul>
+</body></html>
