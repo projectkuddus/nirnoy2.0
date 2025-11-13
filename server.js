@@ -12,6 +12,7 @@ app.use(require('./routes/auth'));
 app.use(require('./routes/admin'));
 app.use(require('./routes/migrate'));
 app.use(require('./routes/migrate_step4'));
+app.use(require('./routes/dev_reset'));
 app.use(require('./routes/doctor'));
 app.use(require('./routes/doctors'));
 app.use(require('./routes/appointments'));
