@@ -2,6 +2,20 @@ const express=require('express'),path=require('path'),fs=require('fs');
 const session=require('express-session'),methodOverride=require('method-override');
 require('./db');
 const app=express();
+// --- ONE-TIME AUTO-MIGRATION: add doctor meta columns if missing ---
+const {all:dbAll,run:dbRun}=require('./db');
+(async function ensureDoctorMetaColumns(){
+  try{
+    const cols=await dbAll('PRAGMA table_info(doctors)');
+    const names=cols.map(c=>c.name);
+    if(!names.includes('specialty'))await dbRun('ALTER TABLE doctors ADD COLUMN specialty TEXT');
+    if(!names.includes('area'))await dbRun('ALTER TABLE doctors ADD COLUMN area TEXT');
+    if(!names.includes('fee'))await dbRun('ALTER TABLE doctors ADD COLUMN fee TEXT');
+    console.log('[migrate] doctors.specialty/area/fee ensured');
+  }catch(e){
+    console.error('[migrate] ensureDoctorMetaColumns failed',e);
+  }
+})();
 const UP=path.join(__dirname,'uploads');try{fs.mkdirSync(UP,{recursive:true});}catch(_){}
 app.set('view engine','ejs');app.set('views',path.join(__dirname,'views'));
 app.use(express.urlencoded({extended:true}));app.use(methodOverride('_method'));
@@ -18,6 +32,7 @@ app.use(require('./routes/migrate_step6'));
 app.use(require('./routes/migrate_step8'));
 app.use(require('./routes/migrate_step9'));
 app.use(require('./routes/migrate_step15'));
+app.use(require('./routes/migrate_fix_doctors_meta'));
 app.use(require('./routes/files'));
 app.use(require('./routes/doctor'));
 app.use(require('./routes/doctors'));
