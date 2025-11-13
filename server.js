@@ -10,6 +10,7 @@ app.use(session({secret:'nirnoy-secret',resave:false,saveUninitialized:false}));
 app.use((req,res,next)=>{res.locals.user=req.session.user||null;res.locals.flash=req.session.flash||null;delete req.session.flash;next();});
 app.use(require('./routes/auth'));
 app.use(require('./routes/admin'));
+app.use(require('./routes/migrate'));
 app.use(require('./routes/doctor'));
 app.use(require('./routes/doctors'));
 app.use(require('./routes/appointments'));

@@ -1,62 +1,54 @@
 const express=require('express');
-const {all,get,run}=require('../db');
+const { all, get, run } = require('../db');
 const router=express.Router();
 
-async function requireDoctor(req,res,next){
+// Require doctor
+function needDoctor(req,res,next){
   if(!req.session.user) return res.redirect('/login');
-  const u=await get('SELECT * FROM users WHERE id=?',[req.session.user.id]);
-  if(!u || u.role!=='doctor' || u.status!=='approved') return res.status(403).send('Doctor access only');
-  const d=await get('SELECT * FROM doctors WHERE user_id=?',[u.id]);
-  if(!d) return res.status(403).send('Doctor profile missing');
-  req.doc=d; next();
+  if(req.session.user.role!=='doctor') return res.status(403).send('Doctor access only');
+  next();
 }
 
-router.get('/doctor/dashboard', requireDoctor, async (req,res)=>{
-  const today=new Date().toISOString().slice(0,10);
-  const rows=await all(`SELECT a.*, u.name AS patient_name
-    FROM appointments a JOIN users u ON u.id=a.patient_id
-    WHERE a.doctor_id=? AND a.date=? ORDER BY a.serial_no`, [req.doc.id,today]);
-  res.render('dashboard_doctor',{rows,today});
+// Dashboard: today queue
+router.get('/doctor/dashboard', needDoctor, async (req,res)=>{
+  const u=req.session.user;
+  const today=new Date().toISOString().slice(0,10); // YYYY-MM-DD
+  const rows=await all(`
+    SELECT a.*, p.name AS patient_name, p.email AS patient_email
+    FROM appointments a
+    JOIN users p ON p.id=a.patient_id
+    WHERE a.doctor_id=? AND a.appt_date=?
+    ORDER BY a.slot_time
+  `,[u.id, today]);
+  res.render('dashboard_doctor',{rows});
 });
 
-router.get('/doctor/appointments/:id', requireDoctor, async (req,res)=>{
-  const a=await get(`SELECT a.*, pu.name AS patient_name
-    FROM appointments a JOIN users pu ON pu.id=a.patient_id
-    WHERE a.id=? AND a.doctor_id=?`, [req.params.id, req.doc.id]);
-  if(!a) return res.status(404).send('Not found');
-  const answers=await get(`SELECT answers_json FROM appointment_answers WHERE appointment_id=? ORDER BY id DESC LIMIT 1`,[a.id]);
-  const cons=await get(`SELECT * FROM consultations WHERE appointment_id=?`,[a.id]);
-  res.render('consultation_edit',{a,answers_json:(answers&&answers.answers_json)||'{}',cons});
-});
-
-router.post('/doctor/appointments/:id/finish', requireDoctor, async (req,res)=>{
-  const {notes,prescription_text,tasks_text}=req.body;
-  const existing=await get(`SELECT id FROM consultations WHERE appointment_id=?`,[req.params.id]);
-  const tasks_json=JSON.stringify((tasks_text||'').split('\n').map(s=>s.trim()).filter(Boolean));
-  if(existing) await run(`UPDATE consultations SET notes=?,prescription_text=?,tasks_json=? WHERE appointment_id=?`,
-    [notes||'',prescription_text||'',tasks_json,req.params.id]);
-  else await run(`INSERT INTO consultations(appointment_id,notes,prescription_text,tasks_json) VALUES(?,?,?,?)`,
-    [req.params.id,notes||'',prescription_text||'',tasks_json]);
-  await run(`UPDATE appointments SET status='done' WHERE id=?`,[req.params.id]);
-  res.redirect('/doctor/dashboard');
-});
-
-router.get('/doctor/schedule', requireDoctor, async (req,res)=>{
-  const rows=await all(`SELECT * FROM schedules WHERE doctor_id=? ORDER BY day_of_week`,[req.doc.id]);
-  const d=await get(`SELECT visit_duration_minutes FROM doctors WHERE id=?`,[req.doc.id]);
-  res.render('doctor_schedule',{rows,duration:(d&&d.visit_duration_minutes)||10});
-});
-
-router.post('/doctor/schedule', requireDoctor, async (req,res)=>{
-  const dur=parseInt(req.body.visit_duration_minutes||'10',10);
-  await run(`UPDATE doctors SET visit_duration_minutes=? WHERE id=?`,[dur,req.doc.id]);
-  await run(`DELETE FROM schedules WHERE doctor_id=?`,[req.doc.id]);
-  for(let i=0;i<7;i++){
-    const s=req.body[`w${i}_start`], e=req.body[`w${i}_end`];
-    if(s&&e) await run(`INSERT INTO schedules(doctor_id,day_of_week,start_time,end_time) VALUES(?,?,?,?)`,
-      [req.doc.id,i,s,e]);
+// Helper: set status + timestamp
+async function setStatus(id,status,tsField){
+  if(tsField){
+    await run(`UPDATE appointments SET status=?, ${tsField}=CURRENT_TIMESTAMP WHERE id=?`,[status,id]);
+  }else{
+    await run(`UPDATE appointments SET status=? WHERE id=?`,[status,id]);
   }
-  res.redirect('/doctor/schedule');
+}
+
+router.post('/doctor/appointments/:id/call', needDoctor, async (req,res)=>{
+  await setStatus(req.params.id,'called','called_at'); res.redirect('/doctor/dashboard');
+});
+router.post('/doctor/appointments/:id/start', needDoctor, async (req,res)=>{
+  await setStatus(req.params.id,'in_progress','started_at'); res.redirect('/doctor/dashboard');
+});
+router.post('/doctor/appointments/:id/done', needDoctor, async (req,res)=>{
+  await setStatus(req.params.id,'done','finished_at'); res.redirect('/doctor/dashboard');
+});
+router.post('/doctor/appointments/:id/noshow', needDoctor, async (req,res)=>{
+  await setStatus(req.params.id,'no_show'); res.redirect('/doctor/dashboard');
+});
+
+// Optional: set room label for an appointment
+router.post('/doctor/appointments/:id/room', needDoctor, async (req,res)=>{
+  await run(`UPDATE appointments SET room=? WHERE id=?`,[req.body.room||'', req.params.id]);
+  res.redirect('/doctor/dashboard');
 });
 
 module.exports=router;

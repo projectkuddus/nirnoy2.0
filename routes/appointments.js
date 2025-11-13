@@ -50,11 +50,13 @@ router.get('/appointments/:id/confirm',needLogin,async(req,res)=>{
 });
 
 router.get('/appointments/:id/status',needLogin,async(req,res)=>{
-  const a=await get(`SELECT a.*,d.visit_duration_minutes v FROM appointments a JOIN doctors d ON d.id=a.doctor_id WHERE a.id=?`,[req.params.id]);
-  if(!a)return res.status(404).send('Not found');
-  const ahead=(await get(`SELECT COUNT(*) c FROM appointments WHERE doctor_id=? AND date=? AND serial_no < ?`,
-    [a.doctor_id,a.date,a.serial_no]))?.c||0;
-  const etaMin=a.v*(ahead);res.render('appointment_status',{a,ahead,etaMin});
+  const appt=await get(`SELECT a.*, a.date AS appt_date, u.name AS doctor_name
+    FROM appointments a
+    JOIN doctors d ON d.id=a.doctor_id
+    JOIN users u ON u.id=d.user_id
+    WHERE a.id=?`,[req.params.id]);
+  if(!appt)return res.status(404).send('Not found');
+  res.render('appointment_status',{appt});
 });
 
 // NEW: pre-visit questionnaire

@@ -6,21 +6,38 @@
     <link rel="stylesheet" href="/css/style.css">
   </head>
   <body>
-    <%- include('_header') %>
-    <%- include('_flash') %>
-    <main class="wrap" style="padding:24px 16px">
-      <h2>Doctor Dashboard — <%= today %></h2>
-      <table>
-      <tr><th>Serial</th><th>Patient</th><th>Status</th><th>Action</th></tr>
+    <%- include('_header') %><%- include('_flash') %>
+    <div class="wrap">
+    <h2>Today’s Queue</h2>
+    <table>
+      <tr>
+        <th>Time</th><th>Patient</th><th>Status</th><th>Room</th><th>Actions</th>
+      </tr>
       <% rows.forEach(r=>{ %>
       <tr>
-        <td><%= r.serial_no %></td>
+        <td><%= r.slot_time %></td>
         <td><%= r.patient_name %></td>
-        <td><%= r.status %></td>
-        <td><a href="/doctor/appointments/<%= r.id %>">Open</a></td>
-      </tr><% }) %>
-      </table>
-    </main>
+        <td>
+          <%= r.status %>
+          <% if(r.status==='called'){ %> (since <%= r.called_at||'' %>) <% } %>
+          <% if(r.status==='in_progress'){ %> (since <%= r.started_at||'' %>) <% } %>
+        </td>
+        <td>
+          <form method="post" action="/doctor/appointments/<%= r.id %>/room">
+            <input name="room" value="<%= r.room||'' %>" placeholder="Room #">
+            <button>Save</button>
+          </form>
+        </td>
+        <td style="white-space:nowrap">
+          <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline"><button>Call</button></form>
+          <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline"><button>Start</button></form>
+          <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline"><button>Done</button></form>
+          <form method="post" action="/doctor/appointments/<%= r.id %>/noshow" style="display:inline"><button>No-show</button></form>
+        </td>
+      </tr>
+      <% }) %>
+    </table>
+    </div>
     <%- include('_footer') %>
   </body>
 </html>
