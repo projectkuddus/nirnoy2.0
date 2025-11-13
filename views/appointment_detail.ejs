@@ -1,48 +1,25 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Appointment Detail</title>
-    <link rel="stylesheet" href="/css/style.css" />
-  </head>
-  <body class="notice-page">
-    <section class="notice-card" style="text-align: left;">
-      <h1>Appointment Detail</h1>
-      <p><strong>Doctor:</strong> <%= appointment.doctor_name %></p>
-      <p><strong>Date:</strong> <%= appointment.date %> at <%= appointment.slot_time %></p>
-      <p><strong>Serial:</strong> #<%= appointment.serial_no %></p>
-      <p><strong>Booked for:</strong> <%= appointment.for_person_name %></p>
-      <p><strong>Status:</strong> <%= appointment.status %></p>
+<!doctype html><html><body>
+<%- include('_header') %><%- include('_flash') %>
+<div class="wrap">
+  <h2>Visit — <%= a.patient_name %> with <%= a.doctor_name %></h2>
+  <p><b>Date:</b> <%= a.appt_date %> &nbsp; <b>Time:</b> <%= a.slot_time %> &nbsp; <b>Status:</b> <%= a.status %></p>
 
-      <h2>Pre-visit Form</h2>
-      <% if (answers) { %>
-      <p>Symptoms: <%= answers.symptoms %></p>
-      <p>Duration: <%= answers.duration %></p>
-      <p>Medications: <%= answers.medications %></p>
-      <% } else { %>
-      <p>No form submitted.</p>
-      <% } %>
+  <form method="post" action="/doctor/appointments/<%= a.id %>/update" class="card">
+    <p><label>Diagnosis</label><br>
+    <textarea name="diagnosis" rows="3" style="width:100%"><%= a.diagnosis||'' %></textarea></p>
 
-      <h2>Consultation</h2>
-      <% if (consultation) { %>
-      <p>Notes: <%= consultation.notes %></p>
-      <p>Prescription: <%= consultation.prescription_text %></p>
-      <p>Tasks: <%= consultation.tasks ? consultation.tasks.tasks : 'None' %></p>
-      <% } else { %>
-      <p>Not completed yet.</p>
-      <% } %>
+    <p><label>Prescription (free text)</label><br>
+    <textarea name="prescription_text" rows="8" style="width:100%"><%= a.prescription_text||'' %></textarea></p>
 
-      <% const cancellable = ['booked','arrived','waiting']; %>
-      <% if (cancellable.includes(appointment.status)) { %>
-      <form method="POST" action="/appointments/<%= appointment.id %>/cancel" class="inline-form">
-        <button class="btn primary" type="submit">Cancel appointment</button>
-      </form>
-      <% } %>
+    <p><label>Advice / follow-up</label><br>
+    <textarea name="advice" rows="3" style="width:100%"><%= a.advice||'' %></textarea></p>
 
-      <div class="cta-row" style="margin-top: 1.5rem;">
-        <a class="btn primary" href="/dashboard/patient">Back to dashboard</a>
-        <a class="btn ghost" href="/doctors">Find another doctor</a>
-      </div>
-    </section>
-  </body>
-</html>
+    <p>
+      <button type="submit">Save</button>
+      <a class="pill" href="/appointments/<%= a.id %>/prescription.pdf" target="_blank">Preview PDF</a>
+      <a class="pill" href="/doctor/dashboard">Back</a>
+    </p>
+  </form>
+</div>
+<%- include('_footer') %>
+</body></html>

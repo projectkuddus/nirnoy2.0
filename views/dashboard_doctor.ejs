@@ -17,11 +17,7 @@
       <tr>
         <td><%= r.slot_time %></td>
         <td><%= r.patient_name %></td>
-        <td>
-          <%= r.status %>
-          <% if(r.status==='called'){ %> (since <%= r.called_at||'' %>) <% } %>
-          <% if(r.status==='in_progress'){ %> (since <%= r.started_at||'' %>) <% } %>
-        </td>
+        <td><%= r.status %></td>
         <td>
           <form method="post" action="/doctor/appointments/<%= r.id %>/room">
             <input name="room" value="<%= r.room||'' %>" placeholder="Room #">
@@ -29,6 +25,7 @@
           </form>
         </td>
         <td style="white-space:nowrap">
+          <a href="/doctor/appointments/<%= r.id %>/edit">Visit</a>
           <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline"><button>Call</button></form>
           <form method="post" action="/doctor/appointments/<%= r.id %>/start" style="display:inline"><button>Start</button></form>
           <form method="post" action="/doctor/appointments/<%= r.id %>/done" style="display:inline"><button>Done</button></form>
