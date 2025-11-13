@@ -1,10 +1,15 @@
 <!doctype html><html><body>
-<h2>Doctor Registration</h2>
-<form method="post" action="/doctor/register">
-<input name="name" placeholder="Name"><br>
-<input name="email" type="email" placeholder="Email" required><br>
-<input name="password" type="password" placeholder="Password" required><br>
-<input name="bmdc_no" placeholder="BMDC No"><br>
-<input name="specialty" placeholder="Specialty"><br>
-<input name="chamber" placeholder="Chamber / Address"><br>
-<button type="submit">Register</button></form></body></html>
+<h2>Doctor Sign-up</h2>
+<form method="post" action="/doctor/register" enctype="multipart/form-data">
+  <p>Name <input name="name" required></p>
+  <p>Email <input name="email" type="email" required></p>
+  <p>Password <input name="password" type="password" required></p>
+  <p>Phone <input name="phone" placeholder="+880..."></p>
+  <p>BMDC No <input name="bmdc_no" required></p>
+  <p>Specialty <input name="specialty" placeholder="Medicine, Cardio..."></p>
+  <p>Chamber <input name="chamber" placeholder="Clinic/Hospital name"></p>
+  <p>Visit duration (min) <input name="visit_duration_minutes" type="number" value="10" min="5" max="60"></p>
+  <p>BMDC Card/Certificate (jpg/png/pdf) <input type="file" name="bmdc_card" accept=".jpg,.jpeg,.png,.pdf"></p>
+  <button type="submit">Submit for Approval</button>
+</form>
+</body></html>

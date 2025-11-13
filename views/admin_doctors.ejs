@@ -1,11 +1,31 @@
 <!doctype html><html><body>
-<h2>Admin: Doctors</h2>
+<h2>Admin — Doctors</h2>
+<p><a href="/">Home</a></p>
+<h3>Pending</h3>
 <table border="1" cellpadding="6">
-<tr><th>Name</th><th>Email</th><th>BMDC</th><th>Specialty</th><th>Chamber</th><th>Status</th><th>Actions</th></tr>
-<% rows.forEach(r=>{ %><tr>
-<td><%= r.name %></td><td><%= r.email %></td><td><%= r.bmdc_no||'' %></td>
-<td><%= r.specialty||'' %></td><td><%= r.chamber||'' %></td><td><%= r.status %></td>
-<td>
-<form method="post" action="/admin/doctors/<%= r.user_id %>/approve" style="display:inline"><button>Approve</button></form>
-<form method="post" action="/admin/doctors/<%= r.user_id %>/reject" style="display:inline"><button>Reject</button></form>
-</td></tr><% }) %></table></body></html>
+<tr><th>Name</th><th>Email</th><th>BMDC</th><th>Proof</th><th>Actions</th></tr>
+<% pending.forEach(r=>{ %>
+<tr>
+  <td><%= r.name %></td>
+  <td><%= r.email %></td>
+  <td><%= r.bmdc_no %></td>
+  <td><% if (docs[r.id]) { %><a href="<%= docs[r.id] %>" target="_blank">View</a><% } else { %>-<% } %></td>
+  <td>
+    <form method="post" action="/admin/doctors/<%= r.id %>/approve" style="display:inline"><button>Approve</button></form>
+    <form method="post" action="/admin/doctors/<%= r.id %>/reject" style="display:inline"><button>Reject</button></form>
+  </td>
+</tr><% }) %>
+</table>
+
+<h3>Approved</h3>
+<table border="1" cellpadding="6">
+<tr><th>Name</th><th>Email</th><th>BMDC</th><th>Proof</th></tr>
+<% approved.forEach(r=>{ %>
+<tr>
+  <td><%= r.name %></td>
+  <td><%= r.email %></td>
+  <td><%= r.bmdc_no %></td>
+  <td><% if (docs[r.id]) { %><a href="<%= docs[r.id] %>" target="_blank">View</a><% } else { %>-<% } %></td>
+</tr><% }) %>
+</table>
+</body></html>
