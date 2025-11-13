@@ -1,7 +1,20 @@
-<!doctype html><html><body>
-<h2><%= d.name %></h2>
-<p><b>Specialty:</b> <%= d.specialty||'—' %></p>
-<p><b>Chamber:</b> <%= d.chamber||'—' %></p>
-<p><b>Visit duration:</b> <%= d.visit_duration_minutes||10 %> min</p>
-<p><a href="/appointments/new?doctorId=<%= d.doc_id %>">Book this doctor</a></p>
-</body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= d.name %></title>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <%- include('_header') %>
+    <%- include('_flash') %>
+    <main class="wrap" style="padding:24px 16px">
+      <h2><%= d.name %></h2>
+      <p><b>Specialty:</b> <%= d.specialty||'—' %></p>
+      <p><b>Chamber:</b> <%= d.chamber||'—' %></p>
+      <p><b>Visit duration:</b> <%= d.visit_duration_minutes||10 %> min</p>
+      <p><a href="/appointments/new?doctorId=<%= d.doc_id %>">Book this doctor</a></p>
+    </main>
+    <%- include('_footer') %>
+  </body>
+</html>

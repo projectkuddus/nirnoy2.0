@@ -1,13 +1,26 @@
-<!doctype html><html><body>
-<h2>Doctor Dashboard — <%= today %></h2>
-<table border="1" cellpadding="6">
-<tr><th>Serial</th><th>Patient</th><th>Status</th><th>Action</th></tr>
-<% rows.forEach(r=>{ %>
-<tr>
-  <td><%= r.serial_no %></td>
-  <td><%= r.patient_name %></td>
-  <td><%= r.status %></td>
-  <td><a href="/doctor/appointments/<%= r.id %>">Open</a></td>
-</tr><% }) %>
-</table>
-</body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <%- include('_header') %>
+    <%- include('_flash') %>
+    <main class="wrap" style="padding:24px 16px">
+      <h2>Doctor Dashboard — <%= today %></h2>
+      <table>
+      <tr><th>Serial</th><th>Patient</th><th>Status</th><th>Action</th></tr>
+      <% rows.forEach(r=>{ %>
+      <tr>
+        <td><%= r.serial_no %></td>
+        <td><%= r.patient_name %></td>
+        <td><%= r.status %></td>
+        <td><a href="/doctor/appointments/<%= r.id %>">Open</a></td>
+      </tr><% }) %>
+      </table>
+    </main>
+    <%- include('_footer') %>
+  </body>
+</html>

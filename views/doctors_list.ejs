@@ -1,8 +1,21 @@
-<!doctype html><html><body>
-<h2>Available Doctors</h2>
-<ul>
-<% rows.forEach(r=>{ %>
-  <li><a href="/doctors/<%= r.doc_id %>"><%= r.name %></a> — <%= r.specialty||'' %> (<%= r.chamber||'' %>)</li>
-<% }) %>
-</ul>
-</body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Doctors</title>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <%- include('_header') %>
+    <%- include('_flash') %>
+    <main class="wrap" style="padding:24px 16px">
+      <h2>Available Doctors</h2>
+      <ul>
+      <% rows.forEach(r=>{ %>
+        <li><a href="/doctors/<%= r.doc_id %>"><%= r.name %></a> — <%= r.specialty||'' %> (<%= r.chamber||'' %>)</li>
+      <% }) %>
+      </ul>
+    </main>
+    <%- include('_footer') %>
+  </body>
+</html>

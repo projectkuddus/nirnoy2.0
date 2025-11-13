@@ -1,19 +1,37 @@
-<!doctype html><html><body>
-<h1>Nirnoy 2.0</h1>
-<% if (user) { %>
-  <p>Signed in as: <b><%= user.name||user.email %></b> (<%= user.role %>) — <a href="/logout">Logout</a></p>
-<% } else { %>
-  <p>Not signed in — <a href="/login">Login</a> | <a href="/register">Patient Sign-up</a> | <a href="/doctor/register">Doctor Sign-up</a></p>
-<% } %>
-
-<h3>Quick Links</h3>
-<ul>
-  <li><a href="/doctors">Browse Doctors (public)</a></li>
-  <li><a href="/patient/dashboard">Patient Dashboard</a></li>
-  <li><a href="/doctor/dashboard">Doctor Dashboard</a></li>
-  <li><a href="/doctor/schedule">Doctor Schedule</a></li>
-  <li><a href="/admin/doctors">Admin: Doctors</a></li>
-  <li><a href="/admin/seed">Admin Seed (once)</a></li>
-  <li><a href="/debug/me">Debug: Who am I?</a> | <a href="/debug/outbox">Debug: Outbox</a></li>
-</ul>
-</body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Nirnoy</title>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <%- include('_header') %>
+    <%- include('_flash') %>
+    <div class="wrap">
+      <% if (user) { %>
+        <p>Signed in as <b><%= user.name||user.email %></b> (<%= user.role %>) — <a href="/logout">Logout</a></p>
+      <% } else { %>
+        <p>Not signed in — <a href="/login">Login</a> · <a href="/register">Patient Sign-up</a> · <a href="/doctor/register">Doctor Sign-up</a></p>
+      <% } %>
+      <div class="row">
+        <div class="card" style="flex:1 1 280px">
+          <h3>Patients</h3>
+          <p>Find doctor → pick slot → live ETA → prescription/history.</p>
+          <p><a href="/doctors">Browse doctors</a></p>
+        </div>
+        <div class="card" style="flex:1 1 280px">
+          <h3>Doctors</h3>
+          <p>Set weekly schedule. See queue. Finish with notes/prescription.</p>
+          <p><a href="/doctor/dashboard">Doctor dashboard</a></p>
+        </div>
+        <div class="card" style="flex:1 1 280px">
+          <h3>Admin</h3>
+          <p>Verify BMDC + approve doctors.</p>
+          <p><a href="/admin/doctors">Admin panel</a></p>
+        </div>
+      </div>
+    </div>
+    <%- include('_footer') %>
+  </body>
+</html>

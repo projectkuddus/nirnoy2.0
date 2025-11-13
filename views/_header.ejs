@@ -1,0 +1,15 @@
+<header>
+  <div class="wrap nav">
+    <div class="logo"><a href="/">Nirnoy</a></div>
+    <nav style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/doctors">Doctors</a>
+      <a href="/patient/dashboard">Patient</a>
+      <a href="/doctor/dashboard">Doctor</a>
+      <a href="/doctor/schedule">Schedule</a>
+      <a href="/admin/doctors">Admin</a>
+      <a href="/debug/me" class="pill">Debug</a>
+      <% if (user) { %><span class="pill"><%= user.role %></span> <a href="/logout">Logout</a>
+      <% } else { %><a href="/login">Login</a><a href="/register">Sign-up</a><a href="/doctor/register">Doctor Sign-up</a><% } %>
+    </nav>
+  </div>
+</header>

@@ -1,15 +1,30 @@
-<!doctype html><html><body>
-<h2>Patient Dashboard</h2>
-<h3>Upcoming</h3>
-<ul>
-<% upcoming.forEach(a=>{ %>
-  <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
-    <a href="/appointments/<%= a.id %>/status">Live Status</a></li>
-<% }) %></ul>
-<h3>Past</h3>
-<ul>
-<% past.forEach(a=>{ %>
-  <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
-    <a href="/consultations/appointment/<%= a.id %>">View Prescription</a></li>
-<% }) %></ul>
-</body></html>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <%- include('_header') %>
+    <%- include('_flash') %>
+    <main class="wrap" style="padding:24px 16px">
+      <h2>Patient Dashboard</h2>
+      <h3>Upcoming</h3>
+      <ul>
+      <% upcoming.forEach(a=>{ %>
+        <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
+          <a href="/appointments/<%= a.id %>/status">Live Status</a></li>
+      <% }) %>
+      </ul>
+      <h3>Past</h3>
+      <ul>
+      <% past.forEach(a=>{ %>
+        <li><b><%= a.date %></b> — <%= a.doc_name %> — serial <%= a.serial_no %> —
+          <a href="/consultations/appointment/<%= a.id %>">View Prescription</a></li>
+      <% }) %>
+      </ul>
+    </main>
+    <%- include('_footer') %>
+  </body>
+</html>
