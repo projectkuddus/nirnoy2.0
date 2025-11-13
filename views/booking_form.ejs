@@ -1,39 +1,79 @@
-<!doctype html><html><body>
-<%- include('_header') %><%- include('_flash') %>
-<div class="wrap">
-  <h2>Book — <%= doc.name %></h2>
-  <div class="card">
-    <form method="get" action="/book" class="row" style="margin-bottom:8px">
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<div class="wrap booking-wrap">
+  <section class="booking-card">
+    <header class="booking-head">
+      <% if (doc.photo_url) { %>
+        <div class="booking-head__photo">
+          <img src="<%= doc.photo_url %>" alt="Photo of <%= doc.name %>">
+        </div>
+      <% } %>
+      <div>
+        <p class="eyebrow">Book an appointment</p>
+        <h1><%= doc.name %></h1>
+        <p class="booking-meta">
+          <span><%= doc.specialty || 'General physician' %></span>
+          <% if (doc.area) { %> · <span><%= doc.area %></span><% } %>
+        </p>
+        <p class="booking-fee">
+          <strong><%= doc.fee ? ('৳ ' + doc.fee) : 'Fee on request' %></strong> per visit
+        </p>
+      </div>
+    </header>
+
+    <form method="get" action="/book" class="booking-filters">
       <input type="hidden" name="doctorId" value="<%= doc.uid %>">
-      <label>Clinic</label>
-      <select name="clinicId" onchange="this.form.submit()">
-        <% clinics.forEach(c=>{ %>
-          <option value="<%= c.id %>" <%= c.id==clinicId?'selected':'' %>><%= c.name %> — <%= c.area||'' %></option>
-        <% }) %>
-      </select>
-      <label>Date</label>
-      <select name="date" onchange="this.form.submit()">
-        <% days.forEach(d=>{ %>
-          <option value="<%= d %>" <%= d===date?'selected':'' %>><%= d %></option>
-        <% }) %>
-      </select>
-      <noscript><button>Go</button></noscript>
+
+      <% if (clinics.length > 1) { %>
+        <div class="clinic-selector">
+          <% clinics.forEach(c=>{ %>
+            <label class="clinic-pill">
+              <input type="radio" name="clinicId" value="<%= c.id %>" <%= c.id==clinicId?'checked':'' %> onchange="this.form.submit()">
+              <span><%= c.name %> <small><%= c.area||'' %></small></span>
+            </label>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <input type="hidden" name="clinicId" value="<%= clinicId %>">
+        <p class="single-clinic">
+          Clinic: <strong><%= clinics[0].name %></strong> <%= clinics[0].area ? '('+clinics[0].area+')':'' %>
+        </p>
+      <% } %>
+
+      <label class="date-select">
+        <span>Booking date</span>
+        <select name="date" onchange="this.form.submit()">
+          <% days.forEach(d=>{ %>
+            <option value="<%= d %>" <%= d===date?'selected':'' %>><%= d %></option>
+          <% }) %>
+        </select>
+      </label>
     </form>
 
-    <form method="post" action="/book" class="row">
+    <form method="post" action="/book" class="slot-form">
       <%- include('partials/csrf') %>
       <input type="hidden" name="doctorId" value="<%= doc.uid %>">
       <input type="hidden" name="clinicId" value="<%= clinicId %>">
       <input type="hidden" name="appt_date" value="<%= date %>">
-      <label>Slot</label>
-      <select name="slot_time" required>
-        <% if (!slots.length) { %><option value="">No slots</option><% } %>
-        <% slots.forEach(s=>{ %><option value="<%= s %>"><%= s %></option><% }) %>
-      </select>
-      <button>Confirm</button>
+
+      <p class="booking-date-line">Booking for: <strong><%= date %></strong></p>
+
+      <div class="slot-grid">
+        <% if (!slots.length) { %>
+          <p class="empty">No slots available for this day.</p>
+        <% } %>
+        <% slots.forEach(s=>{ %>
+          <label class="slot-pill">
+            <input type="radio" name="slot_time" value="<%= s %>" required>
+            <span><%= s %></span>
+          </label>
+        <% }) %>
+      </div>
+
+      <button type="submit" class="btn primary slot-submit">Confirm appointment</button>
     </form>
-    <p style="margin-top:8px">Fee: <b><%= doc.fee?('৳ '+doc.fee):'—' %></b></p>
-  </div>
+  </section>
 </div>
+
 <%- include('_footer') %>
-</body></html>

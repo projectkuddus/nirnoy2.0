@@ -35,6 +35,7 @@
     </td>
     <td style="white-space:nowrap">
       <a href="/doctor/appointments/<%= r.id %>/edit">Visit</a>
+      | <a href="/appointments/<%= r.id %>/print" target="_blank">Print</a>
       <form method="post" action="/doctor/appointments/<%= r.id %>/call" style="display:inline">
         <%- include('partials/csrf') %>
         <button>Call</button>

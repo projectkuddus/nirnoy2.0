@@ -5,35 +5,37 @@
   <a href="/doctors" class="back-link">← Back to all doctors</a>
 
   <article class="doctor-hero">
-    <% if (d.photo_url) { %>
+    <% if (doctor.photo_url) { %>
       <div class="doctor-hero__photo">
-        <img src="<%= d.photo_url %>" alt="Photo of <%= d.name %>" />
+        <img src="<%= doctor.photo_url %>" alt="Photo of <%= doctor.name %>" />
       </div>
     <% } %>
 
     <div class="doctor-hero__body">
       <p class="eyebrow">Doctor</p>
-      <h1><%= d.name %></h1>
+      <h1><%= doctor.name %></h1>
 
       <p class="doctor-hero__meta">
-        <% if (d.specialty) { %>
-          <span><%= d.specialty %></span>
+        <% if (doctor.specialty) { %>
+          <span><%= doctor.specialty %></span>
         <% } %>
-        <% if (d.area) { %>
-          · <span><%= d.area %></span>
+        <% if (doctor.area) { %>
+          · <span><%= doctor.area %></span>
         <% } %>
       </p>
 
-      <p class="doctor-hero__bmdc">
-        BMDC: <%= d.bmdc_no || '—' %>
-      </p>
+      <% if (doctor.bmdc_no) { %>
+        <p class="doctor-hero__bmdc">BMDC: <%= doctor.bmdc_no %></p>
+      <% } %>
 
-      <p class="doctor-hero__fee">
-        <strong><%= d.fee ? ('৳ ' + d.fee) : 'Fee on request' %></strong> per visit
-      </p>
+      <% if (doctor.fee) { %>
+        <p class="doctor-hero__fee">
+          <strong>৳ <%= doctor.fee %></strong> per visit
+        </p>
+      <% } %>
 
       <div class="doctor-hero__actions">
-        <a href="/book?doctorId=<%= d.uid %>" class="btn primary">
+        <a href="/book?doctorId=<%= doctor.uid %>" class="btn primary">
           Book an appointment
         </a>
       </div>

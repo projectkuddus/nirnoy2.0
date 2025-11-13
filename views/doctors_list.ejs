@@ -1,36 +1,69 @@
-<!doctype html><html><body>
-<%- include('_header') %><%- include('_flash') %>
-<div class="wrap">
-  <h2>Find a Doctor</h2>
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
 
-  <form method="get" action="/doctors" class="card" style="margin-bottom:16px">
-    <div class="row">
-      <input name="q" value="<%= q||'' %>" placeholder="Search name / specialty / area" style="flex:2 1 260px">
-      <input name="specialty" value="<%= specialty||'' %>" placeholder="Specialty" style="flex:1 1 160px">
-      <input name="area" value="<%= area||'' %>" placeholder="Area / Hospital" style="flex:1 1 160px">
-      <input type="number" name="maxFee" value="<%= maxFee||'' %>" placeholder="Max fee (৳)" style="flex:1 1 120px" min="0">
-      <button style="flex:0 0 auto">Search</button>
-    </div>
+<div class="wrap doctor-search">
+  <header class="page-header">
+    <p class="eyebrow">Find a doctor</p>
+    <h1>Book the right doctor for you</h1>
+    <p class="page-subtitle">
+      Search by name, specialty, or area. Only approved doctors appear here.
+    </p>
+  </header>
+
+  <form method="get" action="/doctors" class="doctor-filters">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search name or specialty…"
+      value="<%= q || '' %>"
+    />
+    <input
+      type="text"
+      name="area"
+      placeholder="Area (e.g. Dhanmondi)"
+      value="<%= area || '' %>"
+    />
+    <input
+      type="number"
+      name="maxFee"
+      placeholder="Max fee"
+      value="<%= maxFee || '' %>"
+    />
+    <button type="submit" class="btn primary">Search</button>
+    <% if (q || area || maxFee) { %>
+      <a href="/doctors" class="btn ghost">Reset</a>
+    <% } %>
   </form>
 
   <% if (!rows.length) { %>
-    <p>No doctors found. Try clearing some filters.</p>
+    <p class="empty">No doctors found. Try changing your search.</p>
   <% } %>
 
-  <div class="row">
-    <% rows.forEach(d=>{ %>
-      <div class="card" style="flex:1 1 300px">
-        <h3 style="margin:0 0 6px 0"><%= d.name %></h3>
-        <p style="margin:0 0 6px 0"><b>Specialty:</b> <%= d.specialty||'—' %></p>
-        <p style="margin:0 0 6px 0"><b>Area:</b> <%= d.area||'—' %></p>
-        <p style="margin:0 0 10px 0"><b>Fee:</b> <%= d.fee?('৳ '+d.fee):'—' %></p>
-        <p style="margin:0;display:flex;gap:10px;flex-wrap:wrap">
-          <a class="pill" href="/doctors/<%= d.did %>">View</a>
-          <a class="pill" href="/book?doctorId=<%= d.uid %>">Book</a>
-        </p>
-      </div>
+  <div class="doctor-grid">
+    <% rows.forEach(d => { %>
+      <article class="doctor-card">
+        <% if (d.photo_url) { %>
+          <div class="doctor-card__photo">
+            <img src="<%= d.photo_url %>" alt="Photo of <%= d.name %>" />
+          </div>
+        <% } %>
+        <div class="doctor-card__body">
+          <h2><%= d.name %></h2>
+          <p class="doctor-card__meta">
+            <span><%= d.specialty || 'General physician' %></span>
+            <% if (d.area) { %> · <span><%= d.area %></span><% } %>
+          </p>
+          <p class="doctor-card__fee">
+            <%= d.fee ? ('৳ ' + d.fee + ' per visit') : 'Fee on request' %>
+          </p>
+          <div class="doctor-card__actions">
+            <a href="/doctors/<%= d.did %>" class="btn ghost">View profile</a>
+            <a href="/book?doctorId=<%= d.uid %>" class="btn primary">Book</a>
+          </div>
+        </div>
+      </article>
     <% }) %>
   </div>
 </div>
+
 <%- include('_footer') %>
-</body></html>

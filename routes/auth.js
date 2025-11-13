@@ -36,7 +36,12 @@ router.post('/register',async(req,res)=>{try{
   const r=await run(`INSERT INTO users(name,email,password_hash,role,status) VALUES(?,?,?,?,?)`,
     [name||'',email,hash,'patient','active']);
   req.session.user={id:r.id,name:name||'',email,role:'patient'};res.redirect('/');}catch(e){res.status(500).send('Register error');}});
-router.get('/login',(req,res)=>res.render('login'));
+router.get('/login',(req,res)=>{
+  let roleHint=null;
+  const r=(req.query.role||'').toLowerCase();
+  if(r==='patient'||r==='doctor'||r==='admin') roleHint=r;
+  res.render('login',{roleHint});
+});
 router.post('/login',async(req,res)=>{try{
   if(isRateLimited(req)){
     return res.status(429).render('notice',{title:'Too many attempts',message:'Please wait a few minutes before trying again.',actions:[{href:'/login',label:'Back to login'}]});

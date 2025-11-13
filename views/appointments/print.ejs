@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Visit Summary — <%= appt.patient_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+      .print-shell{max-width:900px;margin:40px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 30px 60px rgba(15,23,42,.12);}
+      .print-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;}
+      .print-head h1{margin:0;font-size:1.75rem;color:#0f172a;}
+      .print-meta{margin:0;color:#475467;font-size:0.95rem;}
+      .section{margin-top:32px;}
+      .section h2{margin-bottom:12px;color:#0f172a;font-size:1.2rem;border-bottom:1px solid #e5e9f2;padding-bottom:6px;}
+      .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;font-size:0.95rem;}
+      .info-box{background:#f5f7fb;padding:12px;border-radius:12px;}
+      .intake-table{width:100%;border-collapse:collapse;}
+      .intake-table th,.intake-table td{border:1px solid #e5e9f2;padding:10px;vertical-align:top;}
+      .attachments ul{list-style:none;padding:0;margin:0;}
+      .attachments li{margin-bottom:6px;}
+      .print-action{display:flex;justify-content:flex-end;margin:16px auto 0;max-width:900px;}
+      .print-action button{border:none;background:#0a6dff;color:#fff;padding:10px 20px;border-radius:999px;font-weight:600;cursor:pointer;}
+      @media print{
+        body{background:#fff;}
+        .site-nav,.site-footer,.print-action{display:none!important;}
+        .print-shell{box-shadow:none;margin:0;border-radius:0;width:100%;padding:0;}
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="print-action">
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+    <article class="print-shell">
+      <div class="print-head">
+        <div>
+          <h1><%= appt.clinic_name || 'Clinic Visit' %></h1>
+          <p class="print-meta"><strong>Doctor:</strong> <%= appt.doctor_name %></p>
+          <p class="print-meta"><strong>Patient:</strong> <%= appt.patient_name %></p>
+        </div>
+        <div class="info-box" style="min-width:220px;">
+          <div><strong>Date:</strong> <%= appt.appt_date %></div>
+          <div><strong>Time:</strong> <%= appt.slot_time %></div>
+          <div><strong>Status:</strong> <%= appt.status %></div>
+        </div>
+      </div>
+
+      <section class="section">
+        <h2>Visit Details</h2>
+        <div class="info-grid">
+          <div class="info-box"><strong>Clinic</strong><br><%= appt.clinic_name || '—' %></div>
+          <div class="info-box"><strong>Queue position</strong><br><%= appt.serial_no || '—' %></div>
+          <div class="info-box"><strong>Running late</strong><br><%= appt.running_late_minutes!=null ? (appt.running_late_minutes + ' min') : '—' %></div>
+        </div>
+      </section>
+
+      <%
+        const consultNotes = consult ? consult.notes : '';
+        const consultRx = consult ? consult.prescription_text : '';
+        const consultTasks = consult && consult.tasks_json ? consult.tasks_json : '';
+        const tasksDisplay = consultTasks ? consultTasks.replace(/\[|\]|\"/g,' ').trim() : '';
+      %>
+      <section class="section">
+        <h2>Visit Summary</h2>
+        <% if (appt.diagnosis || appt.prescription_text || appt.advice || (consult && (consult.notes || consult.prescription_text || consult.tasks_json))) { %>
+          <p><strong>Diagnosis:</strong><br><%= appt.diagnosis || consultNotes || '—' %></p>
+          <p><strong>Prescription:</strong><br><%= appt.prescription_text || consultRx || '—' %></p>
+          <p><strong>Advice & Follow-up:</strong><br><%= appt.advice || tasksDisplay || '—' %></p>
+        <% } else { %>
+          <p>No visit notes recorded yet.</p>
+        <% } %>
+      </section>
+
+      <section class="section">
+        <h2>Intake / Symptoms</h2>
+        <% if (intakeAnswers && intakeAnswers.length) { %>
+          <table class="intake-table">
+            <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+            <tbody>
+              <% intakeAnswers.forEach(row=>{ %>
+                <tr>
+                  <td><%= row.question %></td>
+                  <td><%= row.answer %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p>No intake responses captured.</p>
+        <% } %>
+      </section>
+
+      <section class="section attachments">
+        <h2>Attachments</h2>
+        <% if (files && files.length) { %>
+          <ul>
+            <% files.forEach(f=>{ %>
+              <li>
+                <a href="<%= f.filepath %>" target="_blank" rel="noopener">
+                  <%= f.kind || 'File' %> — <%= f.note || 'View' %>
+                </a>
+                <span style="color:#94a3b8;font-size:0.85rem;">(<%= f.created_at %>)</span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No files uploaded.</p>
+        <% } %>
+      </section>
+    </article>
+    <footer class="site-footer">
+      <p>&copy; <%= new Date().getFullYear() %> Nirnoy</p>
+    </footer>
+  </body>
+</html>

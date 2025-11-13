@@ -1,23 +1,51 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <main class="wrap" style="padding:24px 16px">
-      <h2>Login</h2>
-      <form method="post" action="/login">
-        <%- include('partials/csrf') %>
-        <p><input name="email" type="email" placeholder="Email" required></p>
-        <p><input name="password" type="password" placeholder="Password" required></p>
-        <button type="submit">Login</button>
-      </form>
-      <p><a href="/register">Create account</a></p>
-    </main>
-    <%- include('_footer') %>
-  </body>
-</html>
+
+<div class="wrap auth-wrap">
+  <div class="auth-card">
+    <p class="eyebrow">Sign in</p>
+    <h1 class="auth-title">
+      <% if (roleHint === 'doctor') { %>
+        Doctor login
+      <% } else if (roleHint === 'patient') { %>
+        Patient login
+      <% } else { %>
+        Welcome back to Nirnoy
+      <% } %>
+    </h1>
+
+    <p class="auth-subtitle">
+      <% if (roleHint === 'doctor') { %>
+        Use the email and password you registered as a doctor.
+      <% } else if (roleHint === 'patient') { %>
+        Use the patient account you created to book appointments.
+      <% } else { %>
+        Patients and doctors sign in here with their email and password.
+      <% } %>
+    </p>
+
+    <form method="post" action="/login" class="auth-form">
+      <%- include('partials/csrf') %>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" name="password" required autocomplete="current-password" />
+      </label>
+
+      <button type="submit" class="btn primary auth-submit">
+        Sign in
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      New here? <a href="/register">Create a patient account</a>.
+    </p>
+  </div>
+</div>
+
+<%- include('_footer') %>

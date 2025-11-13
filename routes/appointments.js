@@ -55,4 +55,50 @@ router.get('/appointments/:id/eta.json', needLogin, async (req,res)=>{
   res.json({ status:a.status, eta_min:etaMin, position:before });
 });
 
+router.get('/appointments/:id/print', needLogin, async (req,res)=>{
+  const appt=await get(`
+    SELECT a.*, 
+           du.name AS doctor_name, du.email AS doctor_email,
+           pu.name AS patient_name, pu.email AS patient_email,
+           c.name AS clinic_name,
+           doc.running_late_minutes
+    FROM appointments a
+    JOIN users du ON du.id=a.doctor_id
+    JOIN users pu ON pu.id=a.patient_id
+    LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
+    LEFT JOIN doctors doc ON doc.user_id=a.doctor_id
+    WHERE a.id=?`,[req.params.id]);
+  if(!appt) return res.status(404).send('Not found');
+  const u=req.session.user;
+  if(!(u.role==='admin'||u.id===appt.patient_id||u.id===appt.doctor_id)) return res.status(403).send('Not allowed');
+
+  const intakeRow=await get(`SELECT answers_json FROM appointment_intake WHERE appointment_id=? ORDER BY id DESC LIMIT 1`,[appt.id]);
+  let intakeAnswers=[];
+  if(intakeRow?.answers_json){
+    try{
+      const parsed=JSON.parse(intakeRow.answers_json);
+      if(Array.isArray(parsed)){
+        intakeAnswers=parsed.map((item,idx)=>{
+          if(item && typeof item==='object' && 'question' in item){
+            return {question:item.question,answer:item.answer||item.response||''};
+          }
+          return {question:`Question ${idx+1}`,answer:item};
+        });
+      }else if(parsed && typeof parsed==='object'){
+        intakeAnswers=Object.keys(parsed).map(key=>({question:key,answer:parsed[key]}));
+      }
+    }catch(_){}
+  }
+
+  const consult=await get(`SELECT * FROM consultations WHERE appointment_id=?`,[appt.id]);
+  const files=await all(`SELECT id, kind, note, filepath, created_at FROM appointment_files WHERE appointment_id=? ORDER BY id DESC`,[appt.id]);
+
+  res.render('appointments/print',{
+    appt,
+    intakeAnswers,
+    consult,
+    files
+  });
+});
+
 module.exports=router;

@@ -30,6 +30,7 @@
                     <a href="/appointments/<%= a.id %>/status">Live status</a>
                     | <a href="/appointments/<%= a.id %>/intake">Intake form</a>
                     | <a href="/appointments/<%= a.id %>/files">Files</a>
+                    | <a href="/appointments/<%= a.id %>/print" target="_blank">Print</a>
                     | <a href="/doctors/<%= a.doctor_id %>">Doctor</a>
                   </td>
                 </tr>
@@ -53,8 +54,8 @@
                   <td><%= a.clinic_name||'—' %></td>
                   <td><%= a.status %></td>
                   <td style="white-space:nowrap">
-                    <!-- PDF comes in Step 4; link shown now for habit -->
-                    <a href="/appointments/<%= a.id %>/prescription.pdf">Prescription (PDF)</a>
+                    <a href="/appointments/<%= a.id %>/print" target="_blank">Print summary</a>
+                    | <a href="/appointments/<%= a.id %>/files">Files</a>
                   </td>
                 </tr>
               <% }) %>

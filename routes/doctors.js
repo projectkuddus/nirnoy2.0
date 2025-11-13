@@ -13,7 +13,8 @@ router.get('/doctors', async (req,res)=>{
     SELECT d.id AS did, u.id AS uid, u.name, u.email,
            COALESCE(d.specialty,'') AS specialty,
            COALESCE(d.area,'') AS area,
-           COALESCE(d.fee,'') AS fee
+           COALESCE(d.fee,'') AS fee,
+           d.photo_url
     FROM doctors d
     JOIN users u ON u.id=d.user_id
     WHERE u.status='approved'
@@ -45,12 +46,13 @@ router.get('/doctors/:id', async (req,res)=>{
   const d = await get(`
     SELECT d.id AS did, u.id AS uid, u.name, u.email,
            d.bmdc_no, COALESCE(d.specialty,'') AS specialty,
-           COALESCE(d.area,'') AS area, COALESCE(d.fee,'') AS fee
+           COALESCE(d.area,'') AS area, COALESCE(d.fee,'') AS fee,
+           d.photo_url
     FROM doctors d JOIN users u ON u.id=d.user_id
     WHERE d.id=? AND u.status='approved'
   `,[req.params.id]);
   if(!d) return res.status(404).send('Doctor not found');
-  res.render('doctor_detail',{d});
+  res.render('doctor_profile',{doctor:d});
 });
 
 module.exports=router;

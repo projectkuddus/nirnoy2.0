@@ -67,6 +67,10 @@ async function runSchemaFixes(database) {
     await run('ALTER TABLE doctors ADD COLUMN running_late_minutes INTEGER DEFAULT 0');
     log('Added doctors.running_late_minutes column');
   }
+  if(!doctorNames.includes('photo_url')){
+    await run('ALTER TABLE doctors ADD COLUMN photo_url TEXT');
+    log('Added doctors.photo_url column');
+  }
 
   // doctor_clinics table
   if (!(await tableExists('doctor_clinics'))) {
