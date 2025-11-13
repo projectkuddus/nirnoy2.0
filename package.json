@@ -6,7 +6,10 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "check": "node scripts/selfcheck.js",
+    "seed:admin": "node -e \"require('./routes/dev_tools');\" && echo 'Open /dev/seed_admin in browser'",
+    "demo": "node -e \"require('./routes/dev_tools');\" && echo 'Open /dev/demo in browser'"
   },
   "keywords": [],
   "author": "",

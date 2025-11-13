@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .box{max-width:540px;margin:2rem auto;padding:1rem;border:1px solid #eee;border-radius:8px;background:#fff}
+    .avatar{width:128px;height:128px;border-radius:50%;object-fit:cover;border:1px solid #ddd}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Profile photo</h2>
+    <% if (doc && doc.photo_url){ %>
+      <p>Current:</p>
+      <img class="avatar" src="<%= doc.photo_url %>" alt="doctor photo">
+    <% } else { %>
+      <p>No photo uploaded yet.</p>
+    <% } %>
+
+    <form method="post" action="/doctor/photo" enctype="multipart/form-data">
+      <p><input type="file" name="photo" accept="image/*" required></p>
+      <button type="submit">Upload</button>
+    </form>
+
+    <p style="margin-top:1rem;"><a href="/doctor/dashboard">Back to dashboard</a></p>
+  </div>
+</body>
+</html>
