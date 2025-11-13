@@ -1,69 +1,50 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Patient Dashboard</title>
-    <link rel="stylesheet" href="/css/style.css">
-  </head>
-  <body>
-    <div class="wrap">
-      <h2>My Appointments</h2>
 
-      <div class="row">
-        <div class="card" style="flex:1 1 420px">
-          <h3>Upcoming</h3>
-          <% if (!upcoming.length) { %>
-            <p>No upcoming visits. <a href="/doctors">Find a doctor</a></p>
-          <% } else { %>
-            <table>
-              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Clinic</th><th>Status</th><th>Links</th></tr>
-              <% upcoming.forEach(a=>{ %>
-                <tr>
-                  <td><%= a.appt_date %></td>
-                  <td><%= a.slot_time %></td>
-                  <td><%= a.doctor_name %></td>
-                  <td><%= a.clinic_name||'—' %></td>
-                  <td><%= a.status %></td>
-                  <td style="white-space:nowrap">
-                    <a href="/appointments/<%= a.id %>/status">Live status</a>
-                    | <a href="/appointments/<%= a.id %>/intake">Intake form</a>
-                    | <a href="/appointments/<%= a.id %>/files">Files</a>
-                    | <a href="/appointments/<%= a.id %>/print" target="_blank">Print</a>
-                    | <a href="/doctors/<%= a.doctor_id %>">Doctor</a>
-                  </td>
-                </tr>
-              <% }) %>
-            </table>
-          <% } %>
-        </div>
+<div class="wrap patient-dashboard">
+  <header class="page-header">
+    <p class="eyebrow">Patient dashboard</p>
+    <h1>Your health queue</h1>
+    <p class="page-subtitle">
+      See your upcoming visits and past appointments in one place.
+    </p>
+  </header>
 
-        <div class="card" style="flex:1 1 420px">
-          <h3>Past</h3>
-          <% if (!past.length) { %>
-            <p>No past visits yet.</p>
-          <% } else { %>
-            <table>
-              <tr><th>Date</th><th>Time</th><th>Doctor</th><th>Clinic</th><th>Status</th><th>Files</th></tr>
-              <% past.forEach(a=>{ %>
-                <tr>
-                  <td><%= a.appt_date %></td>
-                  <td><%= a.slot_time %></td>
-                  <td><%= a.doctor_name %></td>
-                  <td><%= a.clinic_name||'—' %></td>
-                  <td><%= a.status %></td>
-                  <td style="white-space:nowrap">
-                    <a href="/appointments/<%= a.id %>/print" target="_blank">Print summary</a>
-                    | <a href="/appointments/<%= a.id %>/files">Files</a>
-                  </td>
-                </tr>
-              <% }) %>
-            </table>
-          <% } %>
-        </div>
+  <% if (!upcoming || !upcoming.length) { %>
+    <p class="empty">
+      You don’t have any upcoming appointments yet.
+      <a href="/doctors">Find a doctor to book now.</a>
+    </p>
+  <% } else { %>
+    <section class="appt-section">
+      <h2>Upcoming appointments</h2>
+      <div class="appt-grid">
+        <% upcoming.forEach(a => { %>
+          <article class="appt-card">
+            <p class="appt-card__label">Appointment</p>
+            <h3 class="appt-card__title">
+              <%= a.doctor_name || 'Doctor' %>
+            </h3>
+            <p class="appt-card__meta">
+              <span><%= a.clinic_name || 'Clinic' %></span>
+              <% if (a.appt_date && a.slot_time) { %>
+                · <span><%= a.appt_date %> at <%= a.slot_time %></span>
+              <% } %>
+            </p>
+            <% if (a.status) { %>
+              <p class="appt-card__status">
+                Status: <span><%= a.status %></span>
+              </p>
+            <% } %>
+            <div class="appt-card__actions">
+              <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
+              <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
+            </div>
+          </article>
+        <% }) %>
       </div>
-    </div>
-    <%- include('_footer') %>
-  </body>
-</html>
+    </section>
+  <% } %>
+</div>
+
+<%- include('_footer') %>

@@ -12,7 +12,13 @@ const fromMin=m=>`${mm(Math.floor(m/60))}:${mm(m%60)}`;
 
 async function doctorBasics(doctorUserId){
   return await get(`
-    SELECT u.id as uid, u.name, d.visit_duration_minutes, COALESCE(d.fee,'') fee
+    SELECT u.id as uid, u.name,
+           d.id as did,
+           d.visit_duration_minutes,
+           COALESCE(d.fee,'') fee,
+           COALESCE(d.specialty,'') specialty,
+           COALESCE(d.area,'') area,
+           d.photo_url
     FROM users u JOIN doctors d ON d.user_id=u.id
     WHERE u.id=? AND u.status='approved' AND u.role='doctor'`,[doctorUserId]);
 }
@@ -23,8 +29,8 @@ router.get('/book', needPatient, async (req,res)=>{
 
   const doc=await doctorBasics(doctorId); if(!doc) return res.status(404).send('Doctor not found');
 
-  const clinics=await all(`SELECT * FROM doctor_clinics WHERE doctor_id=? ORDER BY id`,[doctorId]);
-  if(!clinics.length) return res.status(400).send('Doctor has no clinics');
+  const clinics=await all(`SELECT * FROM doctor_clinics WHERE doctor_id=? ORDER BY id`,[doc.did]);
+  if(!clinics.length) return res.render('notice',{title:'Doctor has no clinics',message:'This doctor needs to add a clinic first.'});
   const clinicId=parseInt(req.query.clinicId||clinics[0].id,10);
 
   const sched=await all(`SELECT day_of_week,start_time,end_time FROM doctor_schedule WHERE doctor_id=? AND clinic_id=? ORDER BY day_of_week`,[doctorId, clinicId]);
@@ -84,7 +90,7 @@ router.post('/book', needPatient, async (req,res)=>{
     const doc=await doctorBasics(doctorId);
     if(!doc) return await renderNotice('Doctor unavailable','That doctor is not available right now.',[{href:'/doctors',label:'Browse doctors'}]);
 
-    const clinic=await get(`SELECT id FROM doctor_clinics WHERE id=? AND doctor_id=?`,[clinicId,doctorId]);
+    const clinic=await get(`SELECT id FROM doctor_clinics WHERE id=? AND doctor_id=?`,[clinicId,doc.did]);
     if(!clinic) return await renderNotice('Clinic mismatch','That clinic is not available for this doctor.',[{href:`/book?doctorId=${doctorId}`,label:'Pick another clinic'}]);
 
     const dateObj=new Date(`${date}T00:00:00`);

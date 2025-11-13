@@ -48,7 +48,11 @@
           </div>
         <% } %>
         <div class="doctor-card__body">
-          <h2><%= d.name %></h2>
+          <h2>
+            <a href="/doctors/<%= d.did %>" class="doctor-card__name-link">
+              <%= d.name %>
+            </a>
+          </h2>
           <p class="doctor-card__meta">
             <span><%= d.specialty || 'General physician' %></span>
             <% if (d.area) { %> · <span><%= d.area %></span><% } %>

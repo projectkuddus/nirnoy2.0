@@ -1,21 +1,58 @@
 const express=require('express'); const {all,get,run}=require('../db');
 const router=express.Router();
 
+const DHAKA_HOSPITALS=[
+  "Square Hospital",
+  "Evercare Hospital",
+  "United Hospital",
+  "Labaid Hospital",
+  "Ibn Sina Hospital",
+  "Popular Diagnostic Centre",
+  "BSMMU (PG Hospital)",
+  "Dhaka Medical College Hospital",
+  "Bangabandhu Sheikh Mujib Medical University",
+  "Green Life Hospital",
+  "Asgar Ali Hospital",
+  "City Hospital",
+  "Medinova Medical",
+  "Anwar Khan Modern Hospital"
+];
+
 function needDoctor(req,res,next){
   if(!req.session.user) return res.redirect('/login');
   if(req.session.user.role!=='doctor') return res.status(403).send('Doctor only');
   next();
 }
 
+async function findDoctorByUserId(userId){
+  return get(`SELECT * FROM doctors WHERE user_id=?`,[userId]);
+}
+
 router.get('/doctor/clinics', needDoctor, async (req,res)=>{
-  const rows=await all(`SELECT * FROM doctor_clinics WHERE doctor_id=? ORDER BY id DESC`,[req.session.user.id]);
-  res.render('doctor_clinics',{rows});
+  const doctor=await findDoctorByUserId(req.session.user.id);
+  if(!doctor) return res.status(404).send('Doctor profile not found');
+  const clinics=await all(`SELECT * FROM doctor_clinics WHERE doctor_id=? ORDER BY id DESC`,[doctor.id]);
+  res.render('doctor_clinics',{clinics,doctor,hospitalOptions:DHAKA_HOSPITALS});
 });
-router.post('/doctor/clinics/add', needDoctor, async (req,res)=>{
+
+router.post('/doctor/clinics', needDoctor, async (req,res)=>{
+  const doctor=await findDoctorByUserId(req.session.user.id);
+  if(!doctor) return res.status(404).send('Doctor profile not found');
+  const hospitalChoice=(req.body.hospital_choice||'').trim();
+  const nameCustom=(req.body.name_custom||'').trim();
+  const clinicName=hospitalChoice||nameCustom;
+  if(!clinicName){
+    req.session.flash={type:'err',msg:'Please select or enter a clinic name'};
+    return res.redirect('/doctor/clinics');
+  }
+  const address=(req.body.address||'').trim();
+  const area=(req.body.city||req.body.area||'').trim();
   await run(`INSERT INTO doctor_clinics(doctor_id,name,area,address) VALUES(?,?,?,?)`,
-    [req.session.user.id, (req.body.name||'').trim()||'Clinic', req.body.area||'', req.body.address||'']);
+    [doctor.id,clinicName,area,address]);
+  req.session.flash={type:'ok',msg:'Clinic added'};
   res.redirect('/doctor/clinics');
 });
+
 router.post('/doctor/clinics/:id/update', needDoctor, async (req,res)=>{
   const c=await get(`SELECT * FROM doctor_clinics WHERE id=? AND doctor_id=?`,[req.params.id, req.session.user.id]);
   if(!c) return res.status(404).send('Not found');

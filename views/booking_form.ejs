@@ -2,78 +2,93 @@
 <%- include('partials/flash') %>
 
 <div class="wrap booking-wrap">
-  <section class="booking-card">
-    <header class="booking-head">
-      <% if (doc.photo_url) { %>
-        <div class="booking-head__photo">
-          <img src="<%= doc.photo_url %>" alt="Photo of <%= doc.name %>">
+  <header class="page-header">
+    <p class="eyebrow">Book an appointment</p>
+    <h1>Confirm your visit</h1>
+  </header>
+
+  <div class="booking-layout">
+    <aside class="booking-doctor-card">
+      <div class="booking-doctor-header">
+        <% if (doc && doc.photo_url) { %>
+          <div class="booking-doctor-photo">
+            <img src="<%= doc.photo_url %>" alt="Photo of <%= doc.name %>">
+          </div>
+        <% } %>
+        <div>
+          <h2><%= doc ? doc.name : 'Doctor' %></h2>
+          <p class="booking-doctor-meta">
+            <% if (doc && doc.specialty) { %><span><%= doc.specialty %></span><% } %>
+            <% if (doc && doc.area) { %><span><%= doc.area %></span><% } %>
+          </p>
         </div>
-      <% } %>
-      <div>
-        <p class="eyebrow">Book an appointment</p>
-        <h1><%= doc.name %></h1>
-        <p class="booking-meta">
-          <span><%= doc.specialty || 'General physician' %></span>
-          <% if (doc.area) { %> · <span><%= doc.area %></span><% } %>
-        </p>
-        <p class="booking-fee">
-          <strong><%= doc.fee ? ('৳ ' + doc.fee) : 'Fee on request' %></strong> per visit
-        </p>
       </div>
-    </header>
 
-    <form method="get" action="/book" class="booking-filters">
-      <input type="hidden" name="doctorId" value="<%= doc.uid %>">
-
-      <% if (clinics.length > 1) { %>
-        <div class="clinic-selector">
+      <% if (clinics && clinics.length > 1) { %>
+        <form method="get" action="/book" class="booking-clinics">
+          <input type="hidden" name="doctorId" value="<%= doc.uid %>">
+          <input type="hidden" name="date" value="<%= date %>">
           <% clinics.forEach(c=>{ %>
-            <label class="clinic-pill">
-              <input type="radio" name="clinicId" value="<%= c.id %>" <%= c.id==clinicId?'checked':'' %> onchange="this.form.submit()">
+            <label class="clinic-pill <%= c.id===clinicId?'clinic-pill--selected':'' %>">
+              <input type="radio" name="clinicId" value="<%= c.id %>" <%= c.id===clinicId?'checked':'' %> onchange="this.form.submit()">
               <span><%= c.name %> <small><%= c.area||'' %></small></span>
             </label>
           <% }) %>
-        </div>
-      <% } else { %>
-        <input type="hidden" name="clinicId" value="<%= clinicId %>">
+        </form>
+      <% } else if (clinics && clinics.length === 1) { %>
         <p class="single-clinic">
-          Clinic: <strong><%= clinics[0].name %></strong> <%= clinics[0].area ? '('+clinics[0].area+')':'' %>
+          Clinic: <strong><%= clinics[0].name %></strong> <%= clinics[0].area? '('+clinics[0].area+')':'' %>
         </p>
       <% } %>
+    </aside>
 
-      <label class="date-select">
-        <span>Booking date</span>
-        <select name="date" onchange="this.form.submit()">
-          <% days.forEach(d=>{ %>
-            <option value="<%= d %>" <%= d===date?'selected':'' %>><%= d %></option>
+    <section class="booking-main-card">
+      <form method="get" action="/book" class="date-select">
+        <input type="hidden" name="doctorId" value="<%= doc.uid %>">
+        <input type="hidden" name="clinicId" value="<%= clinicId %>">
+        <label>
+          <span>Choose date</span>
+          <select name="date" onchange="this.form.submit()">
+            <% days.forEach(d=>{ %>
+              <option value="<%= d %>" <%= d===date?'selected':'' %>><%= d %></option>
+            <% }) %>
+          </select>
+        </label>
+      </form>
+
+      <p class="booking-date-line">
+        Booking for: <strong><%= date %></strong>
+      </p>
+
+      <form method="post" action="/book" class="slot-form">
+        <%- include('partials/csrf') %>
+        <input type="hidden" name="doctorId" value="<%= doc.uid %>">
+        <input type="hidden" name="clinicId" value="<%= clinicId %>">
+        <input type="hidden" name="appt_date" value="<%= date %>">
+
+        <div class="slot-legend">
+          <span><span class="slot-dot available"></span> Available</span>
+          <span><span class="slot-dot unavailable"></span> Unavailable</span>
+        </div>
+
+        <div class="slot-grid">
+          <% if (!slots.length) { %>
+            <p class="empty">No slots available for this day.</p>
+          <% } %>
+          <% slots.forEach(s=>{ %>
+            <label class="slot-pill slot-pill--available">
+              <input type="radio" name="slot_time" value="<%= s %>" required>
+              <%= s %>
+            </label>
           <% }) %>
-        </select>
-      </label>
-    </form>
+        </div>
 
-    <form method="post" action="/book" class="slot-form">
-      <%- include('partials/csrf') %>
-      <input type="hidden" name="doctorId" value="<%= doc.uid %>">
-      <input type="hidden" name="clinicId" value="<%= clinicId %>">
-      <input type="hidden" name="appt_date" value="<%= date %>">
-
-      <p class="booking-date-line">Booking for: <strong><%= date %></strong></p>
-
-      <div class="slot-grid">
-        <% if (!slots.length) { %>
-          <p class="empty">No slots available for this day.</p>
-        <% } %>
-        <% slots.forEach(s=>{ %>
-          <label class="slot-pill">
-            <input type="radio" name="slot_time" value="<%= s %>" required>
-            <span><%= s %></span>
-          </label>
-        <% }) %>
-      </div>
-
-      <button type="submit" class="btn primary slot-submit">Confirm appointment</button>
-    </form>
-  </section>
+        <div class="booking-actions">
+          <button type="submit" class="btn primary">Confirm appointment</button>
+        </div>
+      </form>
+    </section>
+  </div>
 </div>
 
 <%- include('_footer') %>

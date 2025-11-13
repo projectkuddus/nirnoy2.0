@@ -1,37 +1,73 @@
-<!doctype html><html><body>
-<%- include('_header') %><%- include('_flash') %>
-<div class="wrap">
-  <h2>Clinics / Chambers</h2>
-  <div class="card">
-    <form method="post" action="/doctor/clinics/add" class="row">
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<div class="wrap doctor-clinics">
+  <header class="page-header">
+    <p class="eyebrow">Doctor settings</p>
+    <h1>My clinics</h1>
+    <p class="page-subtitle">
+      Tell Nirnoy where you see patients. Patients can only book you into clinics listed here.
+    </p>
+  </header>
+
+  <% if (clinics && clinics.length) { %>
+    <section class="clinic-list">
+      <% clinics.forEach(c => { %>
+        <article class="clinic-card">
+          <h2><%= c.name || 'Clinic' %></h2>
+          <% if (c.address) { %>
+            <p class="clinic-card__line"><%= c.address %></p>
+          <% } %>
+          <% if (c.area) { %>
+            <p class="clinic-card__line"><%= c.area %></p>
+          <% } %>
+        </article>
+      <% }) %>
+    </section>
+  <% } else { %>
+    <p class="empty">
+      You haven’t added any clinics yet. Add at least one clinic so patients can book you.
+    </p>
+  <% } %>
+
+  <section class="clinic-form-section">
+    <h2>Add a clinic</h2>
+    <form method="post" action="/doctor/clinics" class="clinic-form">
       <%- include('partials/csrf') %>
-      <input name="name" placeholder="Clinic name" required>
-      <input name="area" placeholder="Area / Hospital">
-      <input name="address" placeholder="Address">
-      <button>Add clinic</button>
-    </form>
-  </div>
-  <div class="row" style="margin-top:12px">
-    <% rows.forEach(c=>{ %>
-      <div class="card" style="flex:1 1 320px">
-        <form method="post" action="/doctor/clinics/<%= c.id %>/update">
-          <%- include('partials/csrf') %>
-          <p><b>ID:</b> <%= c.id %></p>
-          <p><input name="name" value="<%= c.name %>" style="width:100%"></p>
-          <p><input name="area" value="<%= c.area||'' %>" style="width:100%"></p>
-          <p><input name="address" value="<%= c.address||'' %>" style="width:100%"></p>
-          <p>
-            <button>Save</button>
-            <a class="pill" href="/doctor/schedule?clinicId=<%= c.id %>">Edit schedule</a>
-          </p>
-        </form>
-        <form method="post" action="/doctor/clinics/<%= c.id %>/delete" style="display:inline" onsubmit="return confirm('Delete this clinic?')">
-          <%- include('partials/csrf') %>
-          <button>Delete</button>
-        </form>
+
+      <label class="field">
+        <span>Clinic / hospital</span>
+        <select name="hospital_choice">
+          <option value="">Select from Dhaka hospitals…</option>
+          <% if (hospitalOptions && hospitalOptions.length) { %>
+            <% hospitalOptions.forEach(h => { %>
+              <option value="<%= h %>"><%= h %></option>
+            <% }) %>
+          <% } %>
+          <option value="">Other (type below)</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Custom clinic name (optional)</span>
+        <input type="text" name="name_custom" placeholder="If not in the list, type here" />
+      </label>
+
+      <label class="field">
+        <span>Address</span>
+        <input type="text" name="address">
+      </label>
+
+      <label class="field">
+        <span>City / Area</span>
+        <input type="text" name="city">
+      </label>
+
+      <div class="clinic-form__actions">
+        <button type="submit" class="btn primary">Save clinic</button>
       </div>
-    <% }) %>
-  </div>
+    </form>
+  </section>
 </div>
+
 <%- include('_footer') %>
-</body></html>
