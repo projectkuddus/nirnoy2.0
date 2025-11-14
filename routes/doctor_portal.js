@@ -8,23 +8,54 @@ function needDoctor(req,res,next){
   next();
 }
 
-router.get('/doctor/dashboard', needDoctor, async (req,res)=>{
-  const u=req.session.user;
-  const today=new Date().toISOString().slice(0,10);
-  const rows=await all(`
-    SELECT a.*, p.name AS patient_name, p.email AS patient_email, c.name AS clinic_name
-    FROM appointments a
-    JOIN users p ON p.id=a.patient_id
-    LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
-    WHERE a.doctor_id=? AND a.appt_date=?
-    ORDER BY a.slot_time
-  `,[u.id, today]);
+router.get('/doctor/dashboard', needDoctor, async (req,res,next)=>{
+  try{
+    const userId=req.session.user.id;
+    const doctor=await get(`
+      SELECT id AS doctor_id, visit_duration_minutes, running_late_minutes
+      FROM doctors
+      WHERE user_id=?
+    `,[userId]);
+    if(!doctor) return res.status(404).send('Doctor profile not found');
 
-  const d=await get(`SELECT visit_duration_minutes, running_late_minutes FROM doctors WHERE user_id=?`,[u.id]);
-  const visit_duration = d?.visit_duration_minutes ?? 15;
-  const running_late = d?.running_late_minutes ?? 0;
+    const appointments=await all(`
+      SELECT
+        a.id,
+        a.appt_date,
+        a.slot_time,
+        a.status,
+        a.room,
+        c.name AS clinic_name,
+        u.name AS patient_name
+      FROM appointments a
+      JOIN users u ON u.id=a.patient_id
+      LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
+      WHERE a.doctor_id=? AND a.appt_date=date('now','localtime')
+      ORDER BY a.slot_time ASC, a.id ASC
+    `,[userId]);
 
-  res.render('dashboard_doctor',{rows, visit_duration, running_late});
+    const visitDuration=doctor.visit_duration_minutes ?? 15;
+    const runningLateMinutes=doctor.running_late_minutes ?? 0;
+    const nonQueueStatuses=new Set(['done','completed','cancelled','no_show']);
+    let position=1;
+    for(const appt of appointments){
+      const status=(appt.status||'').toLowerCase();
+      if(!nonQueueStatuses.has(status)){
+        appt.position=position;
+        appt.etaMinutes=(position-1)*visitDuration+runningLateMinutes;
+        position++;
+      }
+    }
+
+    res.render('dashboard_doctor',{
+      doctor,
+      appointments,
+      visitDuration,
+      runningLateMinutes
+    });
+  }catch(err){
+    next(err);
+  }
 });
 
 async function setStatus(id,status,tsField){

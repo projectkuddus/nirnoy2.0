@@ -16,7 +16,7 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
   const upcoming = await all(`
     SELECT a.*, du.name AS doctor_name, c.name AS clinic_name
     FROM appointments a
-    JOIN doctors d ON d.id = a.doctor_id
+    JOIN doctors d ON d.user_id = a.doctor_id
     JOIN users du ON du.id = d.user_id
     LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
     WHERE a.patient_id = ?
@@ -27,11 +27,44 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
     ORDER BY a.appt_date, a.slot_time
   `,[me.id, today, today]);
 
+  const docSettingsCache=new Map();
+  const getDoctorSettings=async(doctorUserId)=>{
+    if(docSettingsCache.has(doctorUserId)) return docSettingsCache.get(doctorUserId);
+    const meta=await get(`SELECT visit_duration_minutes, running_late_minutes FROM doctors WHERE user_id=?`,[doctorUserId]);
+    const data={
+      visitDuration:(meta?.visit_duration_minutes??15),
+      runningLate:(meta?.running_late_minutes??0)
+    };
+    docSettingsCache.set(doctorUserId,data);
+    return data;
+  };
+  const groups=new Map();
+  for(const appt of upcoming){
+    const key=[appt.doctor_id||'0',appt.clinic_id||'0',appt.appt_date||''].join(':');
+    if(!groups.has(key)) groups.set(key,[]);
+    groups.get(key).push(appt);
+  }
+  const nonQueueStatuses=new Set(['done','completed','cancelled','no_show']);
+  for(const list of groups.values()){
+    list.sort((a,b)=>String(a.slot_time||'').localeCompare(String(b.slot_time||'')));
+    const doctorId=list[0]?.doctor_id;
+    if(!doctorId) continue;
+    const settings=await getDoctorSettings(doctorId);
+    let position=1;
+    for(const appt of list){
+      const status=(appt.status||'').toLowerCase();
+      if(nonQueueStatuses.has(status)) continue;
+      appt.position=position;
+      appt.etaMinutes=(position-1)*settings.visitDuration+settings.runningLate;
+      position++;
+    }
+  }
+
   // Past: finished/no_show or any day earlier than today
   const past = await all(`
     SELECT a.*, du.name AS doctor_name, c.name AS clinic_name
     FROM appointments a
-    JOIN doctors d ON d.id = a.doctor_id
+    JOIN doctors d ON d.user_id = a.doctor_id
     JOIN users du ON du.id = d.user_id
     LEFT JOIN doctor_clinics c ON c.id=a.clinic_id
     WHERE a.patient_id = ?

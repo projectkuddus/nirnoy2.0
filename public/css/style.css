@@ -623,3 +623,293 @@ h3{margin:0 0 8px}
 .nav a{text-decoration:none;color:#333;font-weight:600}
 .flash{margin:10px 14px}
 .flash .msg{background:#fff8c4;border:1px solid #f2e394;padding:8px 10px;margin-bottom:6px;border-radius:6px}
+.doctor-directory {
+  padding: 24px 16px 40px;
+}
+
+.doctor-filters {
+  margin: 16px 0 18px;
+}
+
+.doctor-filters__row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr)) auto;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .doctor-filters__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.doctor-filters .field input,
+.doctor-filters .field select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.doctor-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px 16px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.07);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.doctor-card__photo img {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.doctor-card__body h2 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+.doctor-card__name-link {
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.doctor-card__name-link:hover {
+  text-decoration: underline;
+}
+
+.doctor-card__meta {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.doctor-card__clinic {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.doctor-card__fee {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.doctor-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.doctor-card--directory {
+  opacity: 0.75;
+  background: #f8fafc;
+}
+
+.doctor-card__badge {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.doctor-card__name {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.doctor-card--directory .btn[disabled] {
+  cursor: default;
+  opacity: 0.8;
+}
+.doctor-profile {
+  padding: 24px 16px 40px;
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+  color: #64748b;
+}
+
+.breadcrumb a {
+  color: #64748b;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.doctor-hero__main {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.doctor-hero__avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.doctor-hero__avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f9fafb;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.doctor-hero__info h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.doctor-hero__specialty {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.doctor-hero__fee {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.doctor-hero__meta {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.doctor-hero__actions .btn.primary {
+  margin-top: 4px;
+}
+
+.doctor-layout {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1.4fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .doctor-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.clinic-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.clinic-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.clinic-card h3 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+}
+
+.clinic-card__line {
+  margin: 0 0 3px;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.side-card {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  font-size: 0.9rem;
+}
+
+.side-card ol {
+  padding-left: 18px;
+  margin: 4px 0 0;
+}
+
+.side-card li {
+  margin-bottom: 4px;
+}
+.doctor-dashboard {
+  padding: 24px 16px 40px;
+}
+
+.queue-section {
+  margin-top: 16px;
+}
+
+.queue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.queue-table th,
+.queue-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.queue-table th {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.queue-row--completed td,
+.queue-row--done td {
+  color: #9ca3af;
+}
+
+.queue-row--cancelled td,
+.queue-row--no_show td {
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.btn-xs {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+}
+.appt-card__queue {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.appt-card__queue strong {
+  font-weight: 700;
+}

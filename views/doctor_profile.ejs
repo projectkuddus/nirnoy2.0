@@ -1,53 +1,96 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
 
-<div class="wrap doctor-detail">
-  <a href="/doctors" class="back-link">← Back to all doctors</a>
+<div class="wrap doctor-profile">
+  <nav class="breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="/doctors">Doctors</a>
+    <span>/</span>
+    <span><%= doctor && doctor.name ? doctor.name : 'Doctor' %></span>
+  </nav>
 
-  <article class="doctor-hero">
-    <% if (doctor.photo_url) { %>
-      <div class="doctor-hero__photo">
-        <img src="<%= doctor.photo_url %>" alt="Photo of <%= doctor.name %>" />
+  <section class="doctor-hero">
+    <div class="doctor-hero__main">
+      <div class="doctor-hero__avatar">
+        <% if (doctor && doctor.photo_url) { %>
+          <img src="<%= doctor.photo_url %>" alt="Photo of <%= doctor.name %>">
+        <% } else { %>
+          <div class="doctor-hero__avatar-placeholder"><span>Dr</span></div>
+        <% } %>
       </div>
-    <% } %>
-
-    <div class="doctor-hero__body">
-      <p class="eyebrow">Doctor</p>
-      <h1><%= doctor.name %></h1>
-
-      <p class="doctor-hero__meta">
-        <% if (doctor.specialty) { %>
-          <span><%= doctor.specialty %></span>
-        <% } %>
-        <% if (doctor.area) { %>
-          · <span><%= doctor.area %></span>
-        <% } %>
-      </p>
-
-      <% if (doctor.bmdc_no) { %>
-        <p class="doctor-hero__bmdc">BMDC: <%= doctor.bmdc_no %></p>
-      <% } %>
-
-      <% if (doctor.fee) { %>
-        <p class="doctor-hero__fee">
-          <strong>৳ <%= doctor.fee %></strong> per visit
+      <div class="doctor-hero__info">
+        <h1><%= doctor.name %></h1>
+        <p class="doctor-hero__specialty">
+          <%= doctor.specialty || 'Doctor' %>
+          <% if (doctor.area) { %>
+            · <span><%= doctor.area %></span>
+          <% } %>
         </p>
-      <% } %>
-
-      <div class="doctor-hero__actions">
-        <a href="/book?doctorId=<%= doctor.uid %>" class="btn primary">
-          Book an appointment
-        </a>
+        <% if (doctor.fee) { %>
+          <p class="doctor-hero__fee">Typical visit fee: ৳ <%= doctor.fee %></p>
+        <% } %>
+        <p class="doctor-hero__meta">
+          <% if (stats && typeof stats.totalCompleted === 'number') { %>
+            <span><%= stats.totalCompleted %> completed visits via Nirnoy</span>
+          <% } %>
+        </p>
+        <div class="doctor-hero__actions">
+          <% if (doctor && doctor.uid) { %>
+            <a href="/book?doctorId=<%= doctor.uid %>" class="btn primary">
+              Book an appointment
+            </a>
+          <% } %>
+        </div>
       </div>
     </div>
-  </article>
+  </section>
 
-  <section class="doctor-detail__note">
-    <h2>What to expect</h2>
-    <p>
-      After you book, Nirnoy guides you through a short symptom intake so your
-      doctor sees your story before you enter the room.
-    </p>
+  <section class="doctor-layout">
+    <div class="doctor-layout__main">
+      <h2>About this doctor</h2>
+      <p class="muted">
+        This is a pilot profile. As Nirnoy grows, doctors will be able to add
+        their own biography, education and special interests here.
+      </p>
+
+      <h2 style="margin-top:18px;">Clinics & visiting locations</h2>
+      <% if (!clinics || !clinics.length) { %>
+        <p class="empty">
+          This doctor hasn’t added any clinics yet. Once clinics are added,
+          you’ll see them here.
+        </p>
+      <% } else { %>
+        <div class="clinic-list">
+          <% clinics.forEach(c => { %>
+            <article class="clinic-card">
+              <h3><%= c.name || 'Clinic' %></h3>
+              <% if (c.address) { %>
+                <p class="clinic-card__line"><%= c.address %></p>
+              <% } %>
+              <% if (c.city) { %>
+                <p class="clinic-card__line"><%= c.city %></p>
+              <% } %>
+              <% if (c.phone) { %>
+                <p class="clinic-card__line">Phone: <%= c.phone %></p>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <aside class="doctor-layout__side">
+      <div class="card side-card">
+        <h3>How Nirnoy works</h3>
+        <ol>
+          <li>Find your doctor from the directory.</li>
+          <li>Book a time slot that works for you.</li>
+          <li>Fill out a short health form before your visit.</li>
+          <li>See your queue position and ETA on visit day.</li>
+        </ol>
+      </div>
+    </aside>
   </section>
 </div>
 

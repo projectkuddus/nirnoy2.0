@@ -181,6 +181,20 @@ db.serialize(() => {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS doctor_directory(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name TEXT NOT NULL,
+      specialty TEXT,
+      hospital_name TEXT,
+      area TEXT,
+      phone TEXT,
+      source TEXT,
+      raw_id TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
 });
 
 runSchemaFixes(db).catch((err) => console.error('[schema] failed to run fixes', err));
