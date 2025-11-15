@@ -1,82 +1,250 @@
 <%- include('partials/header') %>
-<%- include('partials/flash') %>
 
-<div class="wrap booking-page">
-  <header class="page-header">
-    <p class="eyebrow">Book an appointment</p>
-    <h1>
-      <%= doctor && doctor.name ? doctor.name : 'Doctor' %>
-    </h1>
-    <p class="page-subtitle">
-      <%= doctor && doctor.specialty ? doctor.specialty : 'Consultation' %>
-      <% if (doctor && doctor.area) { %>
-        · <span><%= doctor.area %></span>
-      <% } %>
-    </p>
-  </header>
+<%
+  const doc = typeof doctor !== 'undefined' ? doctor : null;
 
-  <% const formAction = '/book'; %>
-  <section class="booking-layout">
-    <form method="post" action="<%= formAction %>" class="card booking-form">
-      <%- include('partials/csrf') %>
-      <input type="hidden" name="doctorId" value="<%= doctor && doctor.uid ? doctor.uid : '' %>">
+  const clinicsList =
+    typeof clinics !== 'undefined' && Array.isArray(clinics)
+      ? clinics
+      : (typeof clinic !== 'undefined' && clinic ? [clinic] : []);
 
-      <div class="booking-form__row">
-        <div class="field">
-          <label for="clinicId">Clinic / hospital</label>
-          <select id="clinicId" name="clinicId" required>
-            <option value="">Choose a location</option>
-            <% if (clinics && clinics.length) { %>
-              <% clinics.forEach(c => { %>
-                <option value="<%= c.id %>" <%= (selectedClinicId && String(selectedClinicId) === String(c.id)) ? 'selected' : '' %>>
-                  <%= c.name %>
-                  <% if (c.city) { %> — <%= c.city %><% } %>
-                </option>
-              <% }) %>
-            <% } %>
-          </select>
-        </div>
+  const primaryClinic =
+    typeof clinic !== 'undefined' && clinic
+      ? clinic
+      : (clinicsList.length ? clinicsList[0] : null);
 
-        <div class="field">
-          <label for="appt_date">Date</label>
-          <input
-            type="date"
-            id="appt_date"
-            name="appt_date"
-            value="<%= selectedDate || '' %>"
-            required
-          >
-        </div>
-      </div>
+  const now = new Date();
+  const defaultDate = now.toISOString().slice(0, 10);
 
-      <div class="booking-form__row">
-        <div class="field field--full">
-          <label>Choose a time slot</label>
-          <% if (!slots || !slots.length) { %>
-            <p class="empty">No slots defined yet for this doctor.</p>
-          <% } else { %>
-            <div class="slot-grid">
-              <% slots.forEach(s => { %>
-                <label class="slot-pill">
-                  <input type="radio" name="slot_time" value="<%= s %>" required>
-                  <span><%= s %></span>
-                </label>
-              <% }) %>
+  const initialDate =
+    (typeof appt_date !== 'undefined' && appt_date) ? appt_date :
+    (typeof selectedDate !== 'undefined' && selectedDate) ? selectedDate :
+    defaultDate;
+
+  const slotsFromAvailable =
+    (typeof availableSlots !== 'undefined' && Array.isArray(availableSlots))
+      ? availableSlots
+      : null;
+
+  const slotsFromSlots =
+    (typeof slots !== 'undefined' && Array.isArray(slots))
+      ? slots
+      : null;
+
+  const slotList = slotsFromAvailable || slotsFromSlots || [];
+
+  const rescheduleId =
+    typeof reschedule_id !== 'undefined' && reschedule_id
+      ? reschedule_id
+      : (typeof rescheduleId !== 'undefined' ? rescheduleId : null);
+%>
+
+<div class="page-container">
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <strong>Cannot book:</strong>
+      <span><%= error %></span>
+    </div>
+  <% } %>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <strong>Done:</strong>
+      <span><%= success %></span>
+    </div>
+  <% } %>
+
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">
+        <% if (doc && doc.name) { %>
+          Book <%= doc.name %>
+        <% } else { %>
+          Book an appointment
+        <% } %>
+      </h1>
+      <p class="page-subtitle">
+        Choose a clinic, date, and a time slot to confirm your visit.
+      </p>
+    </div>
+  </div>
+
+  <div class="booking-layout">
+    <aside class="booking-sidebar">
+      <div class="card">
+        <div class="card-inner">
+          <h2 class="section-title" style="margin-bottom:0.5rem;">Doctor</h2>
+
+          <% if (doc) { %>
+            <div class="booking-doctor-name">
+              <strong><%= doc.name %></strong>
             </div>
+
+            <div class="booking-doctor-meta">
+              <%= doc.specialty || 'Specialty not specified' %>
+              <% if (doc.area) { %>
+                · <%= doc.area %>
+              <% } %>
+            </div>
+
+            <div class="booking-doctor-meta">
+              Fee:
+              <% if (doc.fee != null) { %>
+                ৳<%= doc.fee %>
+              <% } else { %>
+                Not set
+              <% } %>
+            </div>
+
+            <div class="booking-doctor-meta">
+              Visit duration:
+              <% if (doc.visit_duration) { %>
+                <%= doc.visit_duration %> min
+              <% } else { %>
+                Not set
+              <% } %>
+            </div>
+          <% } else { %>
+            <p class="muted">Doctor details not available.</p>
           <% } %>
         </div>
       </div>
 
-      <div class="booking-form__actions booking-actions">
-        <button type="submit" class="btn primary">
-          Confirm appointment
-        </button>
-        <a href="/doctors/<%= doctor && doctor.did ? doctor.did : '' %>" class="btn ghost">
-          Back to profile
-        </a>
+      <div class="card" style="margin-top:0.75rem;">
+        <div class="card-inner">
+          <h2 class="section-title" style="margin-bottom:0.5rem;">Clinic</h2>
+
+          <% if (!clinicsList.length) { %>
+            <p class="muted">
+              No clinic information available. You can still book a time if slots appear on the right.
+            </p>
+          <% } else { %>
+            <div class="booking-clinic">
+              <label class="field-label" for="clinicId-select">Location</label>
+              <select
+                id="clinicId-select"
+                class="input"
+                name="clinic_id"
+                form="booking-form"
+              >
+                <% clinicsList.forEach(function (cl) { %>
+                  <option
+                    value="<%= cl.id %>"
+                    <%= primaryClinic && primaryClinic.id === cl.id ? 'selected' : '' %>
+                  >
+                    <%= cl.name %>
+                    <% if (cl.area) { %> – <%= cl.area %><% } %>
+                  </option>
+                <% }) %>
+              </select>
+
+              <% if (primaryClinic) { %>
+                <div class="clinic-meta">
+                  <div><%= primaryClinic.address || '' %></div>
+                  <% if (primaryClinic.phone) { %>
+                    <div>Phone: <%= primaryClinic.phone %></div>
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
       </div>
-    </form>
-  </section>
+    </aside>
+
+    <main class="booking-main">
+      <div class="card">
+        <div class="card-inner">
+          <% if (rescheduleId) { %>
+            <div class="alert alert-info">
+              You are <strong>rescheduling</strong> an existing appointment.
+            </div>
+          <% } %>
+
+          <form
+            id="booking-form"
+            action="/bookings"
+            method="post"
+            class="booking-form"
+          >
+            <% if (doc && doc.id) { %>
+              <input type="hidden" name="doctor_id" value="<%= doc.id %>">
+            <% } %>
+
+            <% if (!clinicsList.length && primaryClinic && primaryClinic.id) { %>
+              <input type="hidden" name="clinic_id" value="<%= primaryClinic.id %>">
+            <% } %>
+
+            <% if (rescheduleId) { %>
+              <input type="hidden" name="reschedule_id" value="<%= rescheduleId %>">
+            <% } %>
+
+            <div class="field-group">
+              <label class="field-label" for="appt_date">Appointment date</label>
+              <input
+                type="date"
+                id="appt_date"
+                name="appt_date"
+                class="input"
+                value="<%= initialDate %>"
+                min="<%= initialDate %>"
+                required
+              >
+              <p class="field-hint">
+                Pick a date; if the doctor has configured slots, they will appear below.
+              </p>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Time slot</label>
+
+              <% if (slotList.length) { %>
+                <div class="slot-list">
+                  <% slotList.forEach(function (slot) { %>
+                    <label class="slot-pill">
+                      <input
+                        type="radio"
+                        name="slot_time"
+                        value="<%= slot %>"
+                        required
+                      >
+                      <span><%= slot %></span>
+                    </label>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                <p class="muted" style="margin-bottom:0.5rem;">
+                  No predefined slots are available for this date.
+                </p>
+                <input
+                  type="time"
+                  name="slot_time"
+                  class="input"
+                  required
+                >
+                <p class="field-hint">
+                  You can still choose a time manually if your doctor accepts custom times.
+                </p>
+              <% } %>
+            </div>
+
+            <div class="booking-actions">
+              <a
+                href="<%= doc ? ('/doctors/' + doc.id) : '/doctors' %>"
+                class="btn btn-ghost"
+              >
+                Back to doctor profile
+              </a>
+
+              <button type="submit" class="btn btn-primary">
+                Confirm booking
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
-<%- include('_footer') %>
+<%- include('partials/footer') %>

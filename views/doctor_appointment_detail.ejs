@@ -1,0 +1,135 @@
+<%- include('partials/header') %>
+
+<%
+  const a = appt;
+  const statusRaw = (a.status || '').toLowerCase();
+  let statusLabel = 'Scheduled';
+  let statusClass = 'status-scheduled';
+
+  if (statusRaw === 'completed') {
+    statusLabel = 'Completed';
+    statusClass = 'status-completed';
+  } else if (statusRaw === 'cancelled') {
+    statusLabel = 'Cancelled';
+    statusClass = 'status-cancelled';
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isFutureOrToday = (a.appt_date || '') >= today;
+  const isCancelled = statusRaw === 'cancelled';
+%>
+
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">Visit details</h1>
+      <p class="page-subtitle">
+        Appointment information and patient context for this visit.
+      </p>
+    </div>
+
+    <div class="doctor-profile-cta">
+      <span class="status-chip <%= statusClass %>">
+        <%= statusLabel %>
+      </span>
+    </div>
+  </div>
+
+  <div class="booking-layout">
+    <section class="card">
+      <div class="card-inner">
+        <div class="visit-main">
+          <div class="visit-title">
+            <strong><%= a.patient_name || 'Patient' %></strong>
+          </div>
+
+          <div class="visit-meta">
+            <% if (a.patient_email) { %>
+              <%= a.patient_email %>
+            <% } %>
+          </div>
+
+          <div class="visit-meta" style="margin-top: 0.4rem;">
+            Date: <%= a.appt_date %> · Time: <%= a.slot_time || 'Not set' %>
+          </div>
+
+          <div class="visit-meta">
+            <% if (a.clinic_name) { %>
+              <%= a.clinic_name %>
+              <% if (a.clinic_area) { %>
+                · <%= a.clinic_area %>
+              <% } %>
+            <% } %>
+          </div>
+
+          <% if (a.clinic_address) { %>
+            <div class="visit-meta">
+              <%= a.clinic_address %>
+            </div>
+          <% } %>
+
+          <% if (a.clinic_phone) { %>
+            <div class="visit-meta">
+              Phone: <%= a.clinic_phone %>
+            </div>
+          <% } %>
+
+          <div class="visit-meta" style="margin-top: 0.4rem;">
+            Appointment ID: #<%= a.id %>
+          </div>
+        </div>
+
+        <div class="appointment-extra" style="margin-top: 0.75rem;">
+          <% if (a.created_at) { %>
+            <div class="appointment-row">
+              <span class="appointment-label">Booked at</span>
+              <span class="appointment-value"><%= a.created_at %></span>
+            </div>
+          <% } %>
+
+          <% if (a.diagnosis_summary) { %>
+            <div class="appointment-row">
+              <span class="appointment-label">Diagnosis summary</span>
+              <span class="appointment-value"><%= a.diagnosis_summary %></span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Actions</h2>
+        </div>
+
+        <div class="doctor-actions">
+          <a href="/doctor/dashboard" class="btn btn-ghost btn-sm">
+            Back to dashboard
+          </a>
+
+          <a href="/doctor/patients" class="btn btn-ghost btn-sm">
+            My patients
+          </a>
+
+          <% if (a.patient_id) { %>
+            <a
+              href="/doctor/patients/<%= a.patient_id %>"
+              class="btn btn-ghost btn-sm"
+            >
+              View full patient record
+            </a>
+          <% } %>
+
+          <% if (!isCancelled && isFutureOrToday) { %>
+            <span class="muted" style="font-size: 0.75rem;">
+              Status updates (complete / no-show) will be added here.
+            </span>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

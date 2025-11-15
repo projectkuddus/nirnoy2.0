@@ -1,0 +1,121 @@
+<%- include('partials/header') %>
+
+<div class="page-container">
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <strong>Done:</strong>
+      <span><%= success %></span>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <strong>Cannot complete action:</strong>
+      <span><%= error %></span>
+    </div>
+  <% } %>
+
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">Admin dashboard</h1>
+      <p class="page-subtitle">
+        Snapshot of the Nirnoy system: users, doctors, and appointments.
+      </p>
+    </div>
+  </div>
+
+  <% if (typeof metrics !== 'undefined' && metrics) { %>
+    <!-- Top metrics -->
+    <section class="dashboard-grid metrics-grid">
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Patients</div>
+          <div class="metric-value"><%= metrics.totalPatients || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Doctors (total)</div>
+          <div class="metric-value"><%= metrics.totalDoctors || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Nirnoy doctors</div>
+          <div class="metric-value"><%= metrics.nirnoyDoctors || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Directory doctors</div>
+          <div class="metric-value"><%= metrics.directoryDoctors || 0 %></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Second row: appointments -->
+    <section class="dashboard-grid metrics-grid" style="margin-top: 1rem;">
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Pending doctors</div>
+          <div class="metric-value"><%= metrics.pendingDoctors || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Appointments (total)</div>
+          <div class="metric-value"><%= metrics.totalAppointments || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Appointments today</div>
+          <div class="metric-value"><%= metrics.todaysAppointments || 0 %></div>
+        </div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-inner metric-inner">
+          <div class="metric-label">Upcoming appointments</div>
+          <div class="metric-value"><%= metrics.upcomingAppointments || 0 %></div>
+        </div>
+      </div>
+    </section>
+  <% } else { %>
+    <p class="muted">
+      No metrics available at the moment.
+    </p>
+  <% } %>
+
+  <!-- Quick links -->
+  <section class="dashboard-section" style="margin-top: 1.5rem;">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Quick links</h2>
+        </div>
+
+        <div class="admin-links">
+          <a href="/admin/doctors" class="btn btn-ghost btn-sm">
+            Manage doctors
+          </a>
+
+          <a href="/admin/backup" class="btn btn-ghost btn-sm">
+            Download database backup
+          </a>
+
+          <a href="/doctors" class="btn btn-ghost btn-sm">
+            Public doctor directory
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

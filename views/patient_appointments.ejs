@@ -1,57 +1,185 @@
 <%- include('partials/header') %>
-<%- include('partials/flash') %>
 
-<% function renderDashboardBody() { %>
-  <section class="patient-dashboard">
-    <div class="wrap">
-      <header class="page-header">
-        <p class="eyebrow">Patient dashboard</p>
-        <h1>All visits</h1>
-        <p class="page-subtitle">
-          Your full appointment history with Nirnoy, in one place.
-        </p>
-      </header>
+<div class="page-container">
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <strong>Done:</strong>
+      <span><%= success %></span>
+    </div>
+  <% } %>
 
-      <% if (!items || !items.length) { %>
-        <p class="empty">
-          You don’t have any visits yet. Once you book appointments, they will appear here.
-        </p>
-      <% } else { %>
-        <div class="card">
-          <table class="queue-table visits-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Doctor</th>
-                <th>Clinic</th>
-                <th>Status</th>
-                <th style="width: 220px;">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% items.forEach(a => { %>
-                <tr>
-                  <td><%= a.appt_date || '' %></td>
-                  <td><%= a.slot_time || '' %></td>
-                  <td><%= a.doctor_name || '' %></td>
-                  <td><%= a.clinic_name || '' %></td>
-                  <td><%= a.status || '' %></td>
-                  <td class="queue-actions">
-                    <a href="/appointments/<%= a.id %>/status" class="btn ghost btn-xs">Status</a>
-                    <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary btn-xs">Print</a>
-                    <a href="/consultations/appointment/<%= a.id %>" class="btn ghost btn-xs">Visit notes</a>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <strong>Cannot complete action:</strong>
+      <span><%= error %></span>
+    </div>
+  <% } %>
+
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">My visits</h1>
+      <p class="page-subtitle">
+        All appointments you have booked through Nirnoy.
+      </p>
+    </div>
+  </div>
+
+  <!-- Upcoming visits -->
+  <section class="dashboard-section">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Upcoming visits</h2>
         </div>
-      <% } %>
+
+        <% if (!upcomingAppointments || !upcomingAppointments.length) { %>
+          <p class="muted">
+            No upcoming visits yet.
+          </p>
+        <% } else { %>
+          <div class="visit-list">
+            <% upcomingAppointments.forEach(function (appt) { %>
+              <div class="visit-row">
+                <div class="visit-main">
+                  <div class="visit-title">
+                    <strong><%= appt.doctor_name || 'Doctor' %></strong>
+                  </div>
+
+                  <div class="visit-meta">
+                    <%= appt.doctor_specialty || 'Specialty not specified' %>
+                    <% if (appt.doctor_area) { %>
+                      · <%= appt.doctor_area %>
+                    <% } %>
+                  </div>
+
+                  <div class="visit-meta">
+                    <% if (appt.clinic_name) { %>
+                      <%= appt.clinic_name %>
+                      <% if (appt.clinic_area) { %>
+                        · <%= appt.clinic_area %>
+                      <% } %>
+                    <% } %>
+                  </div>
+
+                  <div class="visit-meta">
+                    Date: <%= appt.appt_date %> · Time: <%= appt.slot_time || 'Not set' %>
+                  </div>
+
+                  <div class="visit-status-pill">
+                    <span class="status-chip status-scheduled">
+                      <%= (appt.status || 'scheduled').charAt(0).toUpperCase() + (appt.status || 'scheduled').slice(1) %>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="visit-actions">
+                  <form
+                    action="/patient/appointments/<%= appt.id %>/cancel"
+                    method="post"
+                    onsubmit="return confirm('Cancel this appointment?');"
+                  >
+                    <button type="submit" class="btn btn-ghost btn-sm">
+                      Cancel
+                    </button>
+                  </form>
+
+                  <a
+                    href="/bookings/new?doctor_id=<%= appt.doctor_id %>"
+                    class="btn btn-primary btn-sm"
+                  >
+                    Book again
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
     </div>
   </section>
-<% } %>
 
-<%- include('partials/dashboard_shell') %>
+  <!-- Past visits -->
+  <section class="dashboard-section">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Past visits</h2>
+        </div>
 
-<%- include('_footer') %>
+        <% if (!pastAppointments || !pastAppointments.length) { %>
+          <p class="muted">
+            No past visits recorded yet.
+          </p>
+        <% } else { %>
+          <div class="visit-list">
+            <% pastAppointments.forEach(function (appt) { %>
+              <div class="visit-row">
+                <div class="visit-main">
+                  <div class="visit-title">
+                    <strong><%= appt.doctor_name || 'Doctor' %></strong>
+                  </div>
+
+                  <div class="visit-meta">
+                    <%= appt.doctor_specialty || 'Specialty not specified' %>
+                    <% if (appt.doctor_area) { %>
+                      · <%= appt.doctor_area %>
+                    <% } %>
+                  </div>
+
+                  <div class="visit-meta">
+                    <% if (appt.clinic_name) { %>
+                      <%= appt.clinic_name %>
+                      <% if (appt.clinic_area) { %>
+                        · <%= appt.clinic_area %>
+                      <% } %>
+                    <% } %>
+                  </div>
+
+                  <div class="visit-meta">
+                    Date: <%= appt.appt_date %> · Time: <%= appt.slot_time || 'Not set' %>
+                  </div>
+
+                  <div class="visit-status-pill">
+                    <%
+                      const status = (appt.status || '').toLowerCase();
+                      let statusLabel = 'Completed';
+                      let statusClass = 'status-completed';
+                      if (status === 'cancelled') {
+                        statusLabel = 'Cancelled';
+                        statusClass = 'status-cancelled';
+                      } else if (!status || status === 'scheduled') {
+                        statusLabel = 'Scheduled';
+                        statusClass = 'status-scheduled';
+                      }
+                    %>
+                    <span class="status-chip <%= statusClass %>">
+                      <%= statusLabel %>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="visit-actions">
+                  <a
+                    href="/doctors/<%= appt.doctor_id %>"
+                    class="btn btn-ghost btn-sm"
+                  >
+                    View doctor
+                  </a>
+
+                  <a
+                    href="/bookings/new?doctor_id=<%= appt.doctor_id %>"
+                    class="btn btn-primary btn-sm"
+                  >
+                    Book again
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

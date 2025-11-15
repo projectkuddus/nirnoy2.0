@@ -1,0 +1,147 @@
+<%- include('partials/header') %>
+
+<%
+  const a = appt;
+  const statusRaw = (a.status || '').toLowerCase();
+  let statusLabel = 'Scheduled';
+  let statusClass = 'status-scheduled';
+
+  if (statusRaw === 'completed') {
+    statusLabel = 'Completed';
+    statusClass = 'status-completed';
+  } else if (statusRaw === 'cancelled') {
+    statusLabel = 'Cancelled';
+    statusClass = 'status-cancelled';
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isFutureOrToday = (a.appt_date || '') >= today;
+  const isCancelled = statusRaw === 'cancelled';
+%>
+
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">Appointment details</h1>
+      <p class="page-subtitle">
+        Full details for this visit booked through Nirnoy.
+      </p>
+    </div>
+
+    <div class="doctor-profile-cta">
+      <span class="status-chip <%= statusClass %>">
+        <%= statusLabel %>
+      </span>
+    </div>
+  </div>
+
+  <div class="booking-layout">
+    <!-- LEFT: main details -->
+    <section class="card">
+      <div class="card-inner">
+        <div class="visit-main">
+          <div class="visit-title">
+            <strong><%= a.doctor_name || 'Doctor' %></strong>
+          </div>
+
+          <div class="visit-meta">
+            <%= a.doctor_specialty || 'Specialty not specified' %>
+            <% if (a.doctor_area) { %>
+              · <%= a.doctor_area %>
+            <% } %>
+          </div>
+
+          <div class="visit-meta">
+            <% if (a.clinic_name) { %>
+              <%= a.clinic_name %>
+              <% if (a.clinic_area) { %>
+                · <%= a.clinic_area %>
+              <% } %>
+            <% } %>
+          </div>
+
+          <% if (a.clinic_address) { %>
+            <div class="visit-meta">
+              <%= a.clinic_address %>
+            </div>
+          <% } %>
+
+          <% if (a.clinic_phone) { %>
+            <div class="visit-meta">
+              Phone: <%= a.clinic_phone %>
+            </div>
+          <% } %>
+
+          <div class="visit-meta" style="margin-top: 0.4rem;">
+            Date: <%= a.appt_date %> · Time: <%= a.slot_time || 'Not set' %>
+          </div>
+        </div>
+
+        <div class="appointment-extra">
+          <div class="appointment-row">
+            <span class="appointment-label">Appointment ID</span>
+            <span class="appointment-value">#<%= a.id %></span>
+          </div>
+
+          <div class="appointment-row">
+            <span class="appointment-label">Status</span>
+            <span class="appointment-value">
+              <span class="status-chip <%= statusClass %>">
+                <%= statusLabel %>
+              </span>
+            </span>
+          </div>
+
+          <% if (a.created_at) { %>
+            <div class="appointment-row">
+              <span class="appointment-label">Booked at</span>
+              <span class="appointment-value"><%= a.created_at %></span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: actions & navigation -->
+    <section class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Actions</h2>
+        </div>
+
+        <div class="doctor-actions">
+          <a href="/patient/dashboard" class="btn btn-ghost btn-sm">
+            Back to dashboard
+          </a>
+
+          <a href="/patient/appointments" class="btn btn-ghost btn-sm">
+            All visits
+          </a>
+
+          <% if (!isCancelled && isFutureOrToday) { %>
+            <form
+              action="/patient/appointments/<%= a.id %>/cancel"
+              method="post"
+              onsubmit="return confirm('Cancel this appointment?');"
+            >
+              <button type="submit" class="btn btn-ghost btn-sm">
+                Cancel appointment
+              </button>
+            </form>
+          <% } %>
+
+          <% if (a.doctor_id) { %>
+            <a
+              href="/bookings/new?doctor_id=<%= a.doctor_id %>"
+              class="btn btn-primary btn-sm"
+            >
+              Book again with this doctor
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

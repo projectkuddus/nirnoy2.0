@@ -184,7 +184,23 @@ router.get('/doctors/:id', async (req,res,next)=>{
     `,[doctorId]);
     const stats={totalCompleted:statsRow?statsRow.total_completed:0};
 
-    res.render('doctor_profile',{doctor,clinics,stats});
+    const scheduleEntries=await all(`
+      SELECT
+        ds.*,
+        dc.name AS clinic_name,
+        dc.area AS clinic_area
+      FROM doctor_schedule ds
+      LEFT JOIN doctor_clinics dc ON dc.id=ds.clinic_id
+      WHERE ds.doctor_id=?
+      ORDER BY dc.name ASC, ds.day_of_week ASC, ds.start_time ASC
+    `,[doctorId]);
+    let isBookable=false;
+    if(doctor){
+      const src=(doctor.source||'').toLowerCase();
+      isBookable=(src==='nirnoy' || src==='online');
+    }
+
+    res.render('doctor_profile',{doctor,clinics,stats,scheduleEntries,isBookable});
   }catch(err){
     next(err);
   }

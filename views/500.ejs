@@ -14,7 +14,7 @@
       <a href="/patient/dashboard" class="btn ghost" style="margin-left: 8px;">My dashboard</a>
     </div>
 
-    <% if (process.env.NODE_ENV !== 'production' && error) { %>
+<% if (process.env.NODE_ENV !== 'production' && typeof error !== 'undefined' && error) { %>
       <pre style="text-align:left; margin-top:16px; font-size:12px; white-space:pre-wrap;"><%= error.stack || error %></pre>
     <% } %>
   </div>

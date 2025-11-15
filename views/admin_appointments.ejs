@@ -1,0 +1,91 @@
+<%- include('partials/header') %>
+
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">All appointments</h1>
+      <p class="page-subtitle">
+        Latest appointments across Nirnoy. Use this to verify bookings for any doctor or patient.
+      </p>
+    </div>
+  </div>
+
+  <% if (!appointments || !appointments.length) { %>
+    <div class="card">
+      <div class="card-inner">
+        <p class="muted">
+          No appointments found yet. Once patients start booking, they will appear here.
+        </p>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="card">
+      <div class="card-inner">
+        <table class="table-compact">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Doctor</th>
+              <th>Patient</th>
+              <th>Clinic</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% appointments.forEach(function (appt) { %>
+              <tr>
+                <td>
+                  <%= appt.appt_date || '-' %>
+                </td>
+                <td>
+                  <%= appt.slot_time || '-' %>
+                </td>
+                <td>
+                  <div>
+                    <strong><%= appt.doctor_name || '—' %></strong>
+                  </div>
+                  <div class="muted" style="font-size:0.7rem;">
+                    <%= appt.doctor_email || '' %>
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <strong><%= appt.patient_name || '—' %></strong>
+                  </div>
+                  <div class="muted" style="font-size:0.7rem;">
+                    <%= appt.patient_email || '' %>
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <%= appt.clinic_name || '—' %>
+                  </div>
+                  <% if (appt.clinic_area) { %>
+                    <div class="muted" style="font-size:0.7rem;">
+                      <%= appt.clinic_area %>
+                    </div>
+                  <% } %>
+                </td>
+                <td>
+                  <% 
+                    const st = (appt.status || '').toLowerCase();
+                    let badgeClass = 'badge-status-other';
+                    if (st === 'booked' || st === 'upcoming') badgeClass = 'badge-status-booked';
+                    else if (st === 'completed') badgeClass = 'badge-status-completed';
+                    else if (st === 'cancelled') badgeClass = 'badge-status-cancelled';
+                  %>
+                  <span class="badge-status <%= badgeClass %>">
+                    <%= st || 'n/a' %>
+                  </span>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

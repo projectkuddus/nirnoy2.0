@@ -1,143 +1,251 @@
 <%- include('partials/header') %>
+
+<div class="page-container">
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success">
+      <strong>Done:</strong>
+      <span><%= success %></span>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <strong>Cannot complete action:</strong>
+      <span><%= error %></span>
+    </div>
+  <% } %>
+
 <%- include('partials/flash') %>
 
-<% function renderDashboardBody() { %>
-  <div class="wrap dashboard-page">
-    <div class="dashboard-layout">
-      <aside class="dashboard-nav">
-        <h2 class="dashboard-nav__title">My health</h2>
-        <ul class="dashboard-nav__list">
-          <li class="dashboard-nav__item dashboard-nav__item--active">
-            <a href="/patient/dashboard">Overview</a>
-          </li>
-          <li class="dashboard-nav__item">
-            <a href="/patient/appointments">All appointments</a>
-          </li>
-          <li class="dashboard-nav__item">
-            <a href="/patient/export">Download data (JSON)</a>
-          </li>
-        </ul>
-      </aside>
-
-      <section class="dashboard-main patient-dashboard">
-        <header class="page-header">
-          <p class="eyebrow">Patient dashboard</p>
-          <h1>Your health queue</h1>
-          <p class="page-subtitle">
-            See your upcoming visits and past appointments in one place.
-          </p>
-        </header>
+  <section class="dashboard-grid">
+    <div class="card">
+      <div class="card-inner">
+        <h1 class="page-title">Your health schedule</h1>
+        <p class="page-subtitle">
+          Keep track of your upcoming visits with Nirnoy doctors.
+        </p>
 
         <% if (nextAppointment) { %>
-          <section class="card" style="margin-bottom: 14px;">
-            <p class="eyebrow">Next appointment</p>
-            <h2 style="margin: 4px 0 4px;">
-              <%= nextAppointment.doctor_name || nextAppointment.doctor || 'Doctor' %>
-            </h2>
-            <p class="page-subtitle">
-              <%= nextAppointment.clinic_name || '' %>
-            </p>
-            <p style="margin: 8px 0 0; font-size: 0.9rem;">
-              <strong>Date:</strong> <%= nextAppointment.appt_date %>
-              &nbsp; · &nbsp;
-              <strong>Time:</strong> <%= nextAppointment.slot_time %>
-            </p>
-            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #6b7280;">
-              Status: <%= nextAppointment.status || 'booked' %>
-            </p>
-            <div style="margin-top: 10px;">
-              <a href="/appointments/<%= nextAppointment.id %>" class="btn ghost btn-xs">
-                View details
+          <div class="next-appt-card">
+            <div class="next-appt-label">Next appointment</div>
+            <div class="next-appt-main">
+              <div class="next-appt-row">
+                <div class="next-appt-doc">
+                  <div class="next-appt-doc-name">
+                    <%= nextAppointment.doctor_name || 'Doctor' %>
+                  </div>
+                  <% if (nextAppointment.clinic_name) { %>
+                    <div class="next-appt-clinic">
+                      <%= nextAppointment.clinic_name %>
+                      <% if (nextAppointment.clinic_area) { %>
+                        · <%= nextAppointment.clinic_area %>
+                      <% } %>
+                    </div>
+                  <% } %>
+                </div>
+                <div class="next-appt-tag">
+                  <span class="badge-status badge-status-booked">
+                    <%= (nextAppointment.status || 'booked').toLowerCase() %>
+                  </span>
+                </div>
+              </div>
+              <div class="next-appt-when">
+                <div class="next-appt-date">
+                  <%= nextAppointment.appt_date || '' %>
+                </div>
+                <% if (nextAppointment.slot_time) { %>
+                  <div class="next-appt-time">
+                    at <%= nextAppointment.slot_time %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            <div class="next-appt-actions">
+              <a
+                href="/patient/appointments/<%= nextAppointment.id %>"
+                class="btn btn-primary btn-sm"
+              >
+                Visit details
+              </a>
+
+              <a
+                href="/patient/appointments"
+                class="btn btn-ghost btn-sm"
+              >
+                All visits
               </a>
             </div>
-          </section>
-        <% } %>
-
-        <section class="patient-stats">
-          <div class="stats-grid">
-            <div class="card stat-card">
-              <p class="stat-label">Upcoming visits</p>
-              <p class="stat-value"><%= (stats && stats.upcomingCount) || 0 %></p>
-            </div>
-            <div class="card stat-card">
-              <p class="stat-label">Past visits</p>
-              <p class="stat-value"><%= (stats && stats.pastCount) || 0 %></p>
-            </div>
-            <div class="card stat-card">
-              <p class="stat-label">Doctors seen</p>
-              <p class="stat-value"><%= (stats && stats.uniqueDoctors) || 0 %></p>
-            </div>
           </div>
-        </section>
-
-        <% if (nextAppointment) { %>
-          <section class="card next-appointment">
-            <p class="eyebrow">Next appointment</p>
-            <h2 style="margin:4px 0;"><%= nextAppointment.doctor_name || 'Doctor' %></h2>
-            <p class="page-subtitle">
-              <%= nextAppointment.clinic_name || 'Clinic' %>
-              <% if (nextAppointment.appt_date && nextAppointment.slot_time) { %>
-                · <%= nextAppointment.appt_date %> at <%= nextAppointment.slot_time %>
-              <% } %>
-            </p>
-            <% if (nextAppointment.status) { %>
-              <p class="appt-card__status">Status: <span><%= nextAppointment.status %></span></p>
-            <% } %>
-            <div class="appt-card__actions">
-              <a href="/appointments/<%= nextAppointment.id %>/status" class="btn primary btn-xs">View status</a>
-              <a href="/appointments/<%= nextAppointment.id %>/print" target="_blank" class="btn ghost btn-xs">Print</a>
-            </div>
-          </section>
-        <% } %>
-
-        <% if (!upcoming || !upcoming.length) { %>
-          <p class="empty">
+        <% } else { %>
+          <div class="card-muted-message">
             You don’t have any upcoming appointments yet.
-            <a href="/doctors">Find a doctor to book now.</a>
+            <br>
+            Browse the <a href="/doctors">doctor directory</a> to book your first visit.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-section">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">My doctors</h2>
+        </div>
+
+        <% if (!myDoctors || !myDoctors.length) { %>
+          <p class="muted">
+            You have not visited any doctors through Nirnoy yet.
           </p>
         <% } else { %>
-          <section class="appt-section">
-            <h2>Upcoming appointments</h2>
-            <div class="appt-grid">
-              <% upcoming.forEach(a => { %>
-                <article class="appt-card">
-                  <p class="appt-card__label">Appointment</p>
-                  <h3 class="appt-card__title">
-                    <%= a.doctor_name || 'Doctor' %>
-                  </h3>
-                  <p class="appt-card__meta">
-                    <span><%= a.clinic_name || 'Clinic' %></span>
-                    <% if (a.appt_date && a.slot_time) { %>
-                      · <span><%= a.appt_date %> at <%= a.slot_time %></span>
-                    <% } %>
-                  </p>
-                  <% if (a.status) { %>
-                    <p class="appt-card__status">
-                      Status: <span><%= a.status %></span>
-                    </p>
-                  <% } %>
-                  <% if (typeof a.position === 'number') { %>
-                    <p class="appt-card__queue">
-                      You are <strong>#<%= a.position %></strong> in line
-                      <% if (typeof a.etaMinutes === 'number') { %>
-                        · ETA ~<%= a.etaMinutes %> min
-                      <% } %>
-                    </p>
-                  <% } %>
-                  <div class="appt-card__actions">
-                    <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
-                    <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
+          <div class="mydoctors-list">
+            <% myDoctors.forEach(function (doc) { %>
+              <div class="mydoc-row">
+                <div class="mydoc-main">
+                  <div class="mydoc-name">
+                    <strong><%= doc.doctor_name || 'Doctor' %></strong>
                   </div>
-                </article>
-              <% }) %>
-            </div>
-          </section>
+
+                  <div class="mydoc-meta">
+                    <%= doc.doctor_specialty || 'Specialty not specified' %>
+                    <% if (doc.doctor_area) { %>
+                      · <%= doc.doctor_area %>
+                    <% } %>
+                  </div>
+
+                  <% if (doc.last_visit_date) { %>
+                    <div class="mydoc-last">
+                      Last visit: <%= doc.last_visit_date %>
+                    </div>
+                  <% } %>
+                </div>
+
+                <div class="mydoc-actions">
+                  <a
+                    href="/doctors/<%= doc.doctor_id %>"
+                    class="btn btn-ghost btn-sm"
+                  >
+                    View doctor
+                  </a>
+
+                  <a
+                    href="/bookings/new?doctor_id=<%= doc.doctor_id %>"
+                    class="btn btn-primary btn-sm"
+                  >
+                    Book again
+                  </a>
+                </div>
+              </div>
+            <% }) %>
+          </div>
         <% } %>
-      </section>
+      </div>
     </div>
-  </div>
-<% } %>
+  </section>
 
-<%- include('partials/dashboard_shell') %>
+  <section class="dashboard-section">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Upcoming visits</h2>
+        </div>
 
-<%- include('_footer') %>
+        <% if (!upcomingAppointments || !upcomingAppointments.length) { %>
+          <p class="muted">No upcoming visits yet.</p>
+        <% } else { %>
+          <div class="visit-list">
+            <% upcomingAppointments.forEach(function (appt) { %>
+              <div class="visit-row">
+                <div class="visit-main">
+                  <div class="visit-doc">
+                    <strong><%= appt.doctor_name || 'Doctor' %></strong>
+                  </div>
+                  <% if (appt.clinic_name) { %>
+                    <div class="visit-clinic">
+                      <%= appt.clinic_name %>
+                      <% if (appt.clinic_area) { %>
+                        · <%= appt.clinic_area %>
+                      <% } %>
+                    </div>
+                  <% } %>
+                  <div class="visit-when">
+                    <%= appt.appt_date || '' %>
+                    <% if (appt.slot_time) { %>
+                      · <%= appt.slot_time %>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="visit-meta">
+                  <%
+                    const stUpcoming = (appt.status || 'booked').toLowerCase();
+                    let badgeClassUpcoming = 'badge-status-booked';
+                    if (stUpcoming === 'completed') badgeClassUpcoming = 'badge-status-completed';
+                    else if (stUpcoming === 'cancelled') badgeClassUpcoming = 'badge-status-cancelled';
+                  %>
+                  <span class="badge-status <%= badgeClassUpcoming %>">
+                    <%= stUpcoming %>
+                  </span>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <section class="dashboard-section">
+    <div class="card">
+      <div class="card-inner">
+        <div class="section-header">
+          <h2 class="section-title">Past visits</h2>
+        </div>
+
+        <% if (!pastAppointments || !pastAppointments.length) { %>
+          <p class="muted">No past visits recorded yet.</p>
+        <% } else { %>
+          <div class="visit-list">
+            <% pastAppointments.forEach(function (appt) { %>
+              <div class="visit-row">
+                <div class="visit-main">
+                  <div class="visit-doc">
+                    <strong><%= appt.doctor_name || 'Doctor' %></strong>
+                  </div>
+                  <% if (appt.clinic_name) { %>
+                    <div class="visit-clinic">
+                      <%= appt.clinic_name %>
+                      <% if (appt.clinic_area) { %>
+                        · <%= appt.clinic_area %>
+                      <% } %>
+                    </div>
+                  <% } %>
+                  <div class="visit-when">
+                    <%= appt.appt_date || '' %>
+                    <% if (appt.slot_time) { %>
+                      · <%= appt.slot_time %>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="visit-meta">
+                  <%
+                    const stPast = (appt.status || '').toLowerCase();
+                    let badgeClassPast = 'badge-status-other';
+                    if (stPast === 'booked' || stPast === 'upcoming') badgeClassPast = 'badge-status-booked';
+                    else if (stPast === 'completed') badgeClassPast = 'badge-status-completed';
+                    else if (stPast === 'cancelled') badgeClassPast = 'badge-status-cancelled';
+                  %>
+                  <span class="badge-status <%= badgeClassPast %>">
+                    <%= stPast || 'n/a' %>
+                  </span>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</div>
+
+<%- include('partials/footer') %>

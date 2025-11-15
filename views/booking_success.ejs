@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="page-centered">
+  <div class="page-centered-inner card">
+    <div class="card-inner">
+      <div class="booking-success-icon">✓</div>
+      <h1 class="page-centered-title">You’re booked</h1>
+      <p class="booking-success-sub">
+        Your appointment has been scheduled successfully.
+      </p>
+
+      <div class="booking-success-meta">
+        <% if (doctor) { %>
+          <div>
+            <div class="booking-success-meta-label">Doctor</div>
+            <div class="booking-success-meta-value">
+              <%= doctor.name %>
+            </div>
+          </div>
+        <% } %>
+
+        <% if (clinic) { %>
+          <div>
+            <div class="booking-success-meta-label">Clinic</div>
+            <div class="booking-success-meta-value">
+              <%= clinic.name %>
+              <% if (clinic.area) { %>
+                · <%= clinic.area %>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+
+        <% if (appointment) { %>
+          <div>
+            <div class="booking-success-meta-label">Date &amp; time</div>
+            <div class="booking-success-meta-value">
+              <%= appointment.appt_date %>
+              <% if (appointment.slot_time) { %>
+                at <%= appointment.slot_time %>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="booking-success-actions">
+        <a href="/patient/dashboard" class="btn btn-primary">
+          Go to my dashboard
+        </a>
+        <a href="/patient/appointments" class="btn btn-ghost">
+          View all visits
+        </a>
+        <% if (doctor && doctor.id) { %>
+          <a href="/doctors/<%= doctor.id %>" class="btn btn-ghost">
+            Back to doctor profile
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('_footer') %>

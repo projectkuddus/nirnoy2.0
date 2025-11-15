@@ -140,9 +140,10 @@ async function buildBookingState(doctor, clinicId, requestedDate){
   return state;
 }
 
-async function renderBookingForm(res,{doctor,clinics,clinicId,requestedDate,flashMessage,flashType='err'}){
+async function renderBookingForm(res,{doctor,clinics,clinicId,requestedDate,flashMessage,flashType='err',errorMessage=null,rescheduleId=null,initialApptDate=null,initialSlotTime=null,initialClinicId=null}){
   const normalizedId=typeof clinicId==='number'?clinicId:(clinicId?Number(clinicId):null);
   const state=await buildBookingState(doctor, normalizedId, requestedDate);
+  const hasSlots=Array.isArray(state.slots) && state.slots.length>0;
   if(flashMessage){
     res.locals.flash={type:flashType,msg:flashMessage};
   }
@@ -155,7 +156,14 @@ async function renderBookingForm(res,{doctor,clinics,clinicId,requestedDate,flas
     date:state.selectedDate,
     selectedDate:state.selectedDate,
     days:state.days,
-    slots:state.slots
+    slots:state.slots,
+    error:errorMessage,
+    mode:rescheduleId?'reschedule':'new',
+    rescheduleId,
+    initialApptDate,
+    initialSlotTime,
+    initialClinicId,
+    hasSlots
   });
 }
 
@@ -210,32 +218,88 @@ router.get('/book', needPatient, async (req,res)=>{
   const requestedClinicId=parseInt(req.query.clinicId||req.query.clinic_id||'',10);
   const {id:clinicId}=resolveClinicId(clinics, requestedClinicId,{strict:false});
   const requestedDate=sanitizeDateInput(req.query.date);
+  const errorKey=req.query.error;
+  let errorMessage=null;
+  if(errorKey==='past_date'){
+    errorMessage='You cannot book a past date. Please choose today or a future date.';
+  } else if (errorKey==='past_time'){
+    errorMessage='You cannot book a time slot that has already passed today. Please choose a later time.';
+  } else if (errorKey==='slot_taken'){
+    errorMessage='This time slot has just been taken by another patient. Please choose a different time.';
+  } else if (errorKey==='booking_failed'){
+    errorMessage='Something went wrong while creating your booking. Please try again or choose another slot.';
+  } else if (errorKey==='no_slot'){
+    errorMessage='Please select a time slot before confirming your booking.';
+  }
+  const rescheduleId=req.query.rescheduleId||null;
+  const initialApptDate=req.query.appt_date||null;
+  const initialSlotTime=req.query.slot_time||null;
+  const initialClinicId=req.query.clinicId||req.query.clinic_id||null;
   const noClinicsMsg=!clinics.length?'This doctor has not added any clinics yet. Please check back soon.':null;
   return renderBookingForm(res,{
     doctor,
     clinics,
     clinicId,
     requestedDate,
+    errorMessage,
     flashMessage:noClinicsMsg,
-    flashType:'warn'
+    flashType:'warn',
+    rescheduleId,
+    initialApptDate,
+    initialSlotTime,
+    initialClinicId
   });
 });
 
 router.post('/book', needPatient, async (req,res)=>{
-  const doctorId=parseInt(req.body.doctorId||req.body.doctor_id||'',10);
-  if(!doctorId){
-    req.session.flash={type:'err',msg:'Please select a doctor before booking.'};
-    return res.redirect('/doctors');
+  const patientId=req.session.user.id;
+  const doctorIdRaw=req.body.doctor_id||req.body.doctorId;
+  const clinicIdRaw=req.body.clinic_id||req.body.clinicId;
+  const apptDateRaw=(req.body.appt_date||'').trim();
+  const slotTimeRaw=req.body.slot_time||'';
+  const rescheduleId=req.body.reschedule_id||req.body.rescheduleId||null;
+  const slotTime=(slotTimeRaw||'').trim().slice(0,5);
+  if(!doctorIdRaw || !clinicIdRaw || !apptDateRaw || !slotTime){
+    const params=new URLSearchParams();
+    if(doctorIdRaw) params.set('doctorId', String(doctorIdRaw));
+    if(clinicIdRaw) params.set('clinicId', String(clinicIdRaw));
+    if(apptDateRaw) params.set('appt_date', apptDateRaw);
+    params.set('error','no_slot');
+    return res.redirect(`/book?${params.toString()}`);
   }
+  const doctorId=parseInt(doctorIdRaw,10);
+  const requestedClinicId=parseInt(clinicIdRaw,10);
+  const requestedDate=sanitizeDateInput(apptDateRaw);
   const doctor=await doctorBasics(doctorId);
   if(!doctor){
     req.session.flash={type:'err',msg:'Doctor not found. Please pick another doctor.'};
     return res.redirect('/doctors');
   }
   const clinics=await loadDoctorClinics(doctor);
-  const requestedClinicId=parseInt(req.body.clinicId||req.body.clinic_id||'',10);
-  const requestedDate=sanitizeDateInput(req.body.appt_date);
-  const slotTime=(req.body.slot_time||'').trim().slice(0,5);
+  const today=new Date(); today.setHours(0,0,0,0);
+  const selectedDateObj=requestedDate? new Date(requestedDate) : null;
+  if(!requestedDate || !selectedDateObj || Number.isNaN(selectedDateObj.getTime()) || selectedDateObj<today){
+    return res.redirect(`/book?doctorId=${doctorId}&clinicId=${requestedClinicId||''}&error=past_date`);
+  }
+  if(selectedDateObj.getTime()===today.getTime()){
+    if(!slotTime){
+      return res.redirect(`/book?doctorId=${doctorId}&clinicId=${requestedClinicId||''}&error=past_time`);
+    }
+    const parts=String(slotTime).split(':');
+    const slotHour=parseInt(parts[0],10);
+    const slotMinute=parseInt(parts[1]||'0',10);
+    if(Number.isNaN(slotHour)||Number.isNaN(slotMinute)){
+      return res.redirect(`/book?doctorId=${doctorId}&clinicId=${requestedClinicId||''}&error=past_time`);
+    }
+    const now=new Date();
+    const slotDateTime=new Date();
+    slotDateTime.setHours(slotHour,slotMinute,0,0);
+    const BUFFER_MINUTES=10;
+    const nowWithBuffer=new Date(now.getTime()+BUFFER_MINUTES*60*1000);
+    if(slotDateTime<=nowWithBuffer){
+      return res.redirect(`/book?doctorId=${doctorId}&clinicId=${requestedClinicId||''}&error=past_time`);
+    }
+  }
   const clinicResolution=resolveClinicId(clinics, requestedClinicId,{strict:true});
   if(!clinicResolution.id){
     return renderBookingForm(res,{doctor,clinics,clinicId:null,requestedDate,flashMessage:'Please select a clinic before booking.'});
@@ -257,6 +321,9 @@ router.post('/book', needPatient, async (req,res)=>{
                             VALUES(?,?,?,?,?,?)`,
       [req.session.user.id, doctor.uid, clinicResolution.id, dateStr, slot, 'queued']);
     const appointmentId = insert.lastID;
+    if(rescheduleId){
+      await run(`UPDATE appointments SET status='cancelled' WHERE id=? AND patient_id=?`,[rescheduleId, req.session.user.id]);
+    }
     await run('COMMIT'); txActive=false;
     try {
       notify.notifyAppointmentBooked({
@@ -269,17 +336,105 @@ router.post('/book', needPatient, async (req,res)=>{
     } catch (err) {
       console.error('notifyAppointmentBooked failed (dev stub):', err);
     }
-    req.session.flash={type:'ok',msg:'Your appointment is booked.'};
-    return res.redirect('/patient/dashboard');
+    let patient=null;
+    let doctorRow=null;
+    let clinicRow=null;
+    let newAppointment=null;
+    let oldAppointment=null;
+    try{
+      patient={
+        id:req.session.user && req.session.user.id,
+        name:req.session.user && req.session.user.name,
+        email:req.session.user && req.session.user.email
+      };
+      doctorRow=await get(`SELECT * FROM doctors WHERE user_id=?`,[doctor.uid]);
+      clinicRow=clinicResolution.id? await get(`SELECT * FROM doctor_clinics WHERE id=?`,[clinicResolution.id]) : null;
+      if(appointmentId){
+        newAppointment=await get(`SELECT * FROM appointments WHERE id=?`,[appointmentId]);
+      }else{
+        newAppointment=await get(`
+          SELECT *
+          FROM appointments
+          WHERE patient_id=?
+            AND doctor_id=?
+            AND clinic_id=?
+            AND appt_date=?
+            AND slot_time=?
+          ORDER BY id DESC
+          LIMIT 1
+        `,[req.session.user.id, doctor.uid, clinicResolution.id, dateStr, slot]);
+      }
+      if(rescheduleId){
+        oldAppointment=await get(`SELECT * FROM appointments WHERE id=?`,[rescheduleId]);
+      }
+      if(rescheduleId){
+        if(notify?.patientBookingRescheduled){
+          notify.patientBookingRescheduled({
+            patient,
+            doctor: doctorRow,
+            clinic: clinicRow,
+            oldAppointment,
+            newAppointment
+          });
+        }
+        if(notify?.doctorBookingRescheduled){
+          notify.doctorBookingRescheduled({
+            patient,
+            doctor: doctorRow,
+            clinic: clinicRow,
+            oldAppointment,
+            newAppointment
+          });
+        }
+      }else{
+        if(notify?.patientBookingCreated){
+          notify.patientBookingCreated({
+            patient,
+            doctor: doctorRow,
+            clinic: clinicRow,
+            appointment: newAppointment
+          });
+        }
+        if(notify?.doctorBookingCreated){
+          notify.doctorBookingCreated({
+            patient,
+            doctor: doctorRow,
+            clinic: clinicRow,
+            appointment: newAppointment
+          });
+        }
+      }
+    }catch(notifyErr){
+      console.error('Error during booking notifications stub',notifyErr);
+    }
+
+    return res.redirect(
+      '/patient/dashboard?success=' +
+      encodeURIComponent(
+        rescheduleId
+          ? 'Your appointment has been rescheduled.'
+          : 'Your appointment has been booked.'
+      )
+    );
   }catch(err){
     await safeRollback();
-    const friendly=err instanceof BookingError?err.message:'Something went wrong while booking. Please try another slot.';
-    return renderBookingForm(res,{
-      doctor,
-      clinics,
-      clinicId:clinicResolution.id,
-      requestedDate,
-      flashMessage:friendly
+    if(err instanceof BookingError){
+      return renderBookingForm(res,{
+        doctor,
+        clinics,
+        clinicId:clinicResolution.id,
+        requestedDate,
+        flashMessage:err.message
+      });
+    }
+    console.error('Error creating appointment', err);
+    const msg = (err && err.message) ? err.message : '';
+    if(msg.toLowerCase().includes('unique')){
+      return res.redirect('/patient/dashboard?error=' + encodeURIComponent('That time slot is no longer available. Please choose another time.'));
+    }
+    return res.status(500).render('500',{
+      user:req.session.user,
+      message:'We could not create this booking.'
     });
   }
 });
