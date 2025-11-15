@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<% function renderDashboardBody() { %>
+  <section class="patient-dashboard">
+    <div class="wrap">
+      <header class="page-header">
+        <p class="eyebrow">Patient dashboard</p>
+        <h1>All visits</h1>
+        <p class="page-subtitle">
+          Your full appointment history with Nirnoy, in one place.
+        </p>
+      </header>
+
+      <% if (!items || !items.length) { %>
+        <p class="empty">
+          You don’t have any visits yet. Once you book appointments, they will appear here.
+        </p>
+      <% } else { %>
+        <div class="card">
+          <table class="queue-table visits-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Doctor</th>
+                <th>Clinic</th>
+                <th>Status</th>
+                <th style="width: 220px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.forEach(a => { %>
+                <tr>
+                  <td><%= a.appt_date || '' %></td>
+                  <td><%= a.slot_time || '' %></td>
+                  <td><%= a.doctor_name || '' %></td>
+                  <td><%= a.clinic_name || '' %></td>
+                  <td><%= a.status || '' %></td>
+                  <td class="queue-actions">
+                    <a href="/appointments/<%= a.id %>/status" class="btn ghost btn-xs">Status</a>
+                    <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary btn-xs">Print</a>
+                    <a href="/consultations/appointment/<%= a.id %>" class="btn ghost btn-xs">Visit notes</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
+<%- include('partials/dashboard_shell') %>
+
+<%- include('_footer') %>

@@ -1,4 +1,5 @@
 const express=require('express');
+const path = require('path');
 const {get,all,run}=require('../db');
 const router=express.Router();
 
@@ -75,6 +76,21 @@ router.post('/admin/doctors/:uid/update', needAdmin, async (req,res)=>{
             [req.body.bmdc_no||'', req.body.specialty||'', req.body.area||'', fee, dur, uid]);
   req.session.flash={type:'ok',msg:'Doctor details saved'};
   res.redirect('/admin/doctors');
+});
+
+router.get('/admin/backup', needAdmin, (req, res, next) => {
+  try {
+    const dbPath = path.join(__dirname, '..', 'nirnoy.db');
+    const fileName = `nirnoy_backup_${new Date().toISOString().slice(0,10)}.db`;
+
+    res.download(dbPath, fileName, (err) => {
+      if (err) {
+        return next(err);
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports=router;

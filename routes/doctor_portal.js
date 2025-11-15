@@ -24,7 +24,6 @@ router.get('/doctor/dashboard', needDoctor, async (req,res,next)=>{
         a.appt_date,
         a.slot_time,
         a.status,
-        a.room,
         c.name AS clinic_name,
         u.name AS patient_name
       FROM appointments a
@@ -47,13 +46,66 @@ router.get('/doctor/dashboard', needDoctor, async (req,res,next)=>{
       }
     }
 
-    res.render('dashboard_doctor',{
+    const todayStatsRow = await get(`
+      SELECT COUNT(*) AS cnt
+      FROM appointments
+      WHERE doctor_id = ?
+        AND appt_date = date('now','localtime')
+    `, [userId]);
+
+    const doneStatsRow = await get(`
+      SELECT COUNT(*) AS cnt
+      FROM appointments
+      WHERE doctor_id = ?
+        AND appt_date = date('now','localtime')
+        AND status IN ('done','completed')
+    `, [userId]);
+
+    const uniqueStatsRow = await get(`
+      SELECT COUNT(DISTINCT patient_id) AS cnt
+      FROM appointments
+      WHERE doctor_id = ?
+    `, [userId]);
+
+    const stats = {
+      totalToday: todayStatsRow ? todayStatsRow.cnt : 0,
+      doneToday: doneStatsRow ? doneStatsRow.cnt : 0,
+      totalUniquePatients: uniqueStatsRow ? uniqueStatsRow.cnt : 0
+    };
+
+    res.render('dashboard_doctor', {
       doctor,
       appointments,
       visitDuration,
-      runningLateMinutes
+      runningLateMinutes,
+      stats
     });
   }catch(err){
+    next(err);
+  }
+});
+
+router.get('/doctor/patients', needDoctor, async (req, res, next) => {
+  try {
+    const userId = req.session.user.id;
+
+    const rows = await all(`
+      SELECT
+        u.id AS patient_id,
+        u.name AS patient_name,
+        u.email AS patient_email,
+        MIN(a.appt_date) AS first_visit,
+        MAX(a.appt_date) AS last_visit,
+        COUNT(*) AS total_visits
+      FROM appointments a
+      JOIN users u ON u.id = a.patient_id
+      WHERE a.doctor_id = ?
+      GROUP BY u.id, u.name, u.email
+      ORDER BY last_visit DESC
+    `, [userId]);
+
+    res.render('doctor_patients', { patients: rows });
+  } catch (err) {
     next(err);
   }
 });
@@ -66,7 +118,11 @@ router.post('/doctor/appointments/:id/call', needDoctor, async (req,res)=>{ awai
 router.post('/doctor/appointments/:id/start', needDoctor, async (req,res)=>{ await setStatus(req.params.id,'in_progress','started_at'); res.redirect('/doctor/dashboard'); });
 router.post('/doctor/appointments/:id/done', needDoctor, async (req,res)=>{ await setStatus(req.params.id,'done','finished_at'); res.redirect('/doctor/dashboard'); });
 router.post('/doctor/appointments/:id/noshow', needDoctor, async (req,res)=>{ await setStatus(req.params.id,'no_show'); res.redirect('/doctor/dashboard'); });
-router.post('/doctor/appointments/:id/room', needDoctor, async (req,res)=>{ await run(`UPDATE appointments SET room=? WHERE id=?`,[req.body.room||'', req.params.id]); res.redirect('/doctor/dashboard'); });
+router.post('/doctor/appointments/:id/room', needDoctor, async (req,res)=>{
+  // Room field is currently not stored in DB on this instance.
+  // Keep this endpoint as a harmless no-op for now.
+  res.redirect('/doctor/dashboard');
+});
 
 router.post('/doctor/running-late', needDoctor, async (req,res)=>{
   const mins = Math.max(0, parseInt(req.body.minutes||'0',10)||0);

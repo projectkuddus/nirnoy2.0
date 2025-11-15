@@ -20,6 +20,7 @@
         <% } %>
       </div>
       <div class="doctor-hero__info">
+        <p class="eyebrow">Nirnoy doctor</p>
         <h1><%= doctor.name %></h1>
         <p class="doctor-hero__specialty">
           <%= doctor.specialty || 'Doctor' %>
@@ -30,15 +31,13 @@
         <% if (doctor.fee) { %>
           <p class="doctor-hero__fee">Typical visit fee: ৳ <%= doctor.fee %></p>
         <% } %>
-        <p class="doctor-hero__meta">
-          <% if (stats && typeof stats.totalCompleted === 'number') { %>
-            <span><%= stats.totalCompleted %> completed visits via Nirnoy</span>
-          <% } %>
-        </p>
+        <% if (stats && typeof stats.totalCompleted === 'number') { %>
+          <p class="doctor-hero__meta"><%= stats.totalCompleted %> completed visits via Nirnoy</p>
+        <% } %>
         <div class="doctor-hero__actions">
           <% if (doctor && doctor.uid) { %>
             <a href="/book?doctorId=<%= doctor.uid %>" class="btn primary">
-              Book an appointment
+              Book appointment
             </a>
           <% } %>
         </div>
@@ -48,36 +47,37 @@
 
   <section class="doctor-layout">
     <div class="doctor-layout__main">
-      <h2>About this doctor</h2>
-      <p class="muted">
-        This is a pilot profile. As Nirnoy grows, doctors will be able to add
-        their own biography, education and special interests here.
-      </p>
-
-      <h2 style="margin-top:18px;">Clinics & visiting locations</h2>
-      <% if (!clinics || !clinics.length) { %>
-        <p class="empty">
-          This doctor hasn’t added any clinics yet. Once clinics are added,
-          you’ll see them here.
+      <div class="card">
+        <h2>About this doctor</h2>
+        <p class="muted">
+          This is a pilot profile. As Nirnoy grows, doctors will be able to add
+          their own biography, education and special interests here.
         </p>
-      <% } else { %>
-        <div class="clinic-list">
-          <% clinics.forEach(c => { %>
-            <article class="clinic-card">
-              <h3><%= c.name || 'Clinic' %></h3>
-              <% if (c.address) { %>
-                <p class="clinic-card__line"><%= c.address %></p>
-              <% } %>
-              <% if (c.city) { %>
-                <p class="clinic-card__line"><%= c.city %></p>
-              <% } %>
-              <% if (c.phone) { %>
-                <p class="clinic-card__line">Phone: <%= c.phone %></p>
-              <% } %>
-            </article>
-          <% }) %>
-        </div>
-      <% } %>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <h2>Clinics &amp; visiting locations</h2>
+        <% if (!clinics || !clinics.length) { %>
+          <p class="empty">
+            This doctor hasn’t added any clinics yet. Once clinics are added,
+            you’ll see them here.
+          </p>
+        <% } else { %>
+          <ul class="clinic-list">
+            <% clinics.forEach(c => { %>
+              <li class="clinic-card">
+                <h3><%= c.name || 'Clinic' %></h3>
+                <% if (c.address) { %>
+                  <p class="clinic-card__line"><%= c.address %></p>
+                <% } %>
+                <% if (c.area) { %>
+                  <p class="clinic-card__line"><%= c.area %></p>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
     </div>
 
     <aside class="doctor-layout__side">

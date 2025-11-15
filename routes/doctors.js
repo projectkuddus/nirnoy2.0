@@ -225,8 +225,7 @@ router.get('/doctors/:id', async (req,res,next)=>{
         id,
         name,
         address,
-        area,
-        phone
+        area
       FROM doctor_clinics
       WHERE doctor_id=?
       ORDER BY name ASC

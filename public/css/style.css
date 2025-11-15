@@ -913,3 +913,277 @@ h3{margin:0 0 8px}
 .appt-card__queue strong {
   font-weight: 700;
 }
+
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: calc(100vh - 80px);
+  background: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .dashboard-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-shell__side {
+    display: none;
+  }
+}
+
+.dashboard-shell__side {
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 20px 16px;
+}
+
+.dashboard-shell__brand {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard-shell__nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-shell__nav li {
+  margin-bottom: 6px;
+}
+
+.dashboard-shell__nav a {
+  display: block;
+  padding: 6px 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.dashboard-shell__nav a:hover {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.dashboard-shell__main {
+  padding: 24px 18px 40px;
+}
+
+.booking-page {
+  padding: 24px 16px 40px;
+}
+
+.booking-layout {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1.4fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .booking-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.booking-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.booking-form .field {
+  flex: 1 1 180px;
+}
+
+.booking-form .field--full {
+  flex-basis: 100%;
+}
+
+.booking-form label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: #4b5563;
+}
+
+.booking-form input[type="date"],
+.booking-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  background: #ffffff;
+}
+
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.slot-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.slot-pill input {
+  display: none;
+}
+
+.slot-pill span {
+  white-space: nowrap;
+}
+
+.slot-pill input:checked + span,
+.slot-pill input:focus + span {
+  font-weight: 600;
+}
+
+.slot-pill input:checked ~ span {
+  font-weight: 600;
+}
+
+.booking-form__actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.doctor-stats {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.stat-card {
+  flex: 1 1 160px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  margin: 0 0 4px;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.doctors-page {
+  padding: 24px 16px 40px;
+}
+
+.doctors-filters {
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.doctors-search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doctors-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.doctors-filters .field {
+  flex: 1 1 180px;
+}
+
+.doctors-filters .field--full {
+  flex-basis: 100%;
+}
+
+.doctors-filters .field--actions {
+  align-self: flex-end;
+  flex: 0 0 auto;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.doctor-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doctor-card__header h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.doctor-card__specialty {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.doctor-card__meta {
+  margin: 1px 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.doctor-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.doctor-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #e5e7eb;
+  color: #4b5563;
+  width: fit-content;
+}
+
+.doctor-card__badge--live {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.doctor-card__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}

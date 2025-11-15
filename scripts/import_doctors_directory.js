@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse');
-const db = require('../db'); // sqlite connection from db.js
+const { db } = require('../db'); // sqlite Database instance
 
 function normalizeRow(raw) {
   const cleaned = {};
@@ -18,13 +18,20 @@ function normalizeRow(raw) {
   return cleaned;
 }
 
-async function upsertDoctorDirectory(doc) {
+function upsertDoctorDirectory(doc) {
   return new Promise((resolve, reject) => {
     db.run(
       `
       INSERT INTO doctor_directory (
-        full_name, specialty, hospital_name, area, phone, source, raw_id,
-        created_at, updated_at
+        full_name,
+        specialty,
+        hospital_name,
+        area,
+        phone,
+        source,
+        raw_id,
+        created_at,
+        updated_at
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
       `,
@@ -47,6 +54,19 @@ async function upsertDoctorDirectory(doc) {
   });
 }
 
+function clearDoctorDirectory() {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `DELETE FROM doctor_directory`,
+      [],
+      function (err) {
+        if (err) return reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
 async function run() {
   const csvPath = process.argv[2];
   if (!csvPath) {
@@ -62,13 +82,16 @@ async function run() {
 
   console.log('Importing doctors from', absPath);
 
+  // Clear previous data so we can safely re-import
+  await clearDoctorDirectory();
+
   const parser = fs
     .createReadStream(absPath)
     .pipe(
       parse({
         columns: true,
-        trim: true,
-        skip_empty_lines: true
+        skip_empty_lines: true,
+        trim: true
       })
     );
 
@@ -78,14 +101,12 @@ async function run() {
     const row = normalizeRow(rawRow);
 
     const full_name = row.full_name || '';
-    if (!full_name) {
-      continue;
-    }
+    if (!full_name) continue;
 
-    const specialty = row.specialty || null;
-    const hospital_name = row.hospital_name || null;
-    const area = row.area || null;
-    const phone = row.phone || null;
+    const specialty = row.specialty || '';
+    const hospital_name = row.hospital_name || '';
+    const area = row.area || '';
+    const phone = row.phone || '';
     const source = row.source || 'Imported CSV';
     const raw_id = row.raw_id || null;
 

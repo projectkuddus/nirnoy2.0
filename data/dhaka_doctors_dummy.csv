@@ -1,0 +1,101 @@
+Full Name,Specialty,Hospital Name,Area,Phone,Source,Raw ID
+Prof. Dr. Samia Islam,Cardiologist,BSMMU Dhaka,Khilgaon,+8801115921249,directory,dummy-1
+Dr. Jannat Kabir,Cardiologist,Evercare Hospital Bashundhara,Malibagh,+8801984789611,directory,dummy-2
+Prof. Dr. Afreen Hossain,Neurologist,Dhaka Medical College Hospital,Khilgaon,+8801365766156,directory,dummy-3
+Dr. Farhana Chowdhury,Neurologist,Evercare Hospital Bashundhara,Mirpur,+8801711116152,directory,dummy-4
+Prof. Dr. Afreen Rahman,Endocrinologist,National Heart Foundation Mirpur,Jatrabari,+8801851656049,directory,dummy-5
+Dr. Sabbir Khan,Endocrinologist,United Hospital Dhaka,Old Dhaka,+8801832731585,directory,dummy-6
+Prof. Dr. Tarek Chowdhury,Dermatologist,National Heart Foundation Mirpur,Uttara,+8801689980940,directory,dummy-7
+Dr. Fahim Chowdhury,Dermatologist,Labaid Hospital Dhanmondi,Mohakhali,+8801502296120,directory,dummy-8
+Prof. Dr. Shahriar Kabir,Psychiatrist,Popular Diagnostic Centre Dhanmondi,Malibagh,+8801675254599,directory,dummy-9
+Dr. Shahriar Rahman,Psychiatrist,Ibn Sina Hospital Dhanmondi,Mirpur,+8801901476797,directory,dummy-10
+Prof. Dr. Samia Chowdhury,Pulmonologist,Popular Diagnostic Centre Dhanmondi,Jatrabari,+8801156149784,directory,dummy-11
+Dr. Nadim Rahman,Pulmonologist,BSMMU Dhaka,Mohakhali,+8801943633625,directory,dummy-12
+Prof. Dr. Samia Hasan,Nephrologist,United Hospital Dhaka,Khilgaon,+8801837159381,directory,dummy-13
+Dr. Mahmud Islam,Nephrologist,Square Hospital Dhaka,Mirpur,+8801530561289,directory,dummy-14
+Prof. Dr. Nargis Kabir,Gastroenterologist,Square Hospital Dhaka,Banani,+8801302503461,directory,dummy-15
+Dr. Afreen Ahmed,Gastroenterologist,Evercare Hospital Bashundhara,Old Dhaka,+8801531388458,directory,dummy-16
+Prof. Dr. Nadim Chowdhury,Rheumatologist,National Heart Foundation Mirpur,Old Dhaka,+8801909906659,directory,dummy-17
+Dr. Farhana Islam,Rheumatologist,Holy Family Red Crescent Hospital,Mohakhali,+8801859925796,directory,dummy-18
+Prof. Dr. Afreen Chowdhury,Oncologist,Evercare Hospital Bashundhara,Dhanmondi,+8801288922813,directory,dummy-19
+Dr. Mahmud Rahman,Oncologist,Square Hospital Dhaka,Gulshan,+8801838237203,directory,dummy-20
+Prof. Dr. Tarek Khan,Orthopedic Surgeon,Square Hospital Dhaka,Old Dhaka,+8801420786509,directory,dummy-21
+Dr. Afreen Islam,Orthopedic Surgeon,National Heart Foundation Mirpur,Jatrabari,+8801760864162,directory,dummy-22
+Prof. Dr. Jannat Ahmed,General Surgeon,Dhaka Medical College Hospital,Uttara,+8801577417219,directory,dummy-23
+Dr. Sabbir Ahmed,General Surgeon,Square Hospital Dhaka,Banani,+8801969668100,directory,dummy-24
+Prof. Dr. Farhana Khan,Pediatrician,Square Hospital Dhaka,Mirpur,+8801173135793,directory,dummy-25
+Dr. Nadim Miah,Pediatrician,Evercare Hospital Bashundhara,Dhanmondi,+8801905574104,directory,dummy-26
+Prof. Dr. Shahriar Rahman,Gynecologist,United Hospital Dhaka,Gulshan,+8801803305295,directory,dummy-27
+Dr. Samia Rahman,Gynecologist,BSMMU Dhaka,Khilgaon,+8801663719097,directory,dummy-28
+Prof. Dr. Tarek Islam,Ophthalmologist,Ibn Sina Hospital Dhanmondi,Gulshan,+8801218736482,directory,dummy-29
+Dr. Afreen Kabir,Ophthalmologist,Holy Family Red Crescent Hospital,Mirpur,+8801859733157,directory,dummy-30
+Prof. Dr. Samia Ahmed,ENT Specialist,National Heart Foundation Mirpur,Mohakhali,+8801149993700,directory,dummy-31
+Dr. Sabbir Rahman,ENT Specialist,Evercare Hospital Bashundhara,Jatrabari,+8801694102641,directory,dummy-32
+Prof. Dr. Jannat Rahman,Urologist,United Hospital Dhaka,Banani,+8801529418765,directory,dummy-33
+Dr. Sadia Hasan,Urologist,Square Hospital Dhaka,Khilgaon,+8801380017774,directory,dummy-34
+Prof. Dr. Mahmud Hossain,Hepatologist,BSMMU Dhaka,Old Dhaka,+8801376420428,directory,dummy-35
+Dr. Nadim Khan,Hepatologist,Popular Diagnostic Centre Dhanmondi,Gulshan,+8801970114987,directory,dummy-36
+Prof. Dr. Farhana Rahman,Diabetologist,Popular Diagnostic Centre Dhanmondi,Dhanmondi,+8801602487996,directory,dummy-37
+Dr. Nargis Sarkar,Diabetologist,Labaid Hospital Dhanmondi,Malibagh,+8801890698060,directory,dummy-38
+Prof. Dr. Imran Kabir,General Physician,Dhaka Medical College Hospital,Mohakhali,+8801604321708,directory,dummy-39
+Dr. Saif Ahmed,General Physician,Holy Family Red Crescent Hospital,Old Dhaka,+8801765278786,directory,dummy-40
+Prof. Dr. Sabbir Islam,Infectious Disease Specialist,BSMMU Dhaka,Khilgaon,+8801087478619,directory,dummy-41
+Dr. Tarek Islam,Infectious Disease Specialist,Dhaka Medical College Hospital,Malibagh,+8801105762284,directory,dummy-42
+Prof. Dr. Nadim Hossain,Allergist,Evercare Hospital Bashundhara,Mohakhali,+8801129011511,directory,dummy-43
+Dr. Mahmud Kabir,Allergist,Square Hospital Dhaka,Mirpur,+8801953913516,directory,dummy-44
+Prof. Dr. Imran Rahman,Immunologist,BSMMU Dhaka,Banani,+8801849826994,directory,dummy-45
+Dr. Samia Khan,Immunologist,Evercare Hospital Bashundhara,Jatrabari,+8801578997738,directory,dummy-46
+Prof. Dr. Shahriar Ahmed,Geriatrician,Square Hospital Dhaka,Uttara,+8801033580940,directory,dummy-47
+Dr. Jannat Islam,Geriatrician,United Hospital Dhaka,Dhanmondi,+8801808177374,directory,dummy-48
+Prof. Dr. Imran Islam,Pain Specialist,Holy Family Red Crescent Hospital,Gulshan,+8801673933399,directory,dummy-49
+Dr. Nadim Hasan,Pain Specialist,National Heart Foundation Mirpur,Malibagh,+8801663556015,directory,dummy-50
+Prof. Dr. Afreen Islam,Critical Care Specialist,Evercare Hospital Bashundhara,Old Dhaka,+8801274702022,directory,dummy-51
+Dr. Tarek Kabir,Critical Care Specialist,Square Hospital Dhaka,Mohakhali,+8801350984854,directory,dummy-52
+Prof. Dr. Farhana Kabir,Family Medicine Specialist,United Hospital Dhaka,Mirpur,+8801959008039,directory,dummy-53
+Dr. Saif Islam,Family Medicine Specialist,Dhaka Medical College Hospital,Jatrabari,+8801899712229,directory,dummy-54
+Prof. Dr. Shahriar Miah,Hematologist,Square Hospital Dhaka,Gulshan,+8801698256183,directory,dummy-55
+Dr. Afreen Miah,Hematologist,BSMMU Dhaka,Old Dhaka,+8801307474379,directory,dummy-56
+Prof. Dr. Mahmud Rahman,Neonatologist,Square Hospital Dhaka,Mirpur,+8801719569693,directory,dummy-57
+Dr. Farhana Sarkar,Neonatologist,Evercare Hospital Bashundhara,Banani,+8801097485619,directory,dummy-58
+Prof. Dr. Nargis Rahman,Physical Medicine & Rehab Specialist,BSMMU Dhaka,Mohakhali,+8801454089682,directory,dummy-59
+Dr. Imran Khan,Physical Medicine & Rehab Specialist,National Heart Foundation Mirpur,Mohakhali,+8801968166654,directory,dummy-60
+Prof. Dr. Jannat Rahman,Sports Medicine Specialist,Square Hospital Dhaka,Dhanmondi,+8801192087941,directory,dummy-61
+Dr. Saif Rahman,Sports Medicine Specialist,Evercare Hospital Bashundhara,Banani,+8801155115533,directory,dummy-62
+Prof. Dr. Sabbir Khan,Plastic Surgeon,United Hospital Dhaka,Gulshan,+8801211633491,directory,dummy-63
+Dr. Sadia Khan,Plastic Surgeon,Square Hospital Dhaka,Uttara,+8801399524105,directory,dummy-64
+Prof. Dr. Imran Ahmed,Vascular Surgeon,Dhaka Medical College Hospital,Old Dhaka,+8801903461612,directory,dummy-65
+Dr. Mahmud Ahmed,Vascular Surgeon,BSMMU Dhaka,Khilgaon,+8801429385294,directory,dummy-66
+Prof. Dr. Afreen Hossain,Neurosurgeon,United Hospital Dhaka,Banani,+8801338312214,directory,dummy-67
+Dr. Imran Islam,Neurosurgeon,Square Hospital Dhaka,Dhanmondi,+8801561851412,directory,dummy-68
+Prof. Dr. Sadia Rahman,Dental Surgeon,Evercare Hospital Bashundhara,Jatrabari,+8801995151642,directory,dummy-69
+Dr. Tarek Islam,Dental Surgeon,Square Hospital Dhaka,Mirpur,+8801264993475,directory,dummy-70
+Prof. Dr. Afreen Kabir,Maxillofacial Surgeon,Square Hospital Dhaka,Malibagh,+8801782182515,directory,dummy-71
+Dr. Nargis Kabir,Maxillofacial Surgeon,Ibn Sina Hospital Dhanmondi,Dhanmondi,+8801081719296,directory,dummy-72
+Prof. Dr. Mahmud Khan,Clinical Nutritionist,Square Hospital Dhaka,Mohakhali,+8801263677952,directory,dummy-73
+Dr. Farhana Rahman,Clinical Nutritionist,Evercare Hospital Bashundhara,Uttara,+8801745815058,directory,dummy-74
+Prof. Dr. Jannat Ahmed,Speech Therapist,BSMMU Dhaka,Jatrabari,+8801963816732,directory,dummy-75
+Dr. Nadim Hossain,Speech Therapist,Holy Family Red Crescent Hospital,Old Dhaka,+8801547418858,directory,dummy-76
+Prof. Dr. Farhana Ahmed,Physiotherapist,National Heart Foundation Mirpur,Mirpur,+8801400524709,directory,dummy-77
+Dr. Imran Islam,Physiotherapist,Evercare Hospital Bashundhara,Malibagh,+8801715423159,directory,dummy-78
+Prof. Dr. Saif Rahman,Occupational Therapist,BSMMU Dhaka,Gulshan,+8801430789926,directory,dummy-79
+Dr. Afreen Rahman,Occupational Therapist,Square Hospital Dhaka,Dhanmondi,+8801357246274,directory,dummy-80
+Prof. Dr. Sadia Kabir,Psychologist,Holy Family Red Crescent Hospital,Khilgaon,+8801417271837,directory,dummy-81
+Dr. Jannat Sarkar,Psychologist,BSMMU Dhaka,Banani,+8801358004739,directory,dummy-82
+Prof. Dr. Nargis Ahmed,Child Psychiatrist,BSMMU Dhaka,Mohakhali,+8801635037655,directory,dummy-83
+Dr. Mahmud Kabir,Child Psychiatrist,Square Hospital Dhaka,Mirpur,+8801854589491,directory,dummy-84
+Prof. Dr. Imran Khan,Pediatric Cardiologist,BSMMU Dhaka,Old Dhaka,+8801791880274,directory,dummy-85
+Dr. Saif Kabir,Pediatric Cardiologist,National Heart Foundation Mirpur,Mirpur,+8801866773814,directory,dummy-86
+Prof. Dr. Samia Chowdhury,Pediatric Neurologist,BSMMU Dhaka,Malibagh,+8801758897134,directory,dummy-87
+Dr. Tarek Hossain,Pediatric Neurologist,Square Hospital Dhaka,Khilgaon,+8801163023180,directory,dummy-88
+Prof. Dr. Farhana Islam,Fertility Specialist,United Hospital Dhaka,Banani,+8801428823957,directory,dummy-89
+Dr. Sadia Rahman,Fertility Specialist,Labaid Hospital Dhanmondi,Dhanmondi,+8801041131150,directory,dummy-90
+Prof. Dr. Imran Ahmed,Laparoscopic Surgeon,Square Hospital Dhaka,Old Dhaka,+8801584595434,directory,dummy-91
+Dr. Sabbir Islam,Laparoscopic Surgeon,Evercare Hospital Bashundhara,Gulshan,+8801216343083,directory,dummy-92
+Prof. Dr. Nadim Rahman,Spine Surgeon,Square Hospital Dhaka,Mohakhali,+8801089934900,directory,dummy-93
+Dr. Saif Hossain,Spine Surgeon,United Hospital Dhaka,Uttara,+8801187050055,directory,dummy-94
+Prof. Dr. Jannat Khan,Sleep Medicine Specialist,BSMMU Dhaka,Mirpur,+8801577958594,directory,dummy-95
+Dr. Afreen Rahman,Sleep Medicine Specialist,Square Hospital Dhaka,Malibagh,+8801147564671,directory,dummy-96
+Prof. Dr. Mahmud Islam,Radiologist,Square Hospital Dhaka,Gulshan,+8801189135146,directory,dummy-97
+Dr. Nadim Islam,Radiologist,Evercare Hospital Bashundhara,Dhanmondi,+8801720283963,directory,dummy-98
+Prof. Dr. Tarek Ahmed,Anesthesiologist,Dhaka Medical College Hospital,Old Dhaka,+8801805093212,directory,dummy-99
+Dr. Farhana Miah,Anesthesiologist,BSMMU Dhaka,Jatrabari,+8801438509975,directory,dummy-100

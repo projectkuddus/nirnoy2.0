@@ -1,0 +1,27 @@
+<div class="dashboard-shell">
+  <aside class="dashboard-shell__side">
+    <h2 class="dashboard-shell__brand">Nirnoy</h2>
+    <nav class="dashboard-shell__nav">
+      <ul>
+        <% if (user && user.role === 'doctor') { %>
+          <li><a href="/doctor/dashboard">Today’s queue</a></li>
+          <li><a href="/doctor/patients">My patients</a></li>
+          <li><a href="/doctor/clinics">Clinics</a></li>
+          <li><a href="/doctor/schedule">Schedule</a></li>
+        <% } else if (user && user.role === 'patient') { %>
+          <li><a href="/patient/dashboard">My health queue</a></li>
+          <li><a href="/patient/appointments">All visits</a></li>
+        <% } %>
+        <li><a href="/doctors">Find doctors</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main class="dashboard-shell__main">
+    <% if (typeof renderDashboardBody === 'function') { %>
+      <% renderDashboardBody(); %>
+    <% } else if (typeof body !== 'undefined') { %>
+      <%- body %>
+    <% } %>
+  </main>
+</div>

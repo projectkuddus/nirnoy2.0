@@ -90,4 +90,67 @@ router.get('/consultations/appointment/:id', needPatient, async (req,res)=>{
   res.render('consultation_view',{a,cons:c});
 });
 
+router.get('/patient/export', needPatient, async (req,res)=>{
+  const me = req.session.user;
+
+  const appointments = await all(`
+    SELECT
+      a.id,
+      a.appt_date,
+      a.slot_time,
+      a.status,
+      a.serial_no,
+      a.clinic_id,
+      a.doctor_id,
+      a.for_person_name,
+      a.diagnosis,
+      a.prescription_text,
+      a.advice,
+      du.name AS doctor_name,
+      du.email AS doctor_email,
+      c.name AS clinic_name,
+      c.area AS clinic_area
+    FROM appointments a
+    JOIN doctors d ON d.user_id = a.doctor_id
+    JOIN users du ON du.id = d.user_id
+    LEFT JOIN doctor_clinics c ON c.id = a.clinic_id
+    WHERE a.patient_id = ?
+    ORDER BY a.appt_date, a.slot_time
+  `,[me.id]);
+
+  const exportPayload = {
+    patient: {
+      id: me.id,
+      name: me.name,
+      email: me.email
+    },
+    generated_at: new Date().toISOString(),
+    appointments
+  };
+
+  const fileName = `nirnoy_patient_${me.id}_${new Date().toISOString().slice(0,10)}.json`;
+  res.setHeader('Content-Type','application/json');
+  res.setHeader('Content-Disposition',`attachment; filename="${fileName}"`);
+  res.send(JSON.stringify(exportPayload,null,2));
+});
+
+router.get('/patient/appointments', needPatient, async (req, res) => {
+  const me = req.session.user;
+
+  const items = await all(`
+    SELECT
+      a.*,
+      du.name AS doctor_name,
+      c.name AS clinic_name
+    FROM appointments a
+    JOIN doctors d ON d.user_id = a.doctor_id
+    JOIN users du ON du.id = d.user_id
+    LEFT JOIN doctor_clinics c ON c.id = a.clinic_id
+    WHERE a.patient_id = ?
+    ORDER BY a.appt_date DESC, a.slot_time DESC
+  `, [me.id]);
+
+  res.render('patient_appointments', { items });
+});
+
 module.exports=router;

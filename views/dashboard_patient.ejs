@@ -1,58 +1,68 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
 
-<div class="wrap patient-dashboard">
-  <header class="page-header">
-    <p class="eyebrow">Patient dashboard</p>
-    <h1>Your health queue</h1>
-    <p class="page-subtitle">
-      See your upcoming visits and past appointments in one place.
-    </p>
-  </header>
+<% function renderDashboardBody() { %>
+  <section class="patient-dashboard">
+    <div class="wrap">
+      <header class="page-header">
+        <p class="eyebrow">Patient dashboard</p>
+        <h1>Your health queue</h1>
+        <p class="page-subtitle">
+          See your upcoming visits and past appointments in one place.
+        </p>
+      </header>
 
-  <% if (!upcoming || !upcoming.length) { %>
-    <p class="empty">
-      You don’t have any upcoming appointments yet.
-      <a href="/doctors">Find a doctor to book now.</a>
-    </p>
-  <% } else { %>
-    <section class="appt-section">
-      <h2>Upcoming appointments</h2>
-      <div class="appt-grid">
-        <% upcoming.forEach(a => { %>
-          <article class="appt-card">
-            <p class="appt-card__label">Appointment</p>
-            <h3 class="appt-card__title">
-              <%= a.doctor_name || 'Doctor' %>
-            </h3>
-            <p class="appt-card__meta">
-              <span><%= a.clinic_name || 'Clinic' %></span>
-              <% if (a.appt_date && a.slot_time) { %>
-                · <span><%= a.appt_date %> at <%= a.slot_time %></span>
-              <% } %>
-            </p>
-            <% if (a.status) { %>
-              <p class="appt-card__status">
-                Status: <span><%= a.status %></span>
-              </p>
-            <% } %>
-            <% if (typeof a.position === 'number') { %>
-              <p class="appt-card__queue">
-                You are <strong>#<%= a.position %></strong> in line
-                <% if (typeof a.etaMinutes === 'number') { %>
-                  · ETA ~<%= a.etaMinutes %> min
-                <% } %>
-              </p>
-            <% } %>
-            <div class="appt-card__actions">
-              <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
-              <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
-            </div>
-          </article>
-        <% }) %>
+      <div style="margin: 8px 0 16px;">
+        <a href="/patient/export" class="btn ghost">Download my data (JSON)</a>
       </div>
-    </section>
-  <% } %>
-</div>
+
+      <% if (!upcoming || !upcoming.length) { %>
+        <p class="empty">
+          You don’t have any upcoming appointments yet.
+          <a href="/doctors">Find a doctor to book now.</a>
+        </p>
+      <% } else { %>
+        <section class="appt-section">
+          <h2>Upcoming appointments</h2>
+          <div class="appt-grid">
+            <% upcoming.forEach(a => { %>
+              <article class="appt-card">
+                <p class="appt-card__label">Appointment</p>
+                <h3 class="appt-card__title">
+                  <%= a.doctor_name || 'Doctor' %>
+                </h3>
+                <p class="appt-card__meta">
+                  <span><%= a.clinic_name || 'Clinic' %></span>
+                  <% if (a.appt_date && a.slot_time) { %>
+                    · <span><%= a.appt_date %> at <%= a.slot_time %></span>
+                  <% } %>
+                </p>
+                <% if (a.status) { %>
+                  <p class="appt-card__status">
+                    Status: <span><%= a.status %></span>
+                  </p>
+                <% } %>
+                <% if (typeof a.position === 'number') { %>
+                  <p class="appt-card__queue">
+                    You are <strong>#<%= a.position %></strong> in line
+                    <% if (typeof a.etaMinutes === 'number') { %>
+                      · ETA ~<%= a.etaMinutes %> min
+                    <% } %>
+                  </p>
+                <% } %>
+                <div class="appt-card__actions">
+                  <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
+                  <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </section>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
+<%- include('partials/dashboard_shell') %>
 
 <%- include('_footer') %>

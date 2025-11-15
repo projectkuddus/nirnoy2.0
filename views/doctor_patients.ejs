@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<% function renderDashboardBody() { %>
+  <section class="doctor-dashboard">
+    <div class="wrap">
+      <header class="page-header">
+        <p class="eyebrow">Doctor</p>
+        <h1>My patients</h1>
+        <p class="page-subtitle">
+          A list of everyone you’ve seen through Nirnoy.
+        </p>
+      </header>
+
+      <% if (!patients || !patients.length) { %>
+        <p class="empty">
+          You don’t have any patients yet. Once appointments are completed through Nirnoy, they will appear here.
+        </p>
+      <% } else { %>
+        <div class="card">
+          <table class="queue-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>First visit</th>
+                <th>Last visit</th>
+                <th>Total visits</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% patients.forEach(p => { %>
+                <tr>
+                  <td>
+                    <strong><%= p.patient_name || '' %></strong><br>
+                    <span style="font-size: 0.8rem; color: #6b7280;">
+                      <%= p.patient_email || '' %>
+                    </span>
+                  </td>
+                  <td><%= p.first_visit || '-' %></td>
+                  <td><%= p.last_visit || '-' %></td>
+                  <td><%= p.total_visits || 0 %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </section>
+<% } %>
+
+<%- include('partials/dashboard_shell') %>
+
+<%- include('_footer') %>
