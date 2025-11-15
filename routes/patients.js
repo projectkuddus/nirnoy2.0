@@ -75,7 +75,38 @@ router.get('/patient/dashboard', needPatient, async (req,res)=>{
     ORDER BY a.appt_date DESC, a.slot_time DESC
   `,[me.id, today]);
 
-  res.render('dashboard_patient',{upcoming,past});
+  const upcomingRow = await get(`
+    SELECT COUNT(*) AS cnt
+    FROM appointments
+    WHERE patient_id = ?
+      AND appt_date >= date('now','localtime')
+  `,[me.id]);
+
+  const pastRow = await get(`
+    SELECT COUNT(*) AS cnt
+    FROM appointments
+    WHERE patient_id = ?
+      AND appt_date < date('now','localtime')
+  `,[me.id]);
+
+  const uniqueDoctorsRow = await get(`
+    SELECT COUNT(DISTINCT doctor_id) AS cnt
+    FROM appointments
+    WHERE patient_id = ?
+  `,[me.id]);
+
+  const stats = {
+    upcomingCount: upcomingRow ? upcomingRow.cnt : 0,
+    pastCount: pastRow ? pastRow.cnt : 0,
+    uniqueDoctors: uniqueDoctorsRow ? uniqueDoctorsRow.cnt : 0
+  };
+
+  let nextAppointment=null;
+  if(upcoming && upcoming.length){
+    nextAppointment=upcoming[0];
+  }
+
+  res.render('dashboard_patient',{upcoming,past,stats,nextAppointment});
 });
 
 router.get('/consultations/appointment/:id', needPatient, async (req,res)=>{

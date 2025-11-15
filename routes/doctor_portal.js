@@ -45,6 +45,16 @@ router.get('/doctor/dashboard', needDoctor, async (req,res,next)=>{
         position++;
       }
     }
+    let nextAppt=null;
+    if(appointments && appointments.length){
+      for(const appt of appointments){
+        const status=(appt.status||'').toLowerCase();
+        if(!nonQueueStatuses.has(status)){
+          nextAppt=appt;
+          break;
+        }
+      }
+    }
 
     const todayStatsRow = await get(`
       SELECT COUNT(*) AS cnt
@@ -78,7 +88,8 @@ router.get('/doctor/dashboard', needDoctor, async (req,res,next)=>{
       appointments,
       visitDuration,
       runningLateMinutes,
-      stats
+      stats,
+      nextAppt
     });
   }catch(err){
     next(err);
@@ -105,6 +116,79 @@ router.get('/doctor/patients', needDoctor, async (req, res, next) => {
     `, [userId]);
 
     res.render('doctor_patients', { patients: rows });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/doctor/patients/:patientId', needDoctor, async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    const patientId = parseInt(req.params.patientId, 10);
+    if (!patientId) {
+      return res.status(404).render('404', { user });
+    }
+
+    const doctorRow = await get(
+      `
+      SELECT d.id AS doctor_id
+      FROM doctors d
+      WHERE d.user_id = ?
+      `,
+      [user.id]
+    );
+    if (!doctorRow) {
+      return res.status(404).render('404', { user });
+    }
+    const doctorId = doctorRow.doctor_id;
+
+    const patientSummary = await get(
+      `
+      SELECT
+        u.id AS id,
+        u.name,
+        u.email,
+        MIN(a.appt_date) AS first_visit,
+        MAX(a.appt_date) AS last_visit,
+        COUNT(*) AS total_visits
+      FROM appointments a
+      JOIN users u ON u.id = a.patient_id
+      WHERE a.doctor_id = ?
+        AND a.patient_id = ?
+      `,
+      [doctorId, patientId]
+    );
+
+    if (!patientSummary) {
+      return res.status(404).render('404', { user });
+    }
+
+    const visits = await all(
+      `
+      SELECT
+        a.id,
+        a.appt_date,
+        a.slot_time,
+        a.status,
+        c.name AS clinic_name,
+        c.area AS clinic_area,
+        co.diagnosis_summary
+      FROM appointments a
+      LEFT JOIN doctor_clinics c ON c.id = a.clinic_id
+      LEFT JOIN consultations co ON co.appointment_id = a.id
+      WHERE a.doctor_id = ?
+        AND a.patient_id = ?
+      ORDER BY a.appt_date DESC, a.slot_time DESC, a.id DESC
+      `,
+      [doctorId, patientId]
+    );
+
+    res.render('doctor_patient_detail', {
+      user,
+      doctor: doctorRow,
+      patient: patientSummary,
+      visits
+    });
   } catch (err) {
     next(err);
   }

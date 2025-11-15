@@ -2,65 +2,140 @@
 <%- include('partials/flash') %>
 
 <% function renderDashboardBody() { %>
-  <section class="patient-dashboard">
-    <div class="wrap">
-      <header class="page-header">
-        <p class="eyebrow">Patient dashboard</p>
-        <h1>Your health queue</h1>
-        <p class="page-subtitle">
-          See your upcoming visits and past appointments in one place.
-        </p>
-      </header>
+  <div class="wrap dashboard-page">
+    <div class="dashboard-layout">
+      <aside class="dashboard-nav">
+        <h2 class="dashboard-nav__title">My health</h2>
+        <ul class="dashboard-nav__list">
+          <li class="dashboard-nav__item dashboard-nav__item--active">
+            <a href="/patient/dashboard">Overview</a>
+          </li>
+          <li class="dashboard-nav__item">
+            <a href="/patient/appointments">All appointments</a>
+          </li>
+          <li class="dashboard-nav__item">
+            <a href="/patient/export">Download data (JSON)</a>
+          </li>
+        </ul>
+      </aside>
 
-      <div style="margin: 8px 0 16px;">
-        <a href="/patient/export" class="btn ghost">Download my data (JSON)</a>
-      </div>
+      <section class="dashboard-main patient-dashboard">
+        <header class="page-header">
+          <p class="eyebrow">Patient dashboard</p>
+          <h1>Your health queue</h1>
+          <p class="page-subtitle">
+            See your upcoming visits and past appointments in one place.
+          </p>
+        </header>
 
-      <% if (!upcoming || !upcoming.length) { %>
-        <p class="empty">
-          You don’t have any upcoming appointments yet.
-          <a href="/doctors">Find a doctor to book now.</a>
-        </p>
-      <% } else { %>
-        <section class="appt-section">
-          <h2>Upcoming appointments</h2>
-          <div class="appt-grid">
-            <% upcoming.forEach(a => { %>
-              <article class="appt-card">
-                <p class="appt-card__label">Appointment</p>
-                <h3 class="appt-card__title">
-                  <%= a.doctor_name || 'Doctor' %>
-                </h3>
-                <p class="appt-card__meta">
-                  <span><%= a.clinic_name || 'Clinic' %></span>
-                  <% if (a.appt_date && a.slot_time) { %>
-                    · <span><%= a.appt_date %> at <%= a.slot_time %></span>
-                  <% } %>
-                </p>
-                <% if (a.status) { %>
-                  <p class="appt-card__status">
-                    Status: <span><%= a.status %></span>
-                  </p>
-                <% } %>
-                <% if (typeof a.position === 'number') { %>
-                  <p class="appt-card__queue">
-                    You are <strong>#<%= a.position %></strong> in line
-                    <% if (typeof a.etaMinutes === 'number') { %>
-                      · ETA ~<%= a.etaMinutes %> min
-                    <% } %>
-                  </p>
-                <% } %>
-                <div class="appt-card__actions">
-                  <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
-                  <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
-                </div>
-              </article>
-            <% }) %>
+        <% if (nextAppointment) { %>
+          <section class="card" style="margin-bottom: 14px;">
+            <p class="eyebrow">Next appointment</p>
+            <h2 style="margin: 4px 0 4px;">
+              <%= nextAppointment.doctor_name || nextAppointment.doctor || 'Doctor' %>
+            </h2>
+            <p class="page-subtitle">
+              <%= nextAppointment.clinic_name || '' %>
+            </p>
+            <p style="margin: 8px 0 0; font-size: 0.9rem;">
+              <strong>Date:</strong> <%= nextAppointment.appt_date %>
+              &nbsp; · &nbsp;
+              <strong>Time:</strong> <%= nextAppointment.slot_time %>
+            </p>
+            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #6b7280;">
+              Status: <%= nextAppointment.status || 'booked' %>
+            </p>
+            <div style="margin-top: 10px;">
+              <a href="/appointments/<%= nextAppointment.id %>" class="btn ghost btn-xs">
+                View details
+              </a>
+            </div>
+          </section>
+        <% } %>
+
+        <section class="patient-stats">
+          <div class="stats-grid">
+            <div class="card stat-card">
+              <p class="stat-label">Upcoming visits</p>
+              <p class="stat-value"><%= (stats && stats.upcomingCount) || 0 %></p>
+            </div>
+            <div class="card stat-card">
+              <p class="stat-label">Past visits</p>
+              <p class="stat-value"><%= (stats && stats.pastCount) || 0 %></p>
+            </div>
+            <div class="card stat-card">
+              <p class="stat-label">Doctors seen</p>
+              <p class="stat-value"><%= (stats && stats.uniqueDoctors) || 0 %></p>
+            </div>
           </div>
         </section>
-      <% } %>
+
+        <% if (nextAppointment) { %>
+          <section class="card next-appointment">
+            <p class="eyebrow">Next appointment</p>
+            <h2 style="margin:4px 0;"><%= nextAppointment.doctor_name || 'Doctor' %></h2>
+            <p class="page-subtitle">
+              <%= nextAppointment.clinic_name || 'Clinic' %>
+              <% if (nextAppointment.appt_date && nextAppointment.slot_time) { %>
+                · <%= nextAppointment.appt_date %> at <%= nextAppointment.slot_time %>
+              <% } %>
+            </p>
+            <% if (nextAppointment.status) { %>
+              <p class="appt-card__status">Status: <span><%= nextAppointment.status %></span></p>
+            <% } %>
+            <div class="appt-card__actions">
+              <a href="/appointments/<%= nextAppointment.id %>/status" class="btn primary btn-xs">View status</a>
+              <a href="/appointments/<%= nextAppointment.id %>/print" target="_blank" class="btn ghost btn-xs">Print</a>
+            </div>
+          </section>
+        <% } %>
+
+        <% if (!upcoming || !upcoming.length) { %>
+          <p class="empty">
+            You don’t have any upcoming appointments yet.
+            <a href="/doctors">Find a doctor to book now.</a>
+          </p>
+        <% } else { %>
+          <section class="appt-section">
+            <h2>Upcoming appointments</h2>
+            <div class="appt-grid">
+              <% upcoming.forEach(a => { %>
+                <article class="appt-card">
+                  <p class="appt-card__label">Appointment</p>
+                  <h3 class="appt-card__title">
+                    <%= a.doctor_name || 'Doctor' %>
+                  </h3>
+                  <p class="appt-card__meta">
+                    <span><%= a.clinic_name || 'Clinic' %></span>
+                    <% if (a.appt_date && a.slot_time) { %>
+                      · <span><%= a.appt_date %> at <%= a.slot_time %></span>
+                    <% } %>
+                  </p>
+                  <% if (a.status) { %>
+                    <p class="appt-card__status">
+                      Status: <span><%= a.status %></span>
+                    </p>
+                  <% } %>
+                  <% if (typeof a.position === 'number') { %>
+                    <p class="appt-card__queue">
+                      You are <strong>#<%= a.position %></strong> in line
+                      <% if (typeof a.etaMinutes === 'number') { %>
+                        · ETA ~<%= a.etaMinutes %> min
+                      <% } %>
+                    </p>
+                  <% } %>
+                  <div class="appt-card__actions">
+                    <a href="/appointments/<%= a.id %>/status" class="btn ghost">Live status</a>
+                    <a href="/appointments/<%= a.id %>/print" target="_blank" class="btn primary">Print</a>
+                  </div>
+                </article>
+              <% }) %>
+            </div>
+          </section>
+        <% } %>
+      </section>
     </div>
-  </section>
+  </div>
 <% } %>
 
 <%- include('partials/dashboard_shell') %>

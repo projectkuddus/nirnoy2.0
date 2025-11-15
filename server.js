@@ -98,4 +98,31 @@ app.get('/debug/me',blockInProduction,(req,res)=>{res.type('json').send(JSON.str
 app.get('/debug/outbox',blockInProduction,(req,res)=>{const p=path.join(__dirname,'outbox.log');if(!fs.existsSync(p))return res.type('text').send('(empty)');res.type('text').send(fs.readFileSync(p,'utf8'));});
 require('./jobs');
 
+// 404 handler (must be after all routes)
+app.use((req, res, next) => {
+  res.status(404);
+  const user = req.session ? req.session.user : null;
+  try {
+    return res.render('404', { user });
+  } catch (e) {
+    return res.send('Not found');
+  }
+});
+
+// Generic error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  const status = err.status || 500;
+  const user = req.session ? req.session.user : null;
+  res.status(status);
+  try {
+    return res.render('500', { user, error: err });
+  } catch (e) {
+    return res.send('Something went wrong');
+  }
+});
+
 app.listen(3000,()=>console.log('Nirnoy 2.0 running at http://localhost:3000'));

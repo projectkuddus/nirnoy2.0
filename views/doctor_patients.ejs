@@ -31,7 +31,9 @@
               <% patients.forEach(p => { %>
                 <tr>
                   <td>
-                    <strong><%= p.patient_name || '' %></strong><br>
+                    <a href="/doctor/patients/<%= p.patient_id || p.id %>">
+                      <strong><%= p.patient_name || '' %></strong>
+                    </a><br>
                     <span style="font-size: 0.8rem; color: #6b7280;">
                       <%= p.patient_email || '' %>
                     </span>

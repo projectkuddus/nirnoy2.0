@@ -1,69 +1,128 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
-<!doctype html><html><body>
-<div class="wrap">
-  <h2>Admin — Doctors</h2>
 
-  <div class="card">
-    <h3>Pending / Rejected</h3>
-    <% if (!pending.length) { %><p>No pending/rejected doctors.</p><% } else { %>
-    <table>
-      <tr><th>Name</th><th>Email</th><th>Status</th><th>BMDC</th><th>Specialty</th><th>Area</th><th>Fee</th><th>Visit (min)</th><th>Actions</th></tr>
-      <% pending.forEach(d=>{ %>
-      <tr>
-        <form method="post" action="/admin/doctors/<%= d.uid %>/update">
-          <%- include('partials/csrf') %>
-          <td><%= d.name %></td>
-          <td><%= d.email %></td>
-          <td><%= d.status %></td>
-          <td><input name="bmdc_no" value="<%= d.bmdc_no %>" style="width:110px"></td>
-          <td><input name="specialty" value="<%= d.specialty %>" style="width:140px"></td>
-          <td><input name="area" value="<%= d.area %>" style="width:120px"></td>
-          <td><input type="number" name="fee" value="<%= d.fee %>" style="width:90px" min="0"></td>
-          <td><input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" style="width:90px" min="5"></td>
-          <td style="white-space:nowrap">
-            <button>Save</button>
-        </form>
-            <form method="post" action="/admin/doctors/<%= d.uid %>/approve" style="display:inline">
-              <%- include('partials/csrf') %>
-              <button>Approve</button>
-            </form>
-            <form method="post" action="/admin/doctors/<%= d.uid %>/reject" style="display:inline">
-              <%- include('partials/csrf') %>
-              <button>Reject</button>
-            </form>
-          </td>
-      </tr>
-      <% }) %>
-    </table>
-    <% } %>
-  </div>
+<div class="wrap admin-page">
+  <header class="page-header">
+    <p class="eyebrow">Admin</p>
+    <h1>Doctors</h1>
+    <p class="page-subtitle">
+      Review, approve, and update doctors on Nirnoy.
+    </p>
+  </header>
 
-  <div class="card" style="margin-top:16px">
-    <h3>Approved</h3>
-    <% if (!approved.length) { %><p>No approved doctors.</p><% } else { %>
-    <table>
-      <tr><th>Name</th><th>Email</th><th>BMDC</th><th>Specialty</th><th>Area</th><th>Fee</th><th>Visit (min)</th><th>Actions</th></tr>
-      <% approved.forEach(d=>{ %>
-      <tr>
-        <form method="post" action="/admin/doctors/<%= d.uid %>/update">
-          <%- include('partials/csrf') %>
-          <td><%= d.name %></td>
-          <td><%= d.email %></td>
-          <td><input name="bmdc_no" value="<%= d.bmdc_no %>" style="width:110px"></td>
-          <td><input name="specialty" value="<%= d.specialty %>" style="width:140px"></td>
-          <td><input name="area" value="<%= d.area %>" style="width:120px"></td>
-          <td><input type="number" name="fee" value="<%= d.fee %>" style="width:90px" min="0"></td>
-          <td><input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" style="width:90px" min="5"></td>
-          <td style="white-space:nowrap">
-            <button>Save</button>
-          </td>
-        </form>
-      </tr>
-      <% }) %>
-    </table>
-    <% } %>
-  </div>
+  <section class="admin-section">
+    <div class="card">
+      <h2 class="section-title">Pending / rejected</h2>
+      <% if (!pending || !pending.length) { %>
+        <p class="empty">No pending or rejected doctors right now.</p>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>BMDC</th>
+              <th>Specialty</th>
+              <th>Area</th>
+              <th>Fee (BDT)</th>
+              <th>Visit (min)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% pending.forEach(d => { %>
+              <tr>
+                <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+                  <%- include('partials/csrf') %>
+                  <td><%= d.name || '-' %></td>
+                  <td><%= d.email || '-' %></td>
+                  <td><%= d.status || '-' %></td>
+                  <td>
+                    <input type="text" name="bmdc_no" value="<%= d.bmdc_no %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="text" name="specialty" value="<%= d.specialty %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="text" name="area" value="<%= d.area %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="number" name="fee" value="<%= d.fee %>" min="0" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" min="5" class="input-sm">
+                  </td>
+                  <td class="admin-table__actions">
+                    <button type="submit" class="btn primary btn-xs">Save</button>
+                </form>
+                    <form method="post" action="/admin/doctors/<%= d.uid %>/approve" class="inline-form">
+                      <%- include('partials/csrf') %>
+                      <button type="submit" class="btn ghost btn-xs">Approve</button>
+                    </form>
+                    <form method="post" action="/admin/doctors/<%= d.uid %>/reject" class="inline-form">
+                      <%- include('partials/csrf') %>
+                      <button type="submit" class="btn ghost btn-xs">Reject</button>
+                    </form>
+                  </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+
+    <div class="card admin-card--spaced">
+      <h2 class="section-title">Approved</h2>
+      <% if (!approved || !approved.length) { %>
+        <p class="empty">No approved doctors yet.</p>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>BMDC</th>
+              <th>Specialty</th>
+              <th>Area</th>
+              <th>Fee (BDT)</th>
+              <th>Visit (min)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% approved.forEach(d => { %>
+              <tr>
+                <form method="post" action="/admin/doctors/<%= d.uid %>/update">
+                  <%- include('partials/csrf') %>
+                  <td><%= d.name || '-' %></td>
+                  <td><%= d.email || '-' %></td>
+                  <td>
+                    <input type="text" name="bmdc_no" value="<%= d.bmdc_no %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="text" name="specialty" value="<%= d.specialty %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="text" name="area" value="<%= d.area %>" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="number" name="fee" value="<%= d.fee %>" min="0" class="input-sm">
+                  </td>
+                  <td>
+                    <input type="number" name="visit_duration_minutes" value="<%= d.visit_duration_minutes %>" min="5" class="input-sm">
+                  </td>
+                  <td class="admin-table__actions">
+                    <button type="submit" class="btn primary btn-xs">Save</button>
+                  </td>
+                </form>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </section>
 </div>
+
 <%- include('_footer') %>
-</body></html>

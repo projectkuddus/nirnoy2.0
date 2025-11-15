@@ -1,117 +1,133 @@
 <%- include('partials/header') %>
 <%- include('partials/flash') %>
 
-<div class="wrap doctors-page">
+<div class="wrap doctor-directory">
   <header class="page-header">
     <p class="eyebrow">Find a doctor</p>
-    <h1>Doctors in Dhaka</h1>
+    <h1>Search doctors in Dhaka</h1>
     <p class="page-subtitle">
-      Search by name, specialty, hospital or area. Book online with doctors who are live on Nirnoy.
+      Browse by hospital, specialty and area. Sign in only when you’re ready to book.
     </p>
   </header>
 
-  <section class="doctors-filters">
-    <form method="get" action="/doctors" class="doctors-search-form">
-      <div class="field field--full">
-        <label for="q">Search</label>
+  <!-- Search + filters -->
+  <form method="get" action="/doctors" class="doctor-filters">
+    <div class="doctor-filters__row">
+      <div class="field field--wide">
         <input
-          id="q"
           type="text"
           name="q"
+          placeholder="Search by name, specialty, hospital…"
           value="<%= selected && selected.q ? selected.q : '' %>"
-          placeholder="Type name, specialty, hospital or area…"
-        >
+        />
       </div>
 
-      <div class="doctors-filters__row">
-        <div class="field">
-          <label for="area">Area</label>
-          <select id="area" name="area">
-            <option value="">Any area</option>
-            <% if (filters && filters.areas) { %>
-              <% filters.areas.forEach(a => { %>
-                <option value="<%= a %>" <%= selected.area === a ? 'selected' : '' %>><%= a %></option>
-              <% }) %>
-            <% } %>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="hospital">Hospital / clinic</label>
-          <select id="hospital" name="hospital">
-            <option value="">Any hospital</option>
-            <% if (filters && filters.hospitals) { %>
-              <% filters.hospitals.forEach(h => { %>
-                <option value="<%= h %>" <%= selected.hospital === h ? 'selected' : '' %>><%= h %></option>
-              <% }) %>
-            <% } %>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="specialty">Specialty</label>
-          <select id="specialty" name="specialty">
-            <option value="">Any specialty</option>
-            <% if (filters && filters.specialties) { %>
-              <% filters.specialties.forEach(s => { %>
-                <option value="<%= s %>" <%= selected.specialty === s ? 'selected' : '' %>><%= s %></option>
-              <% }) %>
-            <% } %>
-          </select>
-        </div>
-
-        <div class="field field--actions">
-          <button type="submit" class="btn primary">Search</button>
-        </div>
+      <div class="field">
+        <select name="specialty">
+          <option value="">All specialties</option>
+          <% if (filters && filters.specialties) { %>
+            <% filters.specialties.forEach(s => { %>
+              <option value="<%= s %>" <%= selected.specialty === s ? 'selected' : '' %>><%= s %></option>
+            <% }) %>
+          <% } %>
+        </select>
       </div>
-    </form>
-  </section>
 
+      <div class="field">
+        <select name="area">
+          <option value="">All areas</option>
+          <% if (filters && filters.areas) { %>
+            <% filters.areas.forEach(a => { %>
+              <option value="<%= a %>" <%= selected.area === a ? 'selected' : '' %>><%= a %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="field">
+        <select name="hospital">
+          <option value="">All clinics / hospitals</option>
+          <% if (filters && filters.hospitals) { %>
+            <% filters.hospitals.forEach(h => { %>
+              <option value="<%= h %>" <%= selected.hospital === h ? 'selected' : '' %>><%= h %></option>
+            <% }) %>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="field">
+        <select name="sort">
+          <option value="">Sort: A–Z</option>
+          <option value="fee_asc" <%= selected.sort === 'fee_asc' ? 'selected' : '' %>>Fee: low to high</option>
+          <option value="fee_desc" <%= selected.sort === 'fee_desc' ? 'selected' : '' %>>Fee: high to low</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <button type="submit" class="btn primary">Search</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Results -->
   <% if (!doctors || !doctors.length) { %>
-    <p class="empty">
-      No doctors found for this filter. Try clearing some filters or changing your search text.
-    </p>
+    <p class="empty">No doctors match your search yet.</p>
   <% } else { %>
-    <section class="doctors-grid">
+    <div class="doctor-grid">
       <% doctors.forEach(d => { %>
-        <article class="doctor-card">
-          <header class="doctor-card__header">
-            <h2 class="doctor-card__name">
-              <%= d.display_name || d.full_name || d.name %>
-            </h2>
-            <p class="doctor-card__specialty">
-              <%= d.specialty || 'General consultation' %>
+        <article class="doctor-card <%= d.source === 'directory' ? 'doctor-card--directory' : '' %>">
+          <% if (d.photo_url) { %>
+            <div class="doctor-card__photo">
+              <img src="<%= d.photo_url %>" alt="Photo of <%= d.name %>">
+            </div>
+          <% } %>
+          <div class="doctor-card__body">
+            <% if (d.source === 'nirnoy' && d.did) { %>
+              <h2>
+                <a href="/doctors/<%= d.did %>" class="doctor-card__name-link">
+                  <%= d.name %>
+                </a>
+              </h2>
+            <% } else { %>
+              <h2 class="doctor-card__name">
+                <%= d.name %>
+              </h2>
+            <% } %>
+            <p class="doctor-card__meta">
+              <span><%= d.specialty || 'General physician' %></span>
+              <% if (d.area || d.clinic_city) { %>
+                · <span><%= d.area || d.clinic_city %></span>
+              <% } %>
             </p>
-            <% if (d.area || d.clinic_city) { %>
-              <p class="doctor-card__meta">
-                <span><%= d.area || d.clinic_city %></span>
-              </p>
-            <% } %>
             <% if (d.clinic_name) { %>
-              <p class="doctor-card__meta">
-                <span><%= d.clinic_name %></span>
+              <p class="doctor-card__clinic">
+                <%= d.clinic_name %>
               </p>
             <% } %>
-          </header>
-
-          <footer class="doctor-card__footer">
-            <% if (d.canBook) { %>
-              <span class="doctor-card__badge doctor-card__badge--live">
-                Online booking via Nirnoy
-              </span>
+            <% if (d.fee) { %>
+              <p class="doctor-card__fee">
+                ৳ <%= d.fee %> per visit
+              </p>
+            <% } %>
+            <% if (d.source === 'directory') { %>
+              <p class="doctor-card__badge">
+                Public listing — not yet online with Nirnoy
+              </p>
               <div class="doctor-card__actions">
-                <a href="<%= d.did ? '/doctors/' + d.did : '#' %>" class="btn ghost btn-xs">View profile</a>
-                <a href="<%= d.uid ? ('/book?doctorId=' + d.uid) : '#' %>" class="btn primary btn-xs">Book</a>
+                <button type="button" class="btn ghost" disabled>
+                  Not bookable yet
+                </button>
               </div>
             <% } else { %>
-              <span class="doctor-card__badge">
-                Public listing — not yet online
-              </span>
+              <div class="doctor-card__actions">
+                <a href="/doctors/<%= d.did %>" class="btn ghost">View profile</a>
+                <a href="/book?doctorId=<%= d.uid %>" class="btn primary">Book</a>
+              </div>
             <% } %>
-          </footer>
+          </div>
         </article>
       <% }) %>
-    </section>
+    </div>
   <% } %>
 </div>
 

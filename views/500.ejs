@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<div class="wrap dashboard-page">
+  <div class="card" style="margin-top: 32px; text-align: center;">
+    <p class="eyebrow">Error</p>
+    <h1>Something went wrong</h1>
+    <p class="page-subtitle">
+      We hit an unexpected problem while loading this page.
+    </p>
+
+    <div style="margin-top: 16px;">
+      <a href="/" class="btn primary">Back to home</a>
+      <a href="/patient/dashboard" class="btn ghost" style="margin-left: 8px;">My dashboard</a>
+    </div>
+
+    <% if (process.env.NODE_ENV !== 'production' && error) { %>
+      <pre style="text-align:left; margin-top:16px; font-size:12px; white-space:pre-wrap;"><%= error.stack || error %></pre>
+    <% } %>
+  </div>
+</div>
+
+<%- include('_footer') %>

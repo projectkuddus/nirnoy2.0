@@ -1,0 +1,105 @@
+<%- include('partials/header') %>
+<%- include('partials/flash') %>
+
+<div class="wrap dashboard-page">
+  <div class="dashboard-layout">
+    <aside class="dashboard-nav">
+      <h2 class="dashboard-nav__title">Doctor portal</h2>
+      <ul class="dashboard-nav__list">
+        <li class="dashboard-nav__item">
+          <a href="/doctor/dashboard">Overview</a>
+        </li>
+        <li class="dashboard-nav__item">
+          <a href="/doctor/clinics">Clinics</a>
+        </li>
+        <li class="dashboard-nav__item">
+          <a href="/doctor/schedule">Schedule</a>
+        </li>
+        <li class="dashboard-nav__item dashboard-nav__item--active">
+          <a href="/doctor/patients">My patients</a>
+        </li>
+      </ul>
+    </aside>
+
+    <section class="dashboard-main">
+      <header class="page-header">
+        <p class="eyebrow">Patient</p>
+        <h1><%= patient && patient.name ? patient.name : 'Patient' %></h1>
+        <p class="page-subtitle">
+          <%= patient && patient.email ? patient.email : '' %>
+        </p>
+      </header>
+
+      <section class="card" style="margin-bottom: 14px;">
+        <div style="display:flex; flex-wrap:wrap; gap:16px;">
+          <div>
+            <p style="margin:0; font-size:0.85rem; color:#6b7280;">First visit</p>
+            <p style="margin:0; font-size:0.95rem;">
+              <%= patient && patient.first_visit ? patient.first_visit : '—' %>
+            </p>
+          </div>
+          <div>
+            <p style="margin:0; font-size:0.85rem; color:#6b7280;">Last visit</p>
+            <p style="margin:0; font-size:0.95rem;">
+              <%= patient && patient.last_visit ? patient.last_visit : '—' %>
+            </p>
+          </div>
+          <div>
+            <p style="margin:0; font-size:0.85rem; color:#6b7280;">Total visits</p>
+            <p style="margin:0; font-size:0.95rem;">
+              <%= patient && patient.total_visits ? patient.total_visits : 0 %>
+            </p>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <a href="/doctor/patients" class="btn ghost btn-xs">← Back to My patients</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 style="margin:0 0 8px; font-size:1rem;">Visit history</h2>
+        <% if (!visits || !visits.length) { %>
+          <p class="empty">No appointments found with this patient yet.</p>
+        <% } else { %>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Clinic</th>
+                <th>Status</th>
+                <th>Summary</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% visits.forEach(v => { %>
+                <tr>
+                  <td><%= v.appt_date %></td>
+                  <td><%= v.slot_time %></td>
+                  <td>
+                    <%= v.clinic_name || '' %>
+                    <% if (v.clinic_area) { %>
+                      <span style="color:#6b7280; font-size:0.8rem;"> · <%= v.clinic_area %></span>
+                    <% } %>
+                  </td>
+                  <td><%= v.status || '' %></td>
+                  <td style="max-width:260px; font-size:0.8rem;">
+                    <%= v.diagnosis_summary || '' %>
+                  </td>
+                  <td>
+                    <a href="/doctor/appointments/<%= v.id %>/edit" class="btn ghost btn-xs">
+                      Open
+                    </a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } %>
+      </section>
+    </section>
+  </div>
+</div>
+
+<%- include('_footer') %>

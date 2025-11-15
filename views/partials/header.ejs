@@ -1,25 +1,29 @@
-<header class="site-nav">
-  <div class="site-nav__inner">
-    <a class="site-nav__logo" href="/">Nirnoy</a>
-    <nav class="site-nav__links">
-      <a href="/">Home</a>
-      <a href="/doctors">For Patients</a>
-      <a href="/doctor/register">For Doctors</a>
-      <% if (user && user.role==='patient') { %>
-        <a href="/patient/dashboard">My Visits</a>
-      <% } %>
-      <% if (user && user.role==='doctor') { %>
-        <a href="/doctor/dashboard">Doctor Portal</a>
-      <% } %>
-    </nav>
-    <div class="site-nav__auth">
-      <% if (user) { %>
-        <span class="site-nav__user"><%= user.name||user.email %></span>
-        <a class="btn ghost" href="/logout">Logout</a>
-      <% } else { %>
-        <a class="btn ghost" href="/login">Login</a>
-        <a class="btn primary" href="/register">Get Started</a>
-      <% } %>
+<header class="site-header">
+  <div class="wrap site-nav">
+    <div class="nav">
+      <div class="brand"><a href="/">Nirnoy</a></div>
+      <div class="links">
+        <a href="/doctors">For Patients</a>
+        <a href="/doctor/register">For Doctors</a>
+        <% if (user && user.role === 'patient') { %>
+          <a href="/patient/dashboard">My Visits</a>
+        <% } %>
+        <% if (user && user.role === 'doctor') { %>
+          <a href="/doctor/dashboard">Doctor Portal</a>
+        <% } %>
+        <% if (user && user.role === 'admin') { %>
+          <a href="/admin/doctors">Admin</a>
+        <% } %>
+      </div>
+      <div class="auth">
+        <% if (user) { %>
+          <span><%= user.name || user.email %></span>
+          <a href="/logout" class="pill">Logout</a>
+        <% } else { %>
+          <a href="/login" class="pill">Login</a>
+          <a href="/register" class="pill">Sign up</a>
+        <% } %>
+      </div>
     </div>
   </div>
 </header>

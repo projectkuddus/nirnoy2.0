@@ -1187,3 +1187,329 @@ h3{margin:0 0 8px}
   gap: 6px;
   flex-wrap: wrap;
 }
+.booking-page {
+  padding: 24px 16px 40px;
+}
+
+.booking-layout {
+  margin-top: 12px;
+  max-width: 720px;
+}
+
+.booking-form .field-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.booking-form .field-group .field {
+  flex: 1 1 180px;
+}
+
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+
+.slot-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #f9fafb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.slot-pill input[type="radio"] {
+  display: none;
+}
+
+.slot-pill span {
+  white-space: nowrap;
+}
+
+.slot-pill:hover {
+  border-color: #38bdf8;
+}
+
+.slot-pill--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.slot-pill--disabled:hover {
+  border-color: #e2e8f0;
+}
+
+.slot-pill-selected {
+  background: #0ea5e9;
+  color: #ffffff;
+  border-color: #0ea5e9;
+}
+
+.booking-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.patient-stats {
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.doctor-clinics-page {
+  padding: 24px 16px 40px;
+}
+
+.doctor-clinics-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+  gap: 16px;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .doctor-clinics-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.doctor-clinics-list .clinic-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.clinic-card h2 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.clinic-meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.clinic-card__footer {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.doctor-clinics-form .section-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.doctor-schedule-page {
+  padding: 24px 16px 40px;
+}
+
+.doctor-schedule-layout {
+  margin-top: 12px;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.schedule-table th {
+  font-weight: 600;
+  color: #4b5563;
+  background: #f9fafb;
+}
+
+.doctor-schedule-form {
+  margin-top: 18px;
+  max-width: 640px;
+}
+
+.doctor-schedule-form .section-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+/* --- Admin pages --- */
+.admin-page .page-header {
+  margin-bottom: 16px;
+}
+
+.admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-table th,
+.admin-table td {
+  font-size: 13px;
+}
+
+.admin-table__actions {
+  white-space: nowrap;
+}
+
+.input-sm {
+  width: 110px;
+  font-size: 13px;
+  padding: 4px 6px;
+}
+
+.btn-xs {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.inline-form {
+  display: inline-block;
+  margin-left: 4px;
+}
+/* --- Dashboard shell --- */
+.dashboard-page {
+  padding: 24px 16px 40px;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-nav {
+    order: 2;
+  }
+
+  .dashboard-main {
+    order: 1;
+  }
+}
+
+.dashboard-nav {
+  align-self: flex-start;
+}
+
+.dashboard-nav__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  margin: 0 0 6px;
+}
+
+.dashboard-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.dashboard-nav__item a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #374151;
+  text-decoration: none;
+}
+
+.dashboard-nav__item a:hover {
+  background: #e5e7eb;
+}
+
+.dashboard-nav__item--active a {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.dashboard-main {
+  min-width: 0;
+}
+/* Header auth pills: always white text */
+.site-header .pill {
+  color: #ffffff;
+}
+/* Doctor directory filters */
+.doctor-filters__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doctor-filters__row {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) 1.2fr 1.2fr auto;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .doctor-filters__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.doctor-filters__group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doctor-filters__group--grow {
+  min-width: 0;
+}
+
+.doctor-filters__group--buttons {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.doctor-filters__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+.doctor-filters input[type="text"],
+.doctor-filters select {
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.doctor-filters__count {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
